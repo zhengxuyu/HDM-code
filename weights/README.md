@@ -1,5 +1,7 @@
 # Self-routing blocks, fitted on MMLU-Pro
 
+Also on the Hub: <https://huggingface.co/fredreick/HDM-blocks>
+
 Two blocks, one per backbone. Each reads the hidden state at the readout position
 of the fast pass together with eight statistics of the fast answer, and returns a
 distribution over the four joint outcomes of the two modes. The value of thinking

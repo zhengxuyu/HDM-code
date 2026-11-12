@@ -8,7 +8,7 @@
 [![licence](https://img.shields.io/badge/licence-Apache%202.0-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
 [![paper](https://img.shields.io/badge/paper-preprint-orange)](#citation)
-[![blocks](https://img.shields.io/badge/weights-included-success)](weights/)
+[![weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--blocks-yellow)](https://huggingface.co/fredreick/HDM-blocks)
 
 *One backbone, two decision modes, and a learned block that prices thinking
 before either mode runs.*
@@ -152,6 +152,14 @@ python -m inference.decision_service \
 its own dependencies can talk to the service without carrying torch.
 
 ## The blocks
+
+They ship with this repository in `weights/`, and are also on the Hub at
+[**fredreick/HDM-blocks**](https://huggingface.co/fredreick/HDM-blocks):
+
+```bash
+huggingface-cli download fredreick/HDM-blocks \
+    head-4b-mmlu-pro.safetensors --local-dir weights/
+```
 
 | | `head-4b-mmlu-pro` | `head-27b-mmlu-pro` |
 |---|---|---|
