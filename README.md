@@ -57,30 +57,54 @@ pass takes. Nothing in between, and nothing is parsed out of generated text.
 deciding per step. <code>demo/</code> has the harness.</sub>
 </div>
 
-## Repository
+## Quick start
 
-| | |
-|---|---|
-| `src/litjev/` | the two modes: typed requests, readouts, the block, the pipeline |
-| `src/inference/` | SGLang backend, the decision service, and its standard-library client |
-| `src/slime_htm/` | episodic rollouts, the environment protocol, CDPO |
-| `weights/` | self-routing blocks fitted on MMLU-Pro, with their fit reports |
-| `demo/` | one browser task under three policies, on the clock |
-| `docs/` | the API, the schema, how the readouts work, how to reproduce |
-
-## Serving both modes
-
-The server carries the API and three pages that exercise it: `/` answers one typed
-request with the fast mode, `/routing` runs the same request at several prices side
-by side, and `/film` answers a visual environment frame by frame.
-[`docs/deploy.md`](docs/deploy.md) covers installing, attaching a block, running it
-on a GPU through SGLang, and reaching it safely from another machine.
+Python 3.11 or newer, and a GPU with room for the backbone (the 4B needs about
+8 GB in bf16, plus its KV cache).
 
 ```bash
-litjev-serve --model Qwen/Qwen3.8-27B \
-             --decision-head weights/head-27b-mmlu-pro.safetensors \
-             --backend sglang --readout coded --preload
+git clone https://github.com/zhengxuyu/HDM-code
+cd HDM-code
+uv sync                                   # or: pip install -e .
+
+litjev-serve --model Qwen/Qwen3.5-4B \
+             --decision-head weights/head-4b-mmlu-pro.safetensors \
+             --readout coded --port 8000
 ```
+
+The checkpoint downloads on the first call, so the first request is slow and the
+rest are not. Then open <http://127.0.0.1:8000>:
+
+| page | what it shows |
+|---|---|
+| `/` | one typed request answered by the fast mode: the distribution and the confidence, with no token generated |
+| `/routing` | the same request at several prices side by side, so you can see where the block escalates and what it costs |
+| `/film` | a visual environment answered frame by frame |
+| `/health` | whether weights are loaded |
+
+Drop `--decision-head` and the fast mode still answers; there is simply nothing
+to route on, and `/routing` will say so.
+
+On a GPU large enough for the 27B, the slow mode is far faster through SGLang:
+
+```bash
+litjev-serve --model /path/to/Qwen3.8-27B \
+             --decision-head weights/head-27b-mmlu-pro.safetensors \
+             --backend sglang --readout coded --preload --port 8000
+```
+
+`--readout` has to be the one the block was fitted under, and the server refuses a
+block fitted for another backbone rather than reading noise.
+
+> **The playground has no authentication.** The server binds `127.0.0.1` for that
+> reason. To reach it from elsewhere, forward the port
+> (`ssh -N -L 8000:<node>:8000 <user>@<host>`) rather than passing `--host 0.0.0.0`.
+
+[`docs/deploy.md`](docs/deploy.md) has the rest: verifying the engine returns what
+the block was trained on, running the decision service for agent loops, and
+containers.
+
+## The API
 
 `POST /v1/systemone` answers with the fast mode alone. `POST /v1/systemtwo` takes a
 routing block in the body and decides for itself:
@@ -92,9 +116,21 @@ routing block in the body and decides for itself:
  "routing": {"lambda": 0.0, "budget": 4096}}
 ```
 
-`lambda` is the price of one escalation. It is **not** baked into the block: one fit
-serves every price, so moving it moves the operating point along the cost-accuracy
-curve without retraining.
+`lambda` is the price of one escalation, and it is **not** baked into the block:
+training draws a price per example, so one fit serves every price and moving it
+moves the operating point along the cost-accuracy curve without retraining.
+`budget` caps the slow mode at B generated tokens.
+
+## Repository
+
+| | |
+|---|---|
+| `src/litjev/` | the two modes: typed requests, readouts, the block, the pipeline |
+| `src/inference/` | SGLang backend, the decision service, and its standard-library client |
+| `src/slime_htm/` | episodic rollouts, the environment protocol, CDPO |
+| `weights/` | self-routing blocks fitted on MMLU-Pro, with their fit reports |
+| `demo/` | one browser task under three policies, on the clock |
+| `docs/` | the API, the schema, how the readouts work, how to reproduce |
 
 ## Routing inside an agent loop
 
