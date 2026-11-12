@@ -1,5 +1,17 @@
 # HDM: a hybrid decision model
 
+Official implementation of **The Value of Thinking: Learning When to Reason in
+Hybrid Decision Models**.
+
+![The backbone, the self-routing block, and the two modes](assets/architecture.png)
+
+The frozen backbone encodes a typed request with no token generated. The
+self-routing block, which holds the only trained weights, reads the readout state
+and eight statistics of the fast answer and returns the joint outcome of the two
+modes, from which the confidence and the value of thinking follow. Routing happens
+once: the model either returns the cached fast answer or decodes with the same
+backbone.
+
 One language model with two decision modes and a learned block that chooses
 between them before either runs.
 
@@ -86,6 +98,18 @@ difference shrinks exactly where thinking is worth most.
 are the ones the paper reports; `weights/README.md` records what they were fitted
 on and how they score against the baselines, including the two places where a
 simpler rule scores higher.
+
+## Citation
+
+```bibtex
+@article{yu2026valueofthinking,
+  title  = {The Value of Thinking: Learning When to Reason in Hybrid Decision Models},
+  author = {Yu, Zhengxu and Xu, Ke and Fang, Meng and Ammar, Haitham and
+            Luo, Weilin and Wang, Jun},
+  year   = {2026},
+  note   = {Preprint}
+}
+```
 
 ## Licence
 
