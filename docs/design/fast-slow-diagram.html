@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LitJev Fast and Slow</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --panel: #ffffff;
+    --ink: #1e2226;
+    --muted: #666b70;
+    --line: #d3d0c8;
+    --accent: #b45309;
+    --accent-soft: #fdf0e0;
+    --dash: #8a8f95;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16181b; --panel: #1e2125; --ink: #e8e6e0; --muted: #a0a4a8;
+      --line: #3a3e43; --accent: #f2b544; --accent-soft: #33291a; --dash: #8a8f95;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16181b; --panel: #1e2125; --ink: #e8e6e0; --muted: #a0a4a8;
+    --line: #3a3e43; --accent: #f2b544; --accent-soft: #33291a; --dash: #8a8f95;
+  }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 64px; padding-inline: 20px; }
+  h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 6px; text-wrap: balance; }
+  .lede { color: var(--muted); margin: 0 0 28px; max-width: 64ch; }
+  h2 { font-size: 17px; font-weight: 600; margin: 40px 0 10px; }
+  p { max-width: 70ch; margin: 0 0 12px; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+  figure { margin: 0; }
+  .scroll { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  svg { display: block; max-width: 100%; height: auto; min-width: 780px; color: var(--ink); font-family: "IBM Plex Sans", Arial, sans-serif; }
+  svg .mono { font-family: "IBM Plex Mono", Menlo, monospace; }
+  figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; max-width: 76ch; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 10px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--muted); }
+  .legend span.sw { display: inline-block; width: 26px; height: 0; border-top: 2px solid var(--ink); vertical-align: middle; margin-right: 6px; }
+  .legend span.sw.acc { border-color: var(--accent); border-width: 3px; }
+  .legend span.sw.dash { border-style: dashed; border-color: var(--dash); }
+  table { border-collapse: collapse; font-size: 14px; margin: 8px 0 4px; }
+  th, td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 14px 0; max-width: 70ch; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>How LitJev routes between fast and slow thinking</h1>
+  <p class="lede">One prefill and one branch forward read the fast answer. A small trained decision head sits beside the same hidden state and judges whether slow thinking would pay off. The backbone is frozen; the slow path is the backbone's own thinking mode; every final answer still comes from the readout.</p>
+
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 1200 600" role="img" aria-label="LitJev request flow: the state is prefilled once into a cache, copied N ways and joined with each question's suffix for one batched forward; the hidden state at the Answer colon feeds both lm_head, giving the fast answer, and the decision head, giving a four-class outcome distribution; questions whose escalation gain exceeds lambda take the slow path, which generates reasoning in thinking mode and then reads the same Answer boundary; the response merges fast and slow answers.">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+          </marker>
+          <marker id="arr-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+          </marker>
+        </defs>
+        <g fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="20" y="60" width="150" height="64" rx="6" fill="var(--panel)"/>
+          <rect x="210" y="60" width="170" height="64" rx="6" fill="var(--panel)"/>
+          <rect x="420" y="60" width="150" height="64" rx="6" fill="var(--panel)"/>
+          <rect x="610" y="30" width="260" height="124" rx="6" fill="var(--panel)"/>
+          <line x1="622" y1="70" x2="858" y2="70" stroke="var(--line)"/>
+          <line x1="622" y1="104" x2="858" y2="104" stroke="var(--line)"/>
+          <circle cx="940" cy="92" r="22" fill="var(--panel)"/>
+          <rect x="640" y="210" width="240" height="64" rx="6" fill="var(--panel)"/>
+          <rect x="640" y="320" width="240" height="64" rx="6" fill="var(--panel)"/>
+          <rect x="20" y="420" width="240" height="130" rx="6" fill="var(--panel)"/>
+          <rect x="300" y="420" width="560" height="130" rx="6" fill="var(--panel)" stroke="var(--dash)" stroke-dasharray="6 5"/>
+        </g>
+        <g fill="none" stroke="var(--accent)" stroke-width="2.2">
+          <rect x="910" y="210" width="260" height="64" rx="6" fill="var(--accent-soft)"/>
+          <rect x="910" y="320" width="260" height="80" rx="6" fill="var(--accent-soft)"/>
+          <polygon points="1040,420 1110,462 1040,504 970,462" fill="var(--accent-soft)"/>
+        </g>
+
+        <g fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arr)">
+          <line x1="170" y1="92" x2="208" y2="92"/>
+          <line x1="380" y1="92" x2="418" y2="92"/>
+          <line x1="570" y1="92" x2="608" y2="52"/>
+          <line x1="570" y1="92" x2="608" y2="92"/>
+          <line x1="570" y1="92" x2="608" y2="132"/>
+          <line x1="870" y1="92" x2="916" y2="92"/>
+          <polyline points="940,114 940,170 760,170 760,208"/>
+          <line x1="760" y1="274" x2="760" y2="318"/>
+          <polyline points="640,352 140,352 140,418"/>
+          <line x1="300" y1="485" x2="262" y2="485"/>
+        </g>
+        <g fill="none" stroke="var(--accent)" stroke-width="2" marker-end="url(#arr-acc)">
+          <polyline points="940,170 1040,170 1040,208"/>
+          <line x1="1040" y1="274" x2="1040" y2="318"/>
+          <line x1="1040" y1="400" x2="1040" y2="418"/>
+          <line x1="970" y1="462" x2="862" y2="462"/>
+          <line x1="1040" y1="504" x2="1040" y2="548"/>
+        </g>
+
+        <g font-size="12.5" fill="currentColor">
+          <text x="95" y="86" text-anchor="middle" font-weight="600">Request</text>
+          <text x="95" y="106" text-anchor="middle" fill="var(--muted)">state + N questions</text>
+
+          <text x="295" y="86" text-anchor="middle" font-weight="600">Forward 1 · prefill</text>
+          <text x="295" y="106" text-anchor="middle" fill="var(--muted)">encode the state once</text>
+
+          <text x="495" y="86" text-anchor="middle" font-weight="600">Cache</text>
+          <text x="495" y="106" text-anchor="middle" fill="var(--muted)">KV + recurrent state</text>
+          <text x="589" y="38" text-anchor="middle" fill="var(--muted)" font-size="11">copy ×N</text>
+
+          <text x="740" y="52" text-anchor="middle" font-weight="600" font-size="12">Forward 2 · N branches, one batch</text>
+          <text x="740" y="90" text-anchor="middle" class="mono" font-size="11.5">Q1 + option codes … Answer:</text>
+          <text x="740" y="124" text-anchor="middle" class="mono" font-size="11.5">Q2 + option codes … Answer:</text>
+          <text x="740" y="146" text-anchor="middle" class="mono" font-size="11.5">QN + option codes … Answer:</text>
+          <text x="893" y="82" text-anchor="middle" fill="var(--muted)" font-size="11">readout</text>
+
+          <text x="940" y="97" text-anchor="middle" font-weight="600" class="mono">h</text>
+          <text x="940" y="44" text-anchor="middle" fill="var(--muted)" font-size="11">hidden state at the colon of Answer:</text>
+          <text x="940" y="58" text-anchor="middle" fill="var(--muted)" font-size="11">one vector, two heads read it</text>
+
+          <text x="760" y="236" text-anchor="middle" font-weight="600">lm_head (backbone's own)</text>
+          <text x="760" y="256" text-anchor="middle" fill="var(--muted)" font-size="12">slice K candidate logits → softmax</text>
+
+          <text x="760" y="346" text-anchor="middle" font-weight="600">Fast answer</text>
+          <text x="760" y="366" text-anchor="middle" fill="var(--muted)" font-size="12">choice / score / noul + probabilities</text>
+          <text x="390" y="344" text-anchor="middle" fill="var(--muted)" font-size="11">not escalated: fast answer is final</text>
+
+          <text x="1040" y="236" text-anchor="middle" font-weight="600" fill="var(--accent)">Decision head (trained)</text>
+          <text x="1040" y="256" text-anchor="middle" fill="var(--muted)" font-size="12">h + distribution stats → 2-layer MLP</text>
+
+          <text x="1040" y="340" text-anchor="middle" font-weight="600">Four-class outcome</text>
+          <text x="1040" y="358" text-anchor="middle" fill="var(--muted)" font-size="11.5">P(fast ✓, slow ✓)   P(fast ✓, slow ✗)</text>
+          <text x="1040" y="373" text-anchor="middle" fill="var(--muted)" font-size="11.5">P(fast ✗, slow ✓)   P(fast ✗, slow ✗)</text>
+          <text x="1040" y="390" text-anchor="middle" fill="var(--muted)" font-size="11.5">confidence = P(fast ✓)</text>
+
+          <text x="1040" y="458" text-anchor="middle" font-weight="600" font-size="12">gain &gt; λ ?</text>
+          <text x="1040" y="474" text-anchor="middle" fill="var(--muted)" font-size="10">P(fast ✗, slow ✓) − P(fast ✓, slow ✗)</text>
+          <text x="916" y="452" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="500">yes · escalate</text>
+          <text x="1040" y="566" text-anchor="middle" fill="var(--muted)" font-size="11">no · keep the fast answer</text>
+
+          <text x="580" y="444" text-anchor="middle" font-weight="600">Slow path · escalated questions only</text>
+          <text x="316" y="470" font-size="12">1  Rebuild the prompt with thinking on; the template itself ends with &lt;think&gt;</text>
+          <text x="316" y="494" font-size="12">2  The backbone writes its own reasoning until &lt;/think&gt; or the budget</text>
+          <text x="316" y="518" font-size="12">3  Append Answer: and read the same K candidate logits → slow answer</text>
+          <text x="316" y="540" font-size="11" fill="var(--muted)" class="mono">usage.output_tokens += thinking tokens · weights untouched</text>
+
+          <text x="140" y="446" text-anchor="middle" font-weight="600">Response</text>
+          <text x="140" y="468" text-anchor="middle" fill="var(--muted)" font-size="12">one typed answer per question</text>
+          <text x="140" y="488" text-anchor="middle" fill="var(--muted)" font-size="12">same shape as /v1/systemone</text>
+          <text x="140" y="508" text-anchor="middle" fill="var(--muted)" font-size="12" class="mono">system: one | two</text>
+          <text x="140" y="530" text-anchor="middle" fill="var(--muted)" font-size="12" class="mono">confidence = P(correct)</text>
+          <text x="281" y="478" text-anchor="middle" fill="var(--muted)" font-size="11">slow</text>
+        </g>
+      </svg>
+    </div>
+    <ul class="legend">
+      <li><span class="sw"></span>Backbone as shipped, weights frozen</li>
+      <li><span class="sw acc"></span>Added and trained: the decision head and its routing rule</li>
+      <li><span class="sw dash"></span>Runs only for escalated questions</li>
+    </ul>
+    <figcaption>One request end to end. The fast path is two forwards and zero generated tokens. The decision head and lm_head read the same hidden state, so deciding whether to think costs no extra token. λ is a request-time knob and never enters training.</figcaption>
+  </figure>
+
+  <h2>What the decision head learns</h2>
+  <p>Not "is the fast answer right" but the joint outcome of both paths. Because the slow path is the frozen backbone's native thinking, its behaviour is fixed, so labels come for free: run both paths on each question and compare with the gold answer.</p>
+  <table>
+    <tr><th>Class</th><th>Fast</th><th>Slow</th><th>Meaning</th></tr>
+    <tr><td class="num">0</td><td>right</td><td>right</td><td>no need to think</td></tr>
+    <tr><td class="num">1</td><td>right</td><td>wrong</td><td>do not think; it would hurt</td></tr>
+    <tr><td class="num">2</td><td>wrong</td><td>right</td><td>think</td></tr>
+    <tr><td class="num">3</td><td>wrong</td><td>wrong</td><td>thinking will not help</td></tr>
+  </table>
+  <p>Routing rule: <code>P(2) − P(1) &gt; λ</code>. Changing the escalation rate means changing λ, not retraining. The head is a two-layer MLP over the selected layers' hidden states plus a few statistics of the candidate distribution (max probability, entropy, margin, question type). Its parameter count is negligible next to the backbone.</p>
+
+  <h2>Why the slow prompt is built separately</h2>
+  <figure>
+    <div class="scroll">
+      <svg viewBox="0 0 1020 200" role="img" aria-label="Two slow-path prompts compared. Before: the fast prefix was reused, and it already contained an empty think block, so the model closed the appended think tag after one token. After: the prompt is rebuilt with thinking enabled, the question goes in the user turn, and the template itself ends with an open think tag, so the model writes its reasoning.">
+        <g font-size="12.5" fill="currentColor" class="mono">
+          <text x="16" y="30" font-weight="600" font-family="IBM Plex Sans, Arial">Before (4B smoke: 1 thinking token per question)</text>
+          <g stroke="currentColor" stroke-width="1.2" fill="var(--panel)">
+            <rect x="16" y="44" width="150" height="34" rx="4"/>
+            <rect x="176" y="44" width="200" height="34" rx="4" stroke="var(--dash)" stroke-dasharray="5 4"/>
+            <rect x="386" y="44" width="180" height="34" rx="4"/>
+            <rect x="576" y="44" width="90" height="34" rx="4"/>
+            <rect x="676" y="44" width="150" height="34" rx="4" stroke="var(--dash)" stroke-dasharray="5 4"/>
+          </g>
+          <text x="91" y="66" text-anchor="middle" font-size="11.5">system + state</text>
+          <text x="276" y="66" text-anchor="middle" font-size="11.5">&lt;think&gt;\n\n&lt;/think&gt;</text>
+          <text x="476" y="66" text-anchor="middle" font-size="11.5">Question: {…}</text>
+          <text x="621" y="66" text-anchor="middle" font-size="11.5">&lt;think&gt;</text>
+          <text x="751" y="66" text-anchor="middle" font-size="11.5" fill="var(--muted)">closed after 1 token</text>
+          <text x="276" y="96" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans, Arial">empty block the template inserts when enable_thinking=False</text>
+
+          <text x="16" y="136" font-weight="600" font-family="IBM Plex Sans, Arial">After (prompt rebuilt with enable_thinking=True)</text>
+          <g stroke="currentColor" stroke-width="1.2" fill="var(--panel)">
+            <rect x="16" y="150" width="180" height="34" rx="4"/>
+            <rect x="206" y="150" width="240" height="34" rx="4"/>
+            <rect x="456" y="150" width="80" height="34" rx="4"/>
+            <rect x="546" y="150" width="200" height="34" rx="4" stroke="var(--accent)" stroke-width="2"/>
+            <rect x="756" y="150" width="90" height="34" rx="4"/>
+            <rect x="856" y="150" width="150" height="34" rx="4"/>
+          </g>
+          <text x="106" y="172" text-anchor="middle" font-size="11.5">system (reasoning allowed)</text>
+          <text x="326" y="172" text-anchor="middle" font-size="11.5">user: state + Question: {…}</text>
+          <text x="496" y="172" text-anchor="middle" font-size="11.5">&lt;think&gt;</text>
+          <text x="646" y="172" text-anchor="middle" font-size="11.5">reasoning ≤ budget</text>
+          <text x="801" y="172" text-anchor="middle" font-size="11.5">&lt;/think&gt;</text>
+          <text x="931" y="172" text-anchor="middle" font-size="11.5">Answer: → readout</text>
+        </g>
+      </svg>
+    </div>
+    <figcaption>Found on the first Qwen3.5-4B run and fixed. With <code>enable_thinking=False</code> the fast prefix carries an empty think block, so the model treats thinking as already finished. The slow path now renders its own prompt with thinking enabled and the question in the user turn, so the template itself ends with <code>&lt;think&gt;</code>. Not a single backbone weight changed.</figcaption>
+  </figure>
+
+  <h2>First numbers</h2>
+  <p>Qwen3.5-4B, 1500 MMLU-Pro questions across all 14 subjects, 1024 thinking tokens, evaluated on three held-out subjects (346 questions). Thinking helped on 24.6% of them and hurt on 4.6%.</p>
+  <table>
+    <tr><th>Policy</th><th>Escalation</th><th>Accuracy</th></tr>
+    <tr><td>Fast only</td><td class="num">0%</td><td class="num">0.540</td></tr>
+    <tr><td>Slow only</td><td class="num">100%</td><td class="num">0.740</td></tr>
+    <tr><td>Stats-only head, λ = 0</td><td class="num">48%</td><td class="num">0.682</td></tr>
+    <tr><td>Layer 24 + PCA-64 head, λ = 0</td><td class="num">53%</td><td class="num">0.717</td></tr>
+    <tr><td>Layer 24 + PCA-64 head, λ = −0.1</td><td class="num">84%</td><td class="num">0.728</td></tr>
+  </table>
+  <div class="note">The hidden-state head beats the stats-only floor at every escalation rate, by about three points; routing AUROC 0.72 versus 0.70. With a twenty-point gap between fast and slow, a router at that AUROC keeps most of the gain at half the thinking cost rather than matching slow-only. Thinking still hit the budget on 90% of questions, so slow accuracy is a floor. One seed, one checkpoint: a pipeline check, not a benchmark.</div>
+
+  <h2>Where it lives in the code</h2>
+  <table>
+    <tr><th>File</th><th>Role</th></tr>
+    <tr><td class="mono">backend.py</td><td>Forward 2 returns readout hidden states; <span class="mono">think()</span> rebuilds the prompt, generates, reads the boundary again</td></tr>
+    <tr><td class="mono">heads.py</td><td>Decision head, features, training, AUROC, coverage curve</td></tr>
+    <tr><td class="mono">routing.py</td><td>Gain rule and λ</td></tr>
+    <tr><td class="mono">decision.py</td><td>With a head, confidence becomes P(fast correct); escalated questions take the slow answer</td></tr>
+    <tr><td class="mono">collect.py / training.py</td><td>Automatic labels, category holdout, per-layer probes</td></tr>
+    <tr><td class="mono">api.py</td><td><span class="mono">/v1/systemtwo</span> with an optional routing block; <span class="mono">/v1/systemone</span> untouched</td></tr>
+  </table>
+</div>
+</body>
+</html>

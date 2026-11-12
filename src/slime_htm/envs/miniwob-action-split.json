@@ -1,0 +1,805 @@
+{
+  "click_tasks_with_pointer_markers": [
+    "bisect-angle",
+    "circle-center",
+    "count-sides",
+    "drag-box",
+    "drag-items",
+    "drag-items-grid",
+    "drag-sort-numbers",
+    "draw-circle",
+    "draw-line",
+    "find-midpoint",
+    "form-sequence",
+    "highlight-text",
+    "highlight-text-2",
+    "hot-cold",
+    "right-angle",
+    "text-editor",
+    "use-slider",
+    "use-slider-2"
+  ],
+  "groups": {
+    "beyond-click": [
+      "book-flight",
+      "book-flight-nodelay",
+      "choose-date",
+      "choose-date-easy",
+      "choose-date-medium",
+      "choose-date-nodelay",
+      "click-widget",
+      "copy-paste",
+      "copy-paste-2",
+      "daily-calendar",
+      "email-inbox",
+      "email-inbox-delete",
+      "email-inbox-forward",
+      "email-inbox-forward-nl",
+      "email-inbox-forward-nl-turk",
+      "email-inbox-important",
+      "email-inbox-nl-turk",
+      "email-inbox-noscroll",
+      "email-inbox-reply",
+      "email-inbox-star-reply",
+      "enter-date",
+      "enter-password",
+      "enter-text",
+      "enter-text-2",
+      "enter-text-dynamic",
+      "enter-time",
+      "find-word",
+      "focus-text",
+      "focus-text-2",
+      "form-sequence-2",
+      "form-sequence-3",
+      "guess-number",
+      "login-user",
+      "login-user-popup",
+      "multi-layouts",
+      "multi-orderings",
+      "read-table",
+      "read-table-2",
+      "resize-textarea",
+      "scroll-text",
+      "scroll-text-2",
+      "search-engine",
+      "sign-agreement",
+      "simple-algebra",
+      "simple-arithmetic",
+      "terminal",
+      "text-transform",
+      "use-autocomplete",
+      "use-autocomplete-nodelay",
+      "use-colorwheel",
+      "use-colorwheel-2",
+      "use-spinner",
+      "visual-addition"
+    ],
+    "click": [
+      "ascending-numbers",
+      "buy-ticket",
+      "choose-list",
+      "click-button",
+      "click-button-sequence",
+      "click-checkboxes",
+      "click-checkboxes-large",
+      "click-checkboxes-soft",
+      "click-checkboxes-transfer",
+      "click-collapsible",
+      "click-collapsible-2",
+      "click-collapsible-2-nodelay",
+      "click-collapsible-nodelay",
+      "click-color",
+      "click-dialog",
+      "click-dialog-2",
+      "click-link",
+      "click-menu",
+      "click-menu-2",
+      "click-option",
+      "click-pie",
+      "click-pie-nodelay",
+      "click-scroll-list",
+      "click-shades",
+      "click-shape",
+      "click-tab",
+      "click-tab-2",
+      "click-tab-2-easy",
+      "click-tab-2-hard",
+      "click-tab-2-medium",
+      "click-test",
+      "click-test-2",
+      "click-test-transfer",
+      "count-shape",
+      "drag-circle",
+      "drag-cube",
+      "drag-shapes",
+      "drag-shapes-2",
+      "drag-single-shape",
+      "find-greatest",
+      "generate-number",
+      "grid-coordinate",
+      "identify-shape",
+      "navigate-tree",
+      "number-checkboxes",
+      "odd-or-even",
+      "order-food",
+      "phone-book",
+      "social-media",
+      "social-media-all",
+      "social-media-some",
+      "stock-market",
+      "tic-tac-toe",
+      "unicode-test"
+    ],
+    "pointer": [
+      "bisect-angle",
+      "circle-center",
+      "count-sides",
+      "drag-box",
+      "drag-items",
+      "drag-items-grid",
+      "drag-sort-numbers",
+      "draw-circle",
+      "draw-line",
+      "find-midpoint",
+      "form-sequence",
+      "highlight-text",
+      "highlight-text-2",
+      "hot-cold",
+      "right-angle",
+      "text-editor",
+      "use-slider",
+      "use-slider-2"
+    ]
+  },
+  "miniwob_commit": "33c3b4ddef8c6eb67c57a29663d844b1eda7e614",
+  "regrouped": "The 18 pointer-marked tasks are their own group from 01b43b1 on. Read this as what it is: c8ed86e's committed rule said they 'stay in the click group, which depresses its success rather than inflating it', 28816 ran on that 72-task group, and the decision to read the 18 apart was made after its first 28 episodes -- which failed on bisect-angle and circle-center, two of them. Naming them in advance is not the same as pre-registering the decision to analyse them separately, and claiming otherwise was the self-serving version. So 28816's primary result is the verdict over the whole 72, the 54/18 split is secondary and dated after that data, and runs from 01b43b1 cannot be combined with 28816 at all because the fast mode's action set changed (scroll). code-reviewer required this reading.",
+  "rule": "beyond click when the page has a text field or a <select>; pointer-only tasks are not detected and stay in the click group, which depresses its success rather than inflating it",
+  "tasks": {
+    "ascending-numbers": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "bisect-angle": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "book-flight": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "book-flight-nodelay": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "buy-ticket": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "choose-date": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "choose-date-easy": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "choose-date-medium": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "choose-date-nodelay": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "choose-list": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "circle-center": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "click-button": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-button-sequence": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-checkboxes": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-checkboxes-large": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-checkboxes-soft": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-checkboxes-transfer": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-collapsible": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-collapsible-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-collapsible-2-nodelay": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-collapsible-nodelay": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-color": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-dialog": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-dialog-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-link": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-menu": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-menu-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-option": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-pie": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-pie-nodelay": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-scroll-list": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-shades": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-shape": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-tab": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-tab-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-tab-2-easy": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-tab-2-hard": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-tab-2-medium": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-test": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-test-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-test-transfer": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "click-widget": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "copy-paste": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "copy-paste-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "count-shape": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "count-sides": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "daily-calendar": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": [
+        "mouse_handlers"
+      ]
+    },
+    "drag-box": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "drag-circle": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "drag-cube": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "drag-items": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "drag-items-grid": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "drag-shapes": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "drag-shapes-2": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "drag-single-shape": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "drag-sort-numbers": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "draw-circle": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "draw-line": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "email-inbox": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-delete": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-forward": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-forward-nl": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-forward-nl-turk": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-important": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-nl-turk": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-noscroll": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-reply": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "email-inbox-star-reply": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-date": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-password": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-text": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-text-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-text-dynamic": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "enter-time": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "find-greatest": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "find-midpoint": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "find-word": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "focus-text": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "focus-text-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "form-sequence": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "form-sequence-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "form-sequence-3": {
+      "needs": [
+        "select"
+      ],
+      "pointer_markers": []
+    },
+    "generate-number": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "grid-coordinate": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "guess-number": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "highlight-text": {
+      "needs": [],
+      "pointer_markers": [
+        "selection"
+      ]
+    },
+    "highlight-text-2": {
+      "needs": [],
+      "pointer_markers": [
+        "selection"
+      ]
+    },
+    "hot-cold": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates",
+        "mouse_handlers"
+      ]
+    },
+    "identify-shape": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "login-user": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "login-user-popup": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "multi-layouts": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "multi-orderings": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "navigate-tree": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "number-checkboxes": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "odd-or-even": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "order-food": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "phone-book": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "read-table": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "read-table-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "resize-textarea": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "right-angle": {
+      "needs": [],
+      "pointer_markers": [
+        "coordinates"
+      ]
+    },
+    "scroll-text": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "scroll-text-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "search-engine": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "sign-agreement": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "simple-algebra": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "simple-arithmetic": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "social-media": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "social-media-all": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "social-media-some": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "stock-market": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "terminal": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "text-editor": {
+      "needs": [],
+      "pointer_markers": [
+        "rich_text"
+      ]
+    },
+    "text-transform": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "tic-tac-toe": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "unicode-test": {
+      "needs": [],
+      "pointer_markers": []
+    },
+    "use-autocomplete": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "use-autocomplete-nodelay": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "use-colorwheel": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "use-colorwheel-2": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "use-slider": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "use-slider-2": {
+      "needs": [],
+      "pointer_markers": [
+        "pointer_library"
+      ]
+    },
+    "use-spinner": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    },
+    "visual-addition": {
+      "needs": [
+        "text"
+      ],
+      "pointer_markers": []
+    }
+  }
+}

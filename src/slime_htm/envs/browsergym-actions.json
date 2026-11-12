@@ -1,0 +1,737 @@
+{
+ "arity_mismatches": [],
+ "browsergym": "0.14.3",
+ "build_cost_kinds": {
+  "constant": "常量,不看页面",
+  "needs_a_subset": "**能构造,但必须先裁取值集合。** known_key 接受 43 个具名键 加任意单字符(~138 个基础键),再乘修饰键组合约 828 种 —— 完整集合一个元素就塞满 52 槽。要先定一个小键表(Enter/Tab/方向键之类),而定它就是一个需要预注册的选择",
+  "needs_hierarchy": "**要先改读取方式。** 取值在 axtree_object 里,但把 option 配到它的 <select> 需要父子关系,现在 element_names() 读的是拍平后的字符串",
+  "quadratic": "**能构造但是平方级。** 52 槽只够 7 个元素(7x6=42),第 8 个就溢出",
+  "same_loop": "和 click 同一个循环,遍历 extra_element_properties 即可。几行"
+ },
+ "counts": {
+  "needs_content": 8,
+  "selectable_in_principle": 25,
+  "selectable_now": 2
+ },
+ "definition": {
+  "needs_content": "至少一个参数的取值无法从 observation 枚举,只能由模型生成",
+  "selectable_in_principle": "取值能从现有 observation 字段得到,但没有构造代码。缺的是我们写枚举,不是模型产生内容",
+  "selectable_now": "候选项已经在构造,快思考现在就能选,不产生任何 token"
+ },
+ "filtered_out": {
+  "option": "折叠的 <select> 里的 <option> 有 bid,但 bbox 为空或不在视口,所以 candidates() 的可见性过滤会去掉它们。这就是为什么「直接 click 一个 option」替代不了 select_option"
+ },
+ "measured_scale": {
+  "candidates_at_limit": 0,
+  "candidates_max": 15,
+  "candidates_median": 3,
+  "elements_max": 14,
+  "elements_median": 2,
+  "steps": 317,
+  "venue": "miniwob click",
+  "webarena_note": "一篇 Wikipedia 文章 3476 clickable / 232 rendered / 视口内 10"
+ },
+ "needs_content": [
+  {
+   "action": "fill",
+   "arity": 2,
+   "candidates_from": null,
+   "note": "**这是那条线本身。** value 是自由文本,页面上没有一个字段列出「应该填什么」。option (b) 曾提议用 goal 的子串当候选,那是一个近似而不是枚举:答案得从页面读出来的任务照样到不了"
+  },
+  {
+   "action": "goto",
+   "arity": 1,
+   "candidates_from": "dom_object 里的 href(部分)",
+   "note": "**部分可枚举。** 页面上的链接能从 dom_object 取,那是一个有限集合;但任意 URL 不行。按「不改造」算它需要内容:现在没有任何代码从 dom_object 取 href"
+  },
+  {
+   "action": "keyboard_insert_text",
+   "arity": 1,
+   "candidates_from": null,
+   "note": "同上"
+  },
+  {
+   "action": "keyboard_type",
+   "arity": 1,
+   "candidates_from": null,
+   "note": "不带 bid 的 fill,同样是自由文本"
+  },
+  {
+   "action": "mouse_upload_file",
+   "arity": 3,
+   "candidates_from": null,
+   "note": "同 upload_file"
+  },
+  {
+   "action": "report_infeasible",
+   "arity": 1,
+   "candidates_from": null,
+   "note": "reason 是自由文本。**但它有一个可枚举的退化版**:固定一句理由就能当一个候选项,因为评分看的是「有没有报不可行」而不是理由写了什么。现在没有接"
+  },
+  {
+   "action": "send_msg_to_user",
+   "arity": 1,
+   "candidates_from": null,
+   "note": "答案本身。WebArena 的 string_match 任务全靠它,而答案要从页面读,不在任何可枚举集合里"
+  },
+  {
+   "action": "upload_file",
+   "arity": 2,
+   "candidates_from": null,
+   "note": "file 是本地路径。严格说不是模型「产生内容」,但也枚举不出来 —— 要环境预先放文件并告知路径,现在没有这个机制"
+  }
+ ],
+ "observation_fields": [
+  "chat_messages",
+  "goal",
+  "goal_object",
+  "open_pages_urls",
+  "open_pages_titles",
+  "active_page_index",
+  "url",
+  "screenshot",
+  "dom_object",
+  "axtree_object",
+  "extra_element_properties",
+  "focused_element_bid",
+  "last_action",
+  "last_action_error",
+  "elapsed_time"
+ ],
+ "selectable_in_principle": [
+  {
+   "action": "check",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "任何 venue 预设都给不到:不在任何子集里(见 datasets.md 1.5)"
+  },
+  {
+   "action": "clear",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "清空一个输入框。**不需要内容** —— 它只删不写"
+  },
+  {
+   "action": "dblclick",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "同 click"
+  },
+  {
+   "action": "drag_and_drop",
+   "arity": 2,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 4,
+    "slots": 52,
+    "worst": 196
+   },
+   "build_cost": "quadratic",
+   "candidates_formula": "E^2",
+   "candidates_from": "extra_element_properties 的键 × 自身",
+   "note": "两个 bid 的叉乘。可枚举但是平方级,52 个候选槽放不下"
+  },
+  {
+   "action": "focus",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "同 click"
+  },
+  {
+   "action": "go_back",
+   "arity": 0,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 1,
+    "worst": 1
+   },
+   "build_cost": "constant",
+   "candidates_formula": "1",
+   "candidates_from": "无参",
+   "note": "一个候选项"
+  },
+  {
+   "action": "go_forward",
+   "arity": 0,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 1,
+    "worst": 1
+   },
+   "build_cost": "constant",
+   "candidates_formula": "1",
+   "candidates_from": "无参",
+   "note": "一个候选项"
+  },
+  {
+   "action": "hover",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "同 click"
+  },
+  {
+   "action": "keyboard_down",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 138,
+    "slots": 52,
+    "worst": 138
+   },
+   "build_cost": "needs_a_subset",
+   "candidates_formula": "K",
+   "candidates_from": "有限键名集合",
+   "note": "同上"
+  },
+  {
+   "action": "keyboard_press",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 138,
+    "slots": 52,
+    "worst": 138
+   },
+   "build_cost": "needs_a_subset",
+   "candidates_formula": "K",
+   "candidates_from": "有限键名集合",
+   "note": "不带 bid 的 press"
+  },
+  {
+   "action": "keyboard_up",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 138,
+    "slots": 52,
+    "worst": 138
+   },
+   "build_cost": "needs_a_subset",
+   "candidates_formula": "K",
+   "candidates_from": "有限键名集合",
+   "note": "同上"
+  },
+  {
+   "action": "mouse_click",
+   "arity": 3,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的 bbox",
+   "note": "坐标可以取元素中心。browsergym 自己的 coord 子集就是这么用的"
+  },
+  {
+   "action": "mouse_dblclick",
+   "arity": 3,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的 bbox",
+   "note": "同上"
+  },
+  {
+   "action": "mouse_down",
+   "arity": 3,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的 bbox",
+   "note": "同上"
+  },
+  {
+   "action": "mouse_drag_and_drop",
+   "arity": 4,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 4,
+    "slots": 52,
+    "worst": 196
+   },
+   "build_cost": "quadratic",
+   "candidates_formula": "E^2",
+   "candidates_from": "bbox × bbox",
+   "note": "同 drag_and_drop,平方级"
+  },
+  {
+   "action": "mouse_move",
+   "arity": 2,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的 bbox",
+   "note": "同上"
+  },
+  {
+   "action": "mouse_up",
+   "arity": 3,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的 bbox",
+   "note": "同上"
+  },
+  {
+   "action": "new_tab",
+   "arity": 0,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 1,
+    "worst": 1
+   },
+   "build_cost": "constant",
+   "candidates_formula": "1",
+   "candidates_from": "无参",
+   "note": "一个候选项"
+  },
+  {
+   "action": "noop",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 1,
+    "worst": 1
+   },
+   "build_cost": "constant",
+   "candidates_formula": "1(固定一个等待时长)",
+   "candidates_from": "少数常量",
+   "note": "wait_ms 有默认值,固定取几个即可。也不在任何子集里"
+  },
+  {
+   "action": "press",
+   "arity": 2,
+   "at_measured_scale": {
+    "fits": false,
+    "median": 276,
+    "slots": 52,
+    "worst": 1932
+   },
+   "build_cost": "needs_a_subset",
+   "candidates_formula": "E x K",
+   "candidates_from": "extra_element_properties 的键 × 有限键名集合",
+   "note": "键名是有限的,而且这个集合我们自己就维护着:browser.py 的 _KEY_NAMES"
+  },
+  {
+   "action": "scroll_at",
+   "arity": 4,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 4,
+    "slots": 52,
+    "worst": 28
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E x 2",
+   "candidates_from": "少数常量 × bbox",
+   "note": "位置加方向,都可枚举"
+  },
+  {
+   "action": "select_option",
+   "arity": 2,
+   "at_measured_scale": {
+    "fits": null,
+    "median": null,
+    "why": "S 和 O 要从页面数,现在读不到层级,所以没有实测值",
+    "worst": null
+   },
+   "build_cost": "needs_hierarchy",
+   "candidates_formula": "S x O",
+   "candidates_from": "axtree_object 里 role=option 的节点",
+   "note": "**有一个坑。** <option> 标签会被标 bid(standard_html 标 125 个标准标签,option 在内),所以选项在无障碍树里有自己的节点和文本。但要把它和它所属的 <select> 配对需要树的父子关系,而现在的 element_names() 读的是拍平后的字符串,没有层级。所以取值在 observation 里,构造代码不在"
+  },
+  {
+   "action": "tab_close",
+   "arity": 0,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 1,
+    "worst": 1
+   },
+   "build_cost": "constant",
+   "candidates_formula": "1",
+   "candidates_from": "无参",
+   "note": "一个候选项"
+  },
+  {
+   "action": "tab_focus",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 2
+   },
+   "build_cost": "constant",
+   "candidates_formula": "T",
+   "candidates_from": "open_pages_urls 的长度",
+   "note": "index 的上界就是开着的标签数,observation 直接给"
+  },
+  {
+   "action": "uncheck",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "同 check,拿不到"
+  }
+ ],
+ "selectable_now": [
+  {
+   "action": "click",
+   "arity": 1,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "slots": 52,
+    "worst": 14
+   },
+   "build_cost": "same_loop",
+   "candidates_formula": "E",
+   "candidates_from": "extra_element_properties 的键",
+   "note": "每个元素一个候选项。快思考现在唯一在用的那个"
+  },
+  {
+   "action": "scroll",
+   "arity": 2,
+   "at_measured_scale": {
+    "fits": true,
+    "median": 2,
+    "worst": 2
+   },
+   "build_cost": "constant",
+   "candidates_formula": "2(两个方向)",
+   "candidates_from": "少数常量",
+   "note": "现在就是快思考的另一半:CONTENT_FREE 两个方向"
+  }
+ ],
+ "shared_budget": [
+  {
+   "actions": [
+    "go_back",
+    "go_forward",
+    "new_tab",
+    "noop",
+    "scroll",
+    "tab_close",
+    "tab_focus"
+   ],
+   "fits": true,
+   "label": "只加常量动作",
+   "median_total": 9,
+   "over_by": 0,
+   "worst_total": 9
+  },
+  {
+   "actions": [
+    "check",
+    "clear",
+    "click",
+    "dblclick",
+    "focus",
+    "go_back",
+    "go_forward",
+    "hover",
+    "mouse_click",
+    "mouse_dblclick",
+    "mouse_down",
+    "mouse_move",
+    "mouse_up",
+    "new_tab",
+    "noop",
+    "scroll",
+    "scroll_at",
+    "tab_close",
+    "tab_focus",
+    "uncheck"
+   ],
+   "fits": false,
+   "label": "常量 + 和 click 同循环的",
+   "median_total": 37,
+   "over_by": 153,
+   "worst_total": 205
+  },
+  {
+   "actions": [
+    "check",
+    "clear",
+    "click",
+    "dblclick",
+    "drag_and_drop",
+    "focus",
+    "go_back",
+    "go_forward",
+    "hover",
+    "mouse_click",
+    "mouse_dblclick",
+    "mouse_down",
+    "mouse_drag_and_drop",
+    "mouse_move",
+    "mouse_up",
+    "new_tab",
+    "noop",
+    "scroll",
+    "scroll_at",
+    "tab_close",
+    "tab_focus",
+    "uncheck"
+   ],
+   "fits": false,
+   "label": "再加平方级的",
+   "median_total": 45,
+   "over_by": 545,
+   "worst_total": 597
+  },
+  {
+   "actions": [
+    "check",
+    "clear",
+    "click",
+    "dblclick",
+    "drag_and_drop",
+    "focus",
+    "go_back",
+    "go_forward",
+    "hover",
+    "keyboard_down",
+    "keyboard_press",
+    "keyboard_up",
+    "mouse_click",
+    "mouse_dblclick",
+    "mouse_down",
+    "mouse_drag_and_drop",
+    "mouse_move",
+    "mouse_up",
+    "new_tab",
+    "noop",
+    "press",
+    "scroll",
+    "scroll_at",
+    "tab_close",
+    "tab_focus",
+    "uncheck"
+   ],
+   "fits": false,
+   "label": "全加(含完整键集合)",
+   "median_total": 735,
+   "over_by": 2891,
+   "worst_total": 2943
+  }
+ ],
+ "slots": 52,
+ "upstream_signatures": {
+  "check": {
+   "parameters": 1,
+   "required": 1
+  },
+  "clear": {
+   "parameters": 1,
+   "required": 1
+  },
+  "click": {
+   "parameters": 3,
+   "required": 1
+  },
+  "dblclick": {
+   "parameters": 3,
+   "required": 1
+  },
+  "drag_and_drop": {
+   "parameters": 2,
+   "required": 2
+  },
+  "fill": {
+   "parameters": 3,
+   "required": 2
+  },
+  "focus": {
+   "parameters": 1,
+   "required": 1
+  },
+  "go_back": {
+   "parameters": 0,
+   "required": 0
+  },
+  "go_forward": {
+   "parameters": 0,
+   "required": 0
+  },
+  "goto": {
+   "parameters": 1,
+   "required": 1
+  },
+  "hover": {
+   "parameters": 1,
+   "required": 1
+  },
+  "keyboard_down": {
+   "parameters": 1,
+   "required": 1
+  },
+  "keyboard_insert_text": {
+   "parameters": 1,
+   "required": 1
+  },
+  "keyboard_press": {
+   "parameters": 1,
+   "required": 1
+  },
+  "keyboard_type": {
+   "parameters": 1,
+   "required": 1
+  },
+  "keyboard_up": {
+   "parameters": 1,
+   "required": 1
+  },
+  "mouse_click": {
+   "parameters": 3,
+   "required": 2
+  },
+  "mouse_dblclick": {
+   "parameters": 3,
+   "required": 2
+  },
+  "mouse_down": {
+   "parameters": 3,
+   "required": 2
+  },
+  "mouse_drag_and_drop": {
+   "parameters": 4,
+   "required": 4
+  },
+  "mouse_move": {
+   "parameters": 2,
+   "required": 2
+  },
+  "mouse_up": {
+   "parameters": 3,
+   "required": 2
+  },
+  "mouse_upload_file": {
+   "parameters": 3,
+   "required": 3
+  },
+  "new_tab": {
+   "parameters": 0,
+   "required": 0
+  },
+  "noop": {
+   "parameters": 1,
+   "required": 0
+  },
+  "press": {
+   "parameters": 2,
+   "required": 2
+  },
+  "report_infeasible": {
+   "parameters": 1,
+   "required": 1
+  },
+  "scroll": {
+   "parameters": 2,
+   "required": 2
+  },
+  "scroll_at": {
+   "parameters": 4,
+   "required": 4
+  },
+  "select_option": {
+   "parameters": 2,
+   "required": 2
+  },
+  "send_msg_to_user": {
+   "parameters": 1,
+   "required": 1
+  },
+  "tab_close": {
+   "parameters": 0,
+   "required": 0
+  },
+  "tab_focus": {
+   "parameters": 1,
+   "required": 1
+  },
+  "uncheck": {
+   "parameters": 1,
+   "required": 1
+  },
+  "upload_file": {
+   "parameters": 2,
+   "required": 2
+  }
+ },
+ "wired_up": [
+  "click",
+  "scroll"
+ ]
+}

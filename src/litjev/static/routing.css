@@ -1,0 +1,82 @@
+/* What the routing page adds to style.css. Same palette, same radii, same type.
+   Wider, though: style.css centres `main` in 1500px, which on this page left a
+   strip down the middle of a wide screen. */
+main { max-width: none; padding: 28px clamp(20px, 2.4vw, 48px) 40px; }
+footer { max-width: none; padding-left: clamp(20px, 2.4vw, 48px); padding-right: clamp(20px, 2.4vw, 48px); }
+.heading { margin-bottom: 22px; }
+/* style.css already splits the workspace in two; do not narrow it. The input
+   panel was capped at 440px here, which on a full-width page left the questions
+   in a column half the width of the results beside it. */
+.workspace { gap: 20px; }
+#schema-input { min-height: 420px; }
+#budget-input {
+  width: 100%; border: 1px solid #cbd4e3; border-radius: 7px; padding: 12px 14px;
+  font-size: 14px; color: #213653; background: #fafbfd;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+#budget-input:focus { outline: 2px solid #86a8ff; outline-offset: 2px; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* The slider, its readout and the run button on one row, under the inputs. */
+.dial { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+.dial input[type="range"] {
+  flex: 1 1 auto; min-width: 0; margin: 0; accent-color: var(--blue);
+  height: 24px; cursor: grab;
+}
+.dial input[type="range"]:active { cursor: grabbing; }
+.dial input[type="range"]:disabled { cursor: progress; opacity: .6; }
+.dial input[type="range"]:focus-visible { outline: 3px solid #86a8ff; outline-offset: 4px; }
+.dial strong {
+  flex: 0 0 auto; min-width: 62px; text-align: right;
+  font-family: ui-monospace, monospace; font-size: 20px; font-weight: 500; color: var(--blue);
+}
+.dial button { flex: 0 0 auto; }
+.dial-scale {
+  display: flex; justify-content: space-between;
+  color: #78849a; font-size: 12px; margin: 6px 92px 0 0;
+}
+.actions { justify-content: flex-start; }
+
+/* The two modes, coloured as in the paper's figure: slow orange, fast blue. */
+.mode {
+  display: inline-block; padding: 4px 9px; border-radius: 4px;
+  font-size: 13px; white-space: nowrap;
+}
+.mode-fast { background: #edf2ff; color: #2459e0; }
+.mode-slow { background: #fdf0e4; color: #b4530a; }
+.answer-tags { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* v and c side by side, read like .metrics but belonging to one question. */
+.routing-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 12px 4px; margin: 12px 0 14px;
+}
+.routing-stats > div { padding: 0 10px; border-right: 1px solid var(--line); }
+.routing-stats > div:last-child { border-right: 0; }
+.routing-stats span { display: block; color: #657187; font-size: 12px; margin-bottom: 8px; }
+.routing-stats strong { font-family: ui-monospace, monospace; font-size: 16px; font-weight: 500; }
+
+#answers .answer:first-of-type { border-top: 0; }
+
+@media (max-width: 850px) {
+  .routing-stats { grid-template-columns: 1fr; }
+  .routing-stats > div { border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 10px; }
+  .routing-stats > div:last-child { border-bottom: 0; }
+}
+
+/* The timing breakdown: one row each, rather than more .metrics tiles. */
+.timing { width: 100%; border-collapse: collapse; margin: 14px 0 4px; font-size: 13px; }
+.timing td { padding: 6px 0; border-bottom: 1px solid var(--line); vertical-align: baseline; }
+.timing tr:last-child td { border-bottom: 0; }
+.timing td:first-child { color: #46556e; white-space: nowrap; }
+.timing td:nth-child(2) {
+  text-align: right; font-family: ui-monospace, monospace;
+  font-variant-numeric: tabular-nums; width: 92px; white-space: nowrap;
+}
+.timing td:last-child { color: #78849a; padding-left: 14px; }
+.timing tr.sub td:first-child { padding-left: 16px; color: #657187; }
+.timing tr.total td { font-weight: 600; color: #172238; }

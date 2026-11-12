@@ -1,0 +1,178 @@
+{
+ "best_site": "shopping",
+ "channels": {
+  "answer": "the agent must send the answer, so the fast mode cannot reach it at any price",
+  "none": "the evaluator requires no typed value. The UPPER BOUND on click-only reachability -- such a task may still need a path a click-only policy cannot walk",
+  "page": "text must appear on the page. On a forum or an issue tracker that means a body somebody typed; this is the bucket the earlier version of this script wrongly counted as reachable",
+  "url_query": "the reference URL carries a search query, which is typed into a box"
+ },
+ "excluded": {
+  "model_judged": "fuzzy_match reference answers need OPENAI_API_KEY; a score depending on a third party's model version is not reproducible once that version is deprecated"
+ },
+ "gateable_with_a_click_only_fast_mode": false,
+ "login": {
+  "note": "every task needs an authenticated session, so `storage_state` must be produced before any episode. This is what the verified images' auto-login headers are for and it is a hard dependency that no earlier note recorded",
+  "require_login": "all 812 tasks"
+ },
+ "min_pairs": 20,
+ "sites": {
+  "gitlab": {
+   "digest": "sha256:673ba94d757c5b3f4bb55751ad8b745a33bad2b987349322403cbc41035a92e0",
+   "distinct_intents_there": 7,
+   "image": "am1n3e/webarena-verified-gitlab",
+   "image_gb_compressed": 20.5,
+   "needs_page_content": 111,
+   "needs_sent_answer": 45,
+   "needs_url_query": 1,
+   "no_typed_value_required": 15,
+   "no_typed_value_task_ids": [
+    44,
+    45,
+    46,
+    102,
+    103,
+    104,
+    105,
+    106,
+    156,
+    258,
+    339,
+    340,
+    341,
+    343,
+    357
+   ],
+   "port": 8023,
+   "usable": 172
+  },
+  "map": {
+   "digest": "sha256:c769aa312c979d68e696dace7049d58eeeb016ce608f0f8779a181bf3714206f",
+   "distinct_intents_there": 0,
+   "image": "am1n3e/webarena-verified-map",
+   "image_gb_compressed": 1.1,
+   "needs_page_content": 15,
+   "needs_sent_answer": 44,
+   "needs_url_query": 5,
+   "no_typed_value_required": 0,
+   "no_typed_value_task_ids": [],
+   "port": 3000,
+   "usable": 64
+  },
+  "reddit": {
+   "digest": "sha256:0594908059a03e5f610005689440a95c05e776e734006197c7b1eba12734cb46",
+   "distinct_intents_there": 0,
+   "image": "am1n3e/webarena-verified-reddit",
+   "image_gb_compressed": 4.3,
+   "needs_page_content": 95,
+   "needs_sent_answer": 9,
+   "needs_url_query": 0,
+   "no_typed_value_required": 0,
+   "no_typed_value_task_ids": [],
+   "port": 9999,
+   "usable": 104
+  },
+  "shopping": {
+   "digest": "sha256:3e8cb9b945ea9b1c94ab26dba53e8d12dd0406abbf4bf686fd3bb2b6a5908feb",
+   "distinct_intents_there": 8,
+   "image": "am1n3e/webarena-verified-shopping",
+   "image_gb_compressed": 5.0,
+   "needs_page_content": 57,
+   "needs_sent_answer": 54,
+   "needs_url_query": 10,
+   "no_typed_value_required": 32,
+   "no_typed_value_task_ids": [
+    158,
+    159,
+    160,
+    161,
+    162,
+    238,
+    239,
+    240,
+    241,
+    242,
+    260,
+    261,
+    262,
+    263,
+    264,
+    269,
+    270,
+    271,
+    272,
+    273,
+    283,
+    284,
+    285,
+    286,
+    298,
+    299,
+    300,
+    351,
+    352,
+    353,
+    354,
+    355
+   ],
+   "port": 7770,
+   "usable": 153
+  },
+  "shopping_admin": {
+   "digest": "sha256:d0531dd27ed98d0c459ff9e88118bf2ed8b660b0ed99c38837db46c065a5be13",
+   "distinct_intents_there": 2,
+   "image": "am1n3e/webarena-verified-shopping_admin",
+   "image_gb_compressed": 1.2,
+   "needs_page_content": 91,
+   "needs_sent_answer": 62,
+   "needs_url_query": 0,
+   "no_typed_value_required": 3,
+   "no_typed_value_task_ids": [
+    157,
+    374,
+    375
+   ],
+   "port": 7780,
+   "usable": 156
+  },
+  "wikipedia": {
+   "digest": "sha256:8c52e6cc8b7cc6f77daaf279929517399b1889bd02b09a257ebd465364ad387d",
+   "distinct_intents_there": 0,
+   "image": "am1n3e/webarena-verified-wikipedia",
+   "image_gb_compressed": 0.0,
+   "needs_page_content": 0,
+   "needs_sent_answer": 0,
+   "needs_url_query": 0,
+   "no_typed_value_required": 0,
+   "no_typed_value_task_ids": [],
+   "port": 8888,
+   "usable": 0
+  }
+ },
+ "state_reset": {
+  "but": "tasks still mutate the sites, so state carries between them in whatever order they run. The control plane's /init is the candidate mechanism and its semantics are UNVERIFIED",
+  "mechanism": "POST to the container's control plane on 8877",
+  "open": "whether /init restores the initial state is NOT established. `scripts/webarena_preflight.py` settles it destructively",
+  "routes": [
+   "/status",
+   "/is_ready",
+   "/init",
+   "/start",
+   "/stop",
+   "/restart"
+  ],
+  "task_file_says": "require_reset is False for every task in the sites examined, so WebArena itself does not ask for a full reset per task",
+  "verified": "2026-10-06, shopping_admin: /status returns per-service health; POST /init did not return inside 10 s"
+ },
+ "task_file": {
+  "sha256": "7b50386fd69163dbc05d615d834df4c6ed2c35596e97a1b10d17451c02537652",
+  "source": "/Users/yuzhengxu/.claude/jobs/787cf042/tmp/webarena/test.raw.json",
+  "tasks": 812
+ },
+ "venue": "webarena",
+ "verdict": "NO. The best site (shopping) has 8 distinct intents whose score requires no typed value, against MIN_PAIRS = 20. This is not a site-selection problem: every site is short, and the shortfall is the action space meeting a venue where almost every task is scored on something typed.",
+ "what_would_change_this": [
+  "a content-bearing fast action -- option (b), `fill`/`select_option` over spans of the goal, implemented in `browser.text_actions` and DECLINED by the user on 2026-10-05. `webarena_span_coverage.py` is the script that measures what it would buy",
+  "a venue whose tasks are scored on clicks and navigation, which is what MiniWoB's click group is and why it was the precondition",
+  "accepting a reach-dominated claim on WebArena, which is the same claim MiniWoB's two seeds already support (reach 0.241 against reasoning 0.019) and does not need 32 GB of containers"
+ ]
+}

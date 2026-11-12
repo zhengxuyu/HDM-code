@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LitJev · Routing Playground</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/method.css">
+  <link rel="stylesheet" href="/static/routing.css">
+  <script src="/static/routing.js" defer></script>
+</head>
+<body>
+  <header><a href="/" class="brand">Lit<span>Jev</span></a><span class="subtitle">Routing Playground · research project · <a href="/">System 1 decisions</a> · <a href="/film">trace replay</a></span><span id="health" class="status">checking…</span></header>
+  <main>
+    <div class="heading"><div><p class="eyebrow">SYSTEM 1 → SYSTEM 2 / ROUTING</p><h1>Set a price, and the model decides for itself whether to think.</h1></div><p>The same questions · only λ changes<br>A question that is not escalated still generates no token</p></div>
+
+    <div class="workspace">
+      <section class="panel">
+        <div class="panel-title"><h2>01 / Request</h2><button id="example" type="button" class="secondary">Load the example</button></div>
+        <form id="routing-form">
+          <label for="schema-input">Questions <span>Jev schema · a JSON object</span></label>
+          <textarea id="schema-input" required spellcheck="false" aria-describedby="schema-help"></textarea>
+          <p id="schema-help" class="hint">choice, score and noul, each written with type, instructions and criteria — exactly as on the System 1 page. Routing does not change how a question is written.</p>
+          <label for="state-input">State <span>optional</span></label>
+          <textarea id="state-input" rows="3" placeholder="A conversation, an application state, further instructions…"></textarea>
+          <label for="budget-input">Thinking budget <span>tokens an escalated question may generate</span></label>
+          <input id="budget-input" type="number" value="512" min="1" max="8192">
+          <label for="lambda">Price of thinking λ <span>dragging sends nothing; the button does</span></label>
+          <div class="dial">
+            <input id="lambda" type="range" min="-1" max="1" step="0.01" value="0.05"
+                   aria-describedby="dial-hint">
+            <strong id="lambda-value">0.05</strong>
+            <button id="submit" type="submit">Run ↗</button>
+          </div>
+          <div class="dial-scale" aria-hidden="true"><span>-1 always think</span><span>0</span><span>1 never think</span></div>
+          <p id="dial-hint" class="hint">A question is escalated when <code>v &gt; λ</code>. Since <code>v = o₃ − o₂</code> is a difference of two probabilities it lies in [−1, 1], so the ends of the slider are the two baselines a routed row is read against: at <code>λ = -1</code> every question is escalated — always-think, the one end that needs no decision head — and at <code>λ = 1</code> no <code>v</code> can clear the price, so none is, which is plain System 1.</p>
+          <div class="actions"><span id="elapsed" role="status">Ready</span></div>
+        </form>
+      </section>
+      <section class="panel output" aria-live="polite" aria-busy="false" id="output-panel">
+        <div class="panel-title"><h2>02 / Result</h2><span id="result-status">Waiting for a request</span></div>
+        <div id="error" role="alert" hidden></div>
+        <p id="stale" class="notice" hidden>The slider has moved to another price. What is shown below is still the previous run.</p>
+        <div class="metrics"><div><span>Escalated</span><strong id="m-escalated">—</strong></div><div><span>Generated tokens</span><strong id="m-tokens">—</strong></div><div><span>Round trip</span><strong id="m-seconds">—</strong></div></div>
+        <table id="timing" class="timing"><tbody></tbody></table>
+        <div id="answers"><div class="empty">Move the slider, then press Run.<br>Each question will show which mode answered it, the value of thinking v, how v compared with the price, and the candidate distribution.</div></div>
+        <details id="raw-details" hidden><summary>Debug response JSON: result is the standard response, diagnostics is the extension</summary><pre id="raw"></pre></details>
+      </section>
+    </div>
+
+    <section class="panel methodology" aria-labelledby="method-title">
+      <p class="eyebrow">HOW IT WORKS / where these numbers come from</p>
+      <h2 id="method-title">Routing does not ask the model a second time. It reads the hidden state the model has already computed.</h2>
+      <p>The fast-thinking mode is still System 1: one forward pass, candidate logits read at the <code>Answer:</code> position, no token generated. The self-routing block holds the only trained weights, and it reads a state that same pass has already produced — so routing adds no forward pass of its own.</p>
+      <ol class="pipeline">
+        <li><strong>The fast-thinking mode answers as usual</strong><span>It encodes the state and the question and reads a candidate distribution <code>p</code> at the readout position, producing on the same pass the hidden state <code>h</code>. This step is identical to the System 1 page.</span></li>
+        <li><strong>The block reads h and eight statistics of p</strong><span>It returns the two modes' four joint outcomes <code>o ∈ Δ⁴</code>: both right, the fast one only, the slow one only, neither. The block is a 72 → 64 → 4 MLP — a few hundred kilobytes of parameters.</span></li>
+        <li><strong>Confidence and the value of thinking follow</strong><span><code>c = o₁ + o₂</code> is the probability the fast answer is right; <code>v = o₃ − o₂</code> is the utility the slow-thinking mode is expected to add over the fast one — the value of thinking.</span></li>
+        <li><strong>Compare it with the price</strong><span>Escalate when <code>v &gt; λ</code>. The price arrives on the request and never enters training, so one trained head covers the whole cost–accuracy curve: moving the slider does not change the model.</span></li>
+        <li><strong>Escalated questions run the slow-thinking mode</strong><span>The backbone's own thinking mode generates a trace, then the answer is read at the same <code>Answer:</code> boundary. The typed answer is still assembled from logits; nothing is parsed from the generated text.</span></li>
+      </ol>
+      <div class="method-grid">
+        <div><h3>Which value is actually taken?</h3><pre># one forward pass, which yields the hidden state too
+p, h = fast(state, question)
+# the self-routing block: hidden state + eight statistics of p
+o = block(h, stats(p))            # in the 4-simplex
+c = o[0] + o[1]                   # P(fast is right)
+v = o[2] - o[1]                   # the value of thinking
+escalate = v &gt; lambda_            # the price comes from the request
+answer = slow(state, question) if escalate else argmax(p)</pre><p class="hint"><code>v</code> is a difference of two probabilities and so lies in [−1, 1]. When <code>c</code> comes from the decision head, diagnostics reports <code>confidence_method</code> as <code>decision_head_outcome_v1</code>; without a head it falls back to the distribution's concentration, <code>normalized_gini_concentration_v1</code>. The two are not interchangeable.</p></div>
+        <div><h3>Response JSON: what comes from the model?</h3><div class="table-scroll"><table><thead><tr><th>Field</th><th>Source and meaning</th></tr></thead><tbody>
+          <tr><td><code>diagnostics.fields.*.escalation_gain</code></td><td><strong>From the self-routing block.</strong> This is <code>v</code>, computed as <code>o₃ − o₂</code>; without a decision head the field is absent.</td></tr>
+          <tr><td><code>diagnostics.fields.*.outcome</code></td><td>The block's four joint-outcome probabilities, keyed as in OUTCOME_CLASSES.</td></tr>
+          <tr><td><code>diagnostics.fields.*.system</code></td><td><code>one</code> if the fast-thinking mode answered, <code>two</code> if the question was escalated.</td></tr>
+          <tr><td><code>diagnostics.routing.escalated</code></td><td>The question ids escalated on this request. <code>lambda</code> and <code>budget</code> are the values that actually applied.</td></tr>
+          <tr><td><code>diagnostics.timing.*</code></td><td>Per stage, measured by the engine; the round trip and transport are measured by this page. Together they say where an escalation's time went.</td></tr>
+          <tr><td><code>result.usage.output_tokens</code></td><td>Tokens the slow-thinking mode actually generated. Zero when nothing escalates.</td></tr>
+        </tbody></table></div></div>
+      </div>
+      <p class="notice">Standard request: POST /v1/systemtwo, {model, state, questions, routing}; standard response: {model, answers, usage}. This page uses /v1/systemtwo/debug for the diagnostics. The routing decision reads only quantities the fast-thinking mode has already computed; it makes no extra call to the model.</p>
+    </section>
+  </main>
+  <footer>Routing playground <span>one head · one cost–accuracy curve · the price arrives on the request</span></footer>
+</body>
+</html>

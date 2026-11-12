@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LitJev · Fast against slow, by depth</title>
+<style>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172238;background:#f3f5f9;font-size:16px;--line:#dce2ec;--blue:#2459e0;--slow:#b4530a;--grey:#8c99ad}
+*{box-sizing:border-box}body{margin:0}
+header{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:24px;padding:0 clamp(20px,2.4vw,48px)}
+.brand{color:#172238;text-decoration:none;font-size:25px;font-weight:800;letter-spacing:-1px}.brand span{color:var(--blue)}
+.subtitle{font-size:14px;border-left:1px solid var(--line);padding-left:24px}
+main{padding:28px clamp(20px,2.4vw,48px) 48px}
+.eyebrow{font-size:12px;letter-spacing:2px;color:var(--blue);font-weight:700;margin:0}
+h1{font-size:30px;letter-spacing:-1px;margin:10px 0 6px}
+.lede{color:#657187;font-size:15px;line-height:1.75;max-width:70ch;margin:0 0 24px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;margin-bottom:20px}
+h2{font-size:16px;margin:0 0 16px}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(320px,1fr);gap:20px;align-items:start}
+@media(max-width:1000px){.two{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-size:12px;color:#657187;font-weight:600}
+tbody tr:hover{background:#f7f9fc;cursor:pointer}tbody tr.on{background:#edf2ff}
+.fast{color:var(--blue)}.slow{color:var(--slow)}.dim{color:var(--grey)}
+.key{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:#46556e;margin:0 0 14px}
+.key i{display:inline-block;width:22px;height:3px;border-radius:2px;vertical-align:middle;margin-right:7px}
+.hint{font-size:13px;color:#657187;line-height:1.7}
+.notice{border-left:3px solid #b7c9f4;background:#f3f6ff;padding:12px;font-size:13px;line-height:1.7;color:#475f91;margin:14px 0 0}
+.walk{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0 16px;font-family:ui-monospace,monospace;font-size:13px}
+.walk b{background:#edf2ff;color:var(--blue);padding:3px 8px;border-radius:4px;font-weight:600}
+.walk b.end{background:#e6f4ea;color:#1a7f37}.walk span{color:var(--grey)}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:700px){.cards{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px}
+.card h3{margin:0 0 10px;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#657187}
+.verdict{font-family:ui-monospace,monospace;font-size:22px}
+.right{color:#1a7f37}.wrong{color:#b42318}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12.5px;background:#f7f9fc;border:1px solid var(--line);border-radius:6px;padding:10px;max-height:260px;overflow:auto;margin:10px 0 0}
+#error{color:#9e2639;background:#fff1f3;border:1px solid #ffd0d8;padding:14px;border-radius:7px;font-size:14px}
+label.upload{display:inline-block;font-size:14px;color:#46556e;margin-bottom:14px}
+footer{padding:0 clamp(20px,2.4vw,48px) 30px;color:#78849a;font-size:13px}
+</style>
+</head>
+<body>
+<header><a href="/" class="brand">Lit<span>Jev</span></a><span class="subtitle">Fast against slow, by depth · <a href="/routing">routing playground</a></span></header>
+<main>
+  <p class="eyebrow">SERIAL DEPTH / WHAT THINKING BUYS</p>
+  <h1>Sixteen arrows, and a walk of k steps.</h1>
+  <p class="lede">A table of sixteen numbers, each pointing at one other, is written into the prompt.
+  A question asks where a walk of <b>k</b> arrows ends. Every arrow is on the page, so nothing has to
+  be known that is not there; what the question demands is that the j-th lookup wait for the
+  (j−1)-th, because which row to read next is the answer to the row before. That makes k a dial on
+  serial depth with everything else held still — the candidate set is the same sixteen numbers at
+  every depth, so chance does not move either.</p>
+  <p id="error" role="alert" hidden></p>
+  <label class="upload" id="upload">Open a trace JSON <input id="file" type="file" accept=".json,application/json"></label>
+
+  <div class="two">
+    <section class="panel">
+      <h2>Accuracy against depth</h2>
+      <p class="key"><span><i style="background:#2459e0"></i>fast only (λ = 1)</span><span><i style="background:#b4530a"></i>slow only (λ = −1)</span><span><i style="background:#8c99ad"></i>chance</span></p>
+      <svg id="chart" viewBox="0 0 760 300" width="100%" height="300" role="img" aria-label="Accuracy against walk depth"></svg>
+      <p class="hint" id="chart-note"></p>
+    </section>
+    <section class="panel">
+      <h2>What the head said before either mode ran</h2>
+      <p class="hint">The block reads the fast pass's hidden state and returns <code>v</code>, the utility it
+      expects thinking to add. If it were reading a shortfall in depth, <code>v</code> would rise with k.</p>
+      <svg id="gain" viewBox="0 0 380 220" width="100%" height="220" role="img" aria-label="Value of thinking against depth"></svg>
+      <p class="hint" id="gain-note"></p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Per depth</h2>
+    <table><thead><tr><th>k</th><th>fast</th><th>slow</th><th>rescued</th><th>spoiled</th><th>slow tokens</th><th>mean v</th></tr></thead><tbody id="rows"></tbody></table>
+    <p class="hint">Rescued: the slow mode right where the fast one was wrong. Spoiled: the reverse.
+    Click a row for one walk at that depth.</p>
+  </section>
+
+  <section class="panel" id="detail" hidden>
+    <h2 id="detail-title">One walk</h2>
+    <div class="walk" id="walk"></div>
+    <div class="cards">
+      <div class="card"><h3 class="fast">Fast only · λ = 1</h3><p class="verdict" id="fast-answer">—</p><p class="hint" id="fast-note"></p></div>
+      <div class="card"><h3 class="slow">Slow only · λ = −1</h3><p class="verdict" id="slow-answer">—</p><p class="hint" id="slow-note"></p><pre id="slow-text" hidden></pre></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>What this does and does not show</h2>
+    <p class="hint">Both modes run on the same questions, the same table and the same candidate set, and
+    the gold answer is computed by composing the table k times rather than asked of any model. What
+    varies between the two columns is only whether the reasoning is written down.</p>
+    <p class="notice" id="provenance"></p>
+  </section>
+</main>
+<footer>One table · one dial · the answer is still read from logits, never parsed from the text</footer>
+
+<script id="trace-data" type="application/json">"__LITJEV_COMPARE__"</script>
+<script>
+"use strict";
+const el = (id) => document.getElementById(id);
+const pct = (x) => `${(100 * x).toFixed(1)}%`;
+let trace = null;
+
+function fail(message) { el("error").textContent = message; el("error").hidden = false; }
+
+function line(points, colour, dash) {
+  const d = points.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join("");
+  return `<path d="${d}" fill="none" stroke="${colour}" stroke-width="2.5"${dash ? ` stroke-dasharray="${dash}"` : ""}/>`;
+}
+
+function chart(summary, chance) {
+  const W = 760, H = 300, L = 46, R = 14, T = 14, B = 34;
+  const ks = summary.map((s) => s.depth);
+  const x = (k) => L + (W - L - R) * (ks.length < 2 ? 0.5 : (k - ks[0]) / (ks[ks.length - 1] - ks[0]));
+  const y = (v) => T + (H - T - B) * (1 - v);
+  let svg = "";
+  for (let g = 0; g <= 4; g++) {
+    const v = g / 4;
+    svg += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#e6eaf1"/>`;
+    svg += `<text x="${L - 8}" y="${y(v) + 4}" font-size="11" fill="#8c99ad" text-anchor="end">${(100 * v).toFixed(0)}%</text>`;
+  }
+  for (const k of ks) {
+    svg += `<text x="${x(k)}" y="${H - 12}" font-size="11" fill="#8c99ad" text-anchor="middle">${k}</text>`;
+  }
+  svg += line([[x(ks[0]), y(chance)], [x(ks[ks.length - 1]), y(chance)]], "#8c99ad", "4 4");
+  svg += line(summary.map((s) => [x(s.depth), y(s.fast_accuracy)]), "#2459e0");
+  svg += line(summary.map((s) => [x(s.depth), y(s.slow_accuracy)]), "#b4530a");
+  for (const s of summary) {
+    svg += `<circle cx="${x(s.depth)}" cy="${y(s.fast_accuracy)}" r="3.5" fill="#2459e0"/>`;
+    svg += `<circle cx="${x(s.depth)}" cy="${y(s.slow_accuracy)}" r="3.5" fill="#b4530a"/>`;
+  }
+  svg += `<text x="${(L + W) / 2}" y="${H - 1}" font-size="11" fill="#657187" text-anchor="middle">walk depth k</text>`;
+  el("chart").innerHTML = svg;
+}
+
+function gainChart(summary) {
+  const values = summary.filter((s) => s.mean_value_of_thinking !== null);
+  if (!values.length) {
+    el("gain").innerHTML = "";
+    el("gain-note").textContent = "No decision head was loaded for this run, so there is no v to show.";
+    return;
+  }
+  const W = 380, H = 220, L = 50, R = 12, T = 12, B = 30;
+  const ks = values.map((s) => s.depth);
+  const vs = values.map((s) => s.mean_value_of_thinking);
+  const lo = Math.min(0, ...vs), hi = Math.max(...vs, 0.001);
+  const x = (k) => L + (W - L - R) * (ks.length < 2 ? 0.5 : (k - ks[0]) / (ks[ks.length - 1] - ks[0]));
+  const y = (v) => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  let svg = `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="#e6eaf1"/>`;
+  svg += `<text x="${L - 6}" y="${y(hi) + 4}" font-size="10" fill="#8c99ad" text-anchor="end">${hi.toFixed(3)}</text>`;
+  svg += `<text x="${L - 6}" y="${y(lo) + 4}" font-size="10" fill="#8c99ad" text-anchor="end">${lo.toFixed(3)}</text>`;
+  svg += line(values.map((s) => [x(s.depth), y(s.mean_value_of_thinking)]), "#2459e0");
+  for (const s of values) svg += `<circle cx="${x(s.depth)}" cy="${y(s.mean_value_of_thinking)}" r="3" fill="#2459e0"/>`;
+  svg += `<text x="${(L + W) / 2}" y="${H - 2}" font-size="10" fill="#657187" text-anchor="middle">walk depth k</text>`;
+  el("gain").innerHTML = svg;
+
+  const first = values[0].mean_value_of_thinking, last = values[values.length - 1].mean_value_of_thinking;
+  el("gain-note").textContent = last > first
+    ? `v rises from ${first.toFixed(4)} at k=${ks[0]} to ${last.toFixed(4)} at k=${ks[ks.length - 1]}, which is the direction a head reading depth would move.`
+    : `v goes from ${first.toFixed(4)} at k=${ks[0]} to ${last.toFixed(4)} at k=${ks[ks.length - 1]}. It does not rise with depth, so whatever the head reads, it is not how many dependent steps the question needs.`;
+}
+
+function rows(summary) {
+  el("rows").innerHTML = summary.map((s) => `<tr data-k="${s.depth}">
+    <td>${s.depth}</td>
+    <td class="fast">${pct(s.fast_accuracy)}</td>
+    <td class="slow">${pct(s.slow_accuracy)}</td>
+    <td>${pct(s.rescued)}</td>
+    <td>${s.spoiled ? pct(s.spoiled) : "—"}</td>
+    <td>${s.slow_tokens.toFixed(0)}</td>
+    <td class="dim">${s.mean_value_of_thinking === null ? "—" : s.mean_value_of_thinking.toFixed(4)}</td>
+  </tr>`).join("");
+  for (const row of el("rows").children) {
+    row.addEventListener("click", () => showWalk(Number(row.dataset.k), row));
+  }
+}
+
+function showWalk(depth, row) {
+  for (const other of el("rows").children) other.classList.toggle("on", other === row);
+  // The first walk at this depth the slow mode answered differently, else the first.
+  const here = trace.rows.filter((r) => r.depth === depth);
+  const pick = here.find((r) => r.slow.correct !== r.fast.correct) || here[0];
+  el("detail").hidden = false;
+  el("detail-title").textContent = `One walk at k = ${depth}`;
+
+  const start = Number(pick.instructions.split("Start at ")[1].split(" ")[0]);
+  const steps = [start];
+  for (let i = 0; i < depth; i++) steps.push(Number(trace.arrows[String(steps[steps.length - 1])]));
+  el("walk").innerHTML = steps.map((n, i) =>
+    `${i ? "<span>→</span>" : ""}<b${i === steps.length - 1 ? ' class="end"' : ""}>${n}</b>`).join("");
+
+  for (const [side, answerId, noteId] of [["fast", "fast-answer", "fast-note"], ["slow", "slow-answer", "slow-note"]]) {
+    const r = pick[side];
+    el(answerId).innerHTML = `<span class="${r.correct ? "right" : "wrong"}">${r.answer ?? "—"}</span>`
+      + ` <span class="dim" style="font-size:14px">gold ${pick.gold}</span>`;
+    el(noteId).textContent = `${r.tokens} generated tokens · ${r.correct ? "correct" : "wrong"}`;
+  }
+  const text = pick.slow.reasoning;
+  el("slow-text").hidden = !text;
+  if (text) el("slow-text").textContent = text;
+}
+
+function load(value) {
+  if (value?.schema_version !== "litjev.compare.v1" || !Array.isArray(value.rows) || !value.rows.length) {
+    fail("Expected a non-empty litjev.compare.v1 trace.");
+    return;
+  }
+  trace = value;
+  el("error").hidden = true;
+  chart(trace.summary, trace.chance);
+  gainChart(trace.summary);
+  rows(trace.summary);
+  const first = trace.summary[0], last = trace.summary[trace.summary.length - 1];
+  el("chart-note").textContent =
+    `Chance is ${pct(trace.chance)} throughout. The fast mode goes from ${pct(first.fast_accuracy)} at k=${first.depth}`
+    + ` to ${pct(last.fast_accuracy)} at k=${last.depth}; the slow mode, from ${pct(first.slow_accuracy)} to ${pct(last.slow_accuracy)}.`;
+  const s = trace.settings || {};
+  el("provenance").textContent =
+    `${trace.rows.length} walks over ${trace.summary.length} depths, ${s.instances} per depth,`
+    + ` one table (seed ${s.seed}), thinking budget ${s.budget} tokens.`
+    + ` Fast only is λ = ${s.never_think}; slow only is λ = ${s.always_think}.`;
+}
+
+const inline = el("trace-data").textContent;
+if (inline && inline.trim() !== '"__LITJEV_COMPARE__"') {
+  try { load(JSON.parse(inline)); } catch (error) { fail(`Could not read the inlined trace: ${error.message}`); }
+} else {
+  el("error").hidden = false;
+  el("error").textContent = "No trace is inlined in this file. Open one with the control above.";
+}
+el("file").addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try { load(JSON.parse(await file.text())); } catch (error) { fail(`Could not read that file: ${error.message}`); }
+});
+</script>
+</body>
+</html>
