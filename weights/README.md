@@ -47,11 +47,24 @@ baselines and the per-layer selection the forced layer overrode.
 
 ## Loading
 
+From the Hub:
+
 ```python
+from huggingface_hub import hf_hub_download
 from litjev.core.block import DecisionHead
 
-block = DecisionHead.load("weights/head-27b-mmlu-pro.safetensors")
+path = hf_hub_download("fredreick/HDM-blocks", "head-4b-mmlu-pro.safetensors")
+block = DecisionHead.load(path)
 ```
+
+Or straight off this directory, which carries the same files:
+
+```python
+block = DecisionHead.load("weights/head-4b-mmlu-pro.safetensors")
+```
+
+While the Hub repository is private, `hf_hub_download` needs a token with access
+to it (`huggingface-cli login`).
 
 The serving path refuses a pairing the block was not fitted for: `litjev.serving`
 compares the model id, the revision, the readout and the hidden size before the
