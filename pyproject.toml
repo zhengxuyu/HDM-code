@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "litjev"
 version = "0.1.0"
-description = "(Unofficial) Turn any off-the-shelf LLM into a JEV-like decision layer"
+description = "HDM: one backbone, two decision modes, and a self-routing block that prices thinking"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES/*.txt"]
