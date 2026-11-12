@@ -20,6 +20,14 @@ cd HDM-code
 uv sync                 # or: pip install -e .
 ```
 
+The blocks are not in the repository; they are on the Hub. Fetch the one that
+matches the backbone you mean to serve:
+
+```bash
+huggingface-cli download fredreick/HDM-blocks \
+    head-4b-mmlu-pro.safetensors --local-dir weights/
+```
+
 `uv sync` resolves the pinned lockfile. The GPU wheels follow your CUDA; see
 `[tool.uv.sources]` in `pyproject.toml` if your platform needs a different index.
 

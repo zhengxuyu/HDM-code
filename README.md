@@ -67,6 +67,9 @@ git clone https://github.com/zhengxuyu/HDM-code
 cd HDM-code
 uv sync                                   # or: pip install -e .
 
+huggingface-cli download fredreick/HDM-blocks \
+    head-4b-mmlu-pro.safetensors --local-dir weights/
+
 litjev-serve --model Qwen/Qwen3.5-4B \
              --decision-head weights/head-4b-mmlu-pro.safetensors \
              --readout coded --port 8000
@@ -127,7 +130,6 @@ moves the operating point along the cost-accuracy curve without retraining.
 | `src/litjev/` | the two modes: typed requests, readouts, the block, the pipeline |
 | `src/inference/` | SGLang backend, the decision service, and its standard-library client |
 | `src/slime_htm/` | episodic rollouts, the environment protocol, CDPO |
-| `weights/` | self-routing blocks fitted on MMLU-Pro, with their fit reports |
 | `demo/` | one browser task under three policies, on the clock |
 | `docs/` | the API, the schema, how the readouts work, how to reproduce |
 
@@ -153,8 +155,10 @@ its own dependencies can talk to the service without carrying torch.
 
 ## The blocks
 
-They ship with this repository in `weights/`, and are also on the Hub at
-[**fredreick/HDM-blocks**](https://huggingface.co/fredreick/HDM-blocks):
+The blocks live on the Hub, at
+[**fredreick/HDM-blocks**](https://huggingface.co/fredreick/HDM-blocks), rather than
+in this repository, so there is one copy of them and one place that records what
+they were fitted on:
 
 ```bash
 huggingface-cli download fredreick/HDM-blocks \
@@ -169,8 +173,9 @@ huggingface-cli download fredreick/HDM-blocks \
 | held out | 346, whole categories | 346, whole categories |
 | AUROC, where thinking helps | 0.804 | 0.879 |
 
-Fitted once and used unchanged everywhere else. [`weights/README.md`](weights/README.md)
-records what they were fitted on, and the two places where a simpler rule scores higher.
+Fitted once and used unchanged everywhere else. The
+[model card](https://huggingface.co/fredreick/HDM-blocks) records what they were
+fitted on, and the two places where a simpler rule scores higher.
 
 ## Citation
 
