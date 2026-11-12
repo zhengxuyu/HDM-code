@@ -8,7 +8,6 @@ model, so deploying the playground is deploying the service.
 |---|---|
 | `/` | one typed request, answered by the fast mode alone. The distribution and the confidence as the model reads them |
 | `/routing` | the same request at several prices, side by side: where the block escalates and what it costs |
-| `/film` | a visual environment answered frame by frame |
 | `/health` | whether weights are loaded |
 
 ## Install
@@ -96,8 +95,8 @@ decision crosses the network.
 
 ```bash
 python -m inference.decision_service \
-       --model /path/to/Qwen3.8-27B \
-       --head weights/head-27b-mmlu-pro.safetensors \
+       --model Qwen/Qwen3.5-4B \
+       --head weights/head-4b-mmlu-pro.safetensors \
        --host 0.0.0.0 --port 30001
 ```
 

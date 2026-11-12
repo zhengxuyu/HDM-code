@@ -79,7 +79,6 @@ rest are not. Then open <http://127.0.0.1:8000>:
 |---|---|
 | `/` | one typed request answered by the fast mode: the distribution and the confidence, with no token generated |
 | `/routing` | the same request at several prices side by side, so you can see where the block escalates and what it costs |
-| `/film` | a visual environment answered frame by frame |
 | `/health` | whether weights are loaded |
 
 Drop `--decision-head` and the fast mode still answers; there is simply nothing
@@ -139,7 +138,7 @@ only the decision crosses the network:
 
 ```bash
 python -m inference.decision_service \
-       --model <path> --head weights/head-27b-mmlu-pro.safetensors
+       --model Qwen/Qwen3.5-4B --head weights/head-4b-mmlu-pro.safetensors
 ```
 
 | route | what it returns |

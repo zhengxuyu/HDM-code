@@ -58,21 +58,20 @@ def create_app(engine_factory, preload=False):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
     @app.get("/", include_in_schema=False)
-    def playground():
-        return FileResponse(static_dir / "index.html")
-
     @app.get("/routing", include_in_schema=False)
     def routing_playground():
-        """The System Two page: one request at several prices, side by side.
+        """The routing page, and the home page.
 
-        `/` predates the routing work and only calls `/v1/systemone`, so nothing
-        served by this app exercised the escalation decision.
+        It is the one that exercises the decision: the same questions at several
+        prices, with the escalation and what it cost. `/routing` stays as an
+        alias so links written before this still land.
         """
         return FileResponse(static_dir / "routing.html")
 
-    @app.get("/film", include_in_schema=False)
-    def film_playground():
-        return FileResponse(static_dir / "film.html")
+    @app.get("/systemone", include_in_schema=False)
+    def playground():
+        """The fast mode alone: one request, no price, no escalation."""
+        return FileResponse(static_dir / "index.html")
 
     @app.get("/example", include_in_schema=False)
     def example():
