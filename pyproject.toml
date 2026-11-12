@@ -50,8 +50,8 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/zhengxuyu/litjev"
-Issues = "https://github.com/zhengxuyu/litjev/issues"
+Repository = "https://github.com/zhengxuyu/HDM-code"
+Issues = "https://github.com/zhengxuyu/HDM-code/issues"
 
 [project.scripts]
 litjev = "litjev.cli:serve"

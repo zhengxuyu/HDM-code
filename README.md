@@ -70,8 +70,14 @@ deciding per step. <code>demo/</code> has the harness.</sub>
 
 ## Serving both modes
 
+The server carries the API and three pages that exercise it: `/` answers one typed
+request with the fast mode, `/routing` runs the same request at several prices side
+by side, and `/film` answers a visual environment frame by frame.
+[`docs/deploy.md`](docs/deploy.md) covers installing, attaching a block, running it
+on a GPU through SGLang, and reaching it safely from another machine.
+
 ```bash
-litjev serve --model Qwen/Qwen3.8-27B \
+litjev-serve --model Qwen/Qwen3.8-27B \
              --decision-head weights/head-27b-mmlu-pro.safetensors \
              --backend sglang --readout coded --preload
 ```
