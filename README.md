@@ -110,25 +110,16 @@ block fitted for another backbone rather than reading noise.
 the block was trained on, running the decision service for agent loops, and
 containers.
 
-## Setting a price, live
+## Set the price, see which questions think
 
-The value of thinking is not a setting of the model: it is read per question, and
-what the caller sets is the price it has to clear. The dial on `/routing` is that
-price, and moving it is the whole of the decision the paper is about.
+Move the slider on `/routing` and run the same questions again. The slider is
+&lambda;, the price a question's value of thinking has to clear to be escalated;
+the model is not touched. Lower it and more questions go to the slow mode, raise
+it and fewer do.
 
-<div align="center">
-<video src="https://github.com/zhengxuyu/HDM-code/raw/main/assets/playground.mp4" controls muted playsinline width="92%">
-<a href="https://github.com/zhengxuyu/HDM-code/raw/main/assets/playground.mp4">The routing page, one request at a price (MP4)</a>
-</video>
-</div>
-
-<div align="center">
-<sub>One request, a price on the dial, and per question: the value of thinking, the fast
-mode's confidence, and how the two compared. A question whose value clears the price is
-answered by the slow mode; the rest are answered at no generated token. The same
-questions throughout, only the price changes. Recorded at twice speed; the text is
-readable at full size, which is why this one is a video and not a GIF.</sub>
-</div>
+Per question the page shows three numbers: the value of thinking, the fast mode's
+confidence, and how the value compared with the price. A question that clears the
+price is answered by the slow mode; the rest are answered at no generated token.
 
 ## The API
 
