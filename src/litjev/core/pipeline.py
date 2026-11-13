@@ -287,17 +287,24 @@ class SchemaDecisionEngine:
             # *gain* path only; the budget is kept separately below.
             policy = RoutingPolicy(lambda_=0.0, budget=0)
         budget = router.policy.budget if router is not None else policy.budget
-        # A price below any possible gain escalates every question, so it is a policy
-        # the head cannot influence: always-think needs no head, and refusing it was
-        # refusing to measure the baseline a benchmark compares the routing against.
-        # `escalation_gain` is a difference of probabilities and so lies in [-1, 1],
-        # which is why -1 is the boundary rather than a number chosen here.
+        # **Without a head there is nothing to price**, so the only price accepted is
+        # one that does not need pricing. -1 is that price by convention, not by
+        # arithmetic: it reads as "cheap enough to think about anything", and with
+        # no head every question is escalated, which is the always-think baseline a
+        # benchmark compares the routing against. Refusing it was refusing to
+        # measure that baseline.
+        #
+        # The convention is all it is. `escalation_gain` is a log ratio floored at
+        # GAIN_EPS, so it runs to about -13.8 rather than to -1, and with a head
+        # loaded a question the block is sure the fast mode answers can sit below
+        # -1 and not escalate. The dial on the routing page says more thinking and
+        # less thinking at its ends for that reason, and not always and never.
         unconditional = policy.lambda_ <= -1.0
         if policy.enabled and self.head is None and not unconditional:
             raise ValueError(
                 f"routing at lambda {policy.lambda_} needs a decision head to price the "
-                f"gain against. Only a lambda at or below -1 escalates every question "
-                f"regardless, which is always-think and needs no head")
+                f"gain against. Without one the only price accepted is -1 or below, "
+                f"which escalates every question and is the always-think baseline")
         # The entry point constructs. Leaving it to callers is what made the two
         # paths reachable only through the script that remembered, and a question
         return Pass(policy=policy, budget=budget)
