@@ -122,7 +122,7 @@ confidence, and how the value compared with the price. A question that clears th
 price is answered by the slow mode; the rest are answered at no generated token.
 
 <div align="center">
-<video src="https://github.com/user-attachments/assets/7d944a66-7dfa-4c87-b7c7-135efbb6bcc5" controls muted playsinline></video>
+<video src="https://github.com/user-attachments/assets/baa4a60f-b50e-49ac-a011-7762be1c7af8" controls muted playsinline></video>
 </div>
 
 <div align="center">
