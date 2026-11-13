@@ -18,15 +18,12 @@ before either mode runs.*
 ---
 
 <div align="center">
-<img src="assets/architecture.png" alt="The backbone, the self-routing block, and the two modes" width="88%">
+<img src="assets/demo.gif" alt="One browser task under three policies" width="88%">
 </div>
 
 <div align="center">
-<sub><b>Where the block sits.</b> The frozen backbone encodes a typed request with no token
-generated. The self-routing block holds the only trained weights: it reads the readout state
-and eight statistics of the fast answer, and returns the joint outcome of the two modes, from
-which the confidence <code>c<sub>i</sub></code> and the value of thinking <code>v<sub>i</sub></code>
-follow. Routing happens once, before either mode runs.</sub>
+<sub><b>One task, three policies, one clock.</b> Never thinking, always thinking, and the
+block deciding per step. <code>demo/</code> has the harness.</sub>
 </div>
 
 ---
@@ -46,15 +43,18 @@ pass takes. Nothing in between, and nothing is parsed out of generated text.
 > difference. The reward discounts tokens rather than subtracting them, and a
 > difference shrinks exactly where thinking is worth most.
 
-## Routing on a live task
+## Where the block sits
 
 <div align="center">
-<img src="assets/demo.gif" alt="One browser task under three policies" width="88%">
+<img src="assets/architecture.png" alt="The backbone, the self-routing block, and the two modes" width="88%">
 </div>
 
 <div align="center">
-<sub>One task, three policies, one clock: never thinking, always thinking, and the block
-deciding per step. <code>demo/</code> has the harness.</sub>
+<sub>The frozen backbone encodes a typed request with no token generated. The self-routing
+block holds the only trained weights: it reads the readout state and eight statistics of the
+fast answer, and returns the joint outcome of the two modes, from which the confidence
+<code>c<sub>i</sub></code> and the value of thinking <code>v<sub>i</sub></code> follow.
+Routing happens once, before either mode runs.</sub>
 </div>
 
 ## Quick start
