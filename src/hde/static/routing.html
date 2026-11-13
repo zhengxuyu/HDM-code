@@ -33,7 +33,7 @@
             <button id="submit" type="submit">Run ↗</button>
           </div>
           <div class="dial-scale" aria-hidden="true"><span>-1 more thinking</span><span>0</span><span>2 less thinking</span></div>
-          <p id="dial-hint" class="hint">A question is escalated when <code>v &gt; λ</code>, where <code>v = log P(slow right) / P(fast right)</code> is the value of thinking. It is a log ratio, not a difference, so it has no upper bound: a question the block rates three times more likely to be answered by the slow mode carries <code>v ≈ 1.1</code> and is escalated at any price below that. Neither end is absolute: lowering λ buys more escalations and raising it buys fewer, and a question whose value of thinking sits outside the dial is decided the same way at every price the dial can reach.</p>
+          <p id="dial-hint" class="hint">A question is escalated when <code>v &gt; λ</code>, where <code>v = log P(slow right) / P(fast right)</code> is the value of thinking. It is a log ratio, so it has no upper bound: three times more likely to be right under the slow mode is <code>v ≈ 1.1</code>. Lowering λ buys more escalations, raising it fewer.</p>
           <div class="actions"><span id="elapsed" role="status">Ready</span></div>
         </form>
       </section>
