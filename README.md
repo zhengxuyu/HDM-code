@@ -122,13 +122,14 @@ confidence, and how the value compared with the price. A question that clears th
 price is answered by the slow mode; the rest are answered at no generated token.
 
 <div align="center">
-<video src="https://github.com/user-attachments/assets/afe8fd99-d484-43ba-b788-4ad483c59f79" controls muted playsinline></video>
+<video src="https://github.com/user-attachments/assets/2e60e761-e682-4f98-9923-e3c5dc71db1f" controls muted playsinline></video>
 </div>
 
 <div align="center">
-<sub>The result panel over several prices, 29 seconds at twice speed. The price it
-was run at is in the corner, beside how many of the four questions it escalated.
-Nothing about the model changes between runs; only &lambda; does.</sub>
+<sub>The page over two prices, in real time. The price each run used is in the
+result panel's corner, beside how many of the four questions it escalated. Nothing
+about the model changes between runs; only &lambda; does. Full size in the
+player's fullscreen button.</sub>
 </div>
 
 ## The API
