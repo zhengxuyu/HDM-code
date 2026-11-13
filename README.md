@@ -121,6 +121,15 @@ Per question the page shows three numbers: the value of thinking, the fast mode'
 confidence, and how the value compared with the price. A question that clears the
 price is answered by the slow mode; the rest are answered at no generated token.
 
+<div align="center">
+<video src="https://github.com/user-attachments/assets/3755af85-b0ef-4102-a29f-9fda045788fb" controls muted playsinline></video>
+</div>
+
+<div align="center">
+<sub>The same four questions at several prices, 34 seconds at twice speed. Nothing
+about the model changes between runs; only &lambda; does.</sub>
+</div>
+
 ## The API
 
 `POST /v1/systemone` answers with the fast mode alone. `POST /v1/systemtwo` takes a
