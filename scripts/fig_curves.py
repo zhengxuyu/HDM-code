@@ -52,7 +52,7 @@ def load_curves():
         routers = json.load(stream)["curves"]
 
     curves = {
-        "HDM (ours)": tuple(cell["hdm"]),
+        "HDM (ours)": tuple(cell["htm"]),
         "Fast confidence": tuple(cell["confidence"]),
         "ThinkSwitcher*": ([row["tokens"] for row in switch],
                             [row["accuracy"] for row in switch]),
