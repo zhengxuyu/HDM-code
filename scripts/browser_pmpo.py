@@ -39,7 +39,7 @@ same held-out tasks, at the same seed, through the same rollout, and the gate is
 the **precondition** -- is there anywhere declining is safe -- and a cost
 reference, not a baseline column.
 
-The venue is MiniWoB through `slime_htm.envs.browser_environment`, which is
+The venue is MiniWoB through `slime_hdm.envs.browser_environment`, which is
 BrowserGym: no containers, no ServiceNow, nothing external.
 
     # beside a running scripts/serve_decision.sbatch, whose node it prints
@@ -61,10 +61,10 @@ import numpy as np
 from litjev._legacy.heads import DecisionHead
 from litjev.run.provenance import commit_now
 from litjev.run.streaming import write_json_atomic
-from slime_htm import ClientScorer, HeadRLConfig, LoopConfig, run
-from slime_htm.head_trainer import train_head_on_smeared_returns
-from slime_htm.loop import BLIND_EPISODES, ENVIRONMENT_BROKEN
-from slime_htm.resume import (
+from slime_hdm import ClientScorer, HeadRLConfig, LoopConfig, run
+from slime_hdm.head_trainer import train_head_on_smeared_returns
+from slime_hdm.loop import BLIND_EPISODES, ENVIRONMENT_BROKEN
+from slime_hdm.resume import (
     append_row,
     attempts_by_index,
     checked_rows,
@@ -72,9 +72,9 @@ from slime_htm.resume import (
     read_rows,
     resume_plan,
 )
-from slime_htm.rollout import rollout_episodes
+from slime_hdm.rollout import rollout_episodes
 
-# What only a finished evaluation episode carries, for `slime_htm.resume`.
+# What only a finished evaluation episode carries, for `slime_hdm.resume`.
 EVAL_KEY = "episode_steps"
 
 # How much of the page the policy is shown. Named once, because the run's
@@ -1045,8 +1045,8 @@ def main():
         return
 
     from inference import DecisionClient
-    from slime_htm.envs.browser_environment import BrowserEnvironment, split_tasks
-    from slime_htm.envs.gate import VENUES, group_tasks, missing_environment
+    from slime_hdm.envs.browser_environment import BrowserEnvironment, split_tasks
+    from slime_hdm.envs.gate import VENUES, group_tasks, missing_environment
 
     absent = missing_environment(args.venue)
     if absent:
@@ -1299,7 +1299,7 @@ def main():
     # only the reads are rationed -- the full curve at the first seed, the others
     # at the middle price. A one-seed difference over 27 tasks cannot tell the
     # objective from training noise.
-    from slime_htm.head_trainer import train_head_on_episodes
+    from slime_hdm.head_trainer import train_head_on_episodes
 
     pmpo_heads, pmpo_reports = {seeds[0]: head}, {seeds[0]: rounds[-1]}
     for seed in seeds[1:]:

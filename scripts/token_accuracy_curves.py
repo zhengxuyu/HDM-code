@@ -34,5 +34,5 @@ for i in range(1, len(sys.argv), 4):
                    np.concatenate([np.linspace(0, 1, 400), [1 + 1e-9]]))
     out[label] = {"n": int(keep.sum()), "fast": float(fast.mean()), "slow": float(slow.mean()),
                   "slow_tokens": float(tok.mean()),
-                  "htm": [hx, hy], "confidence": [cx, cy]}
+                  "hdm": [hx, hy], "confidence": [cx, cy]}
 print(json.dumps(out))

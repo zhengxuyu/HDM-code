@@ -25,7 +25,7 @@ from pathlib import Path
 
 import numpy as np
 
-from slime_htm.envs.browser import candidates, state_text
+from slime_hdm.envs.browser import candidates, state_text
 
 PANEL = """
 (info) => {
@@ -43,7 +43,7 @@ PANEL = """
     'font:600 13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;' +
     'background:rgba(17,17,20,.94);border-radius:10px;padding:11px 14px;' +
     'box-shadow:0 2px 16px rgba(0,0,0,.4);pointer-events:none';
-  const clock = put('htm-clock', shell + ';top:14px;width:214px');
+  const clock = put('hdm-clock', shell + ';top:14px;width:214px');
   clock.style.display = info.clock ? 'block' : 'none';
   clock.innerHTML =
     '<div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;opacity:.6">'
@@ -53,7 +53,7 @@ PANEL = """
     + '<div style="color:' + (info.thinking ? '#ffd166' : '#8ce99a') + '">'
     + (info.thinking ? 'thinking  +' + info.think_seconds.toFixed(1) + 's' : 'instant') + '</div>';
 
-  const think = put('htm-thinking', shell + ';top:' + (info.clock ? 130 : 14) + 'px;' +
+  const think = put('hdm-thinking', shell + ';top:' + (info.clock ? 130 : 14) + 'px;' +
     'width:330px;max-height:62vh;' +
     'overflow:hidden;font-weight:400;font-size:12px');
   if (info.reasoning) {

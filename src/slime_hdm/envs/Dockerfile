@@ -9,21 +9,21 @@
 # needs no head at all -- it runs two constant policies -- and does not use one if
 # the service has it loaded.
 #
-#   docker build -t htm-gate -f src/slime_htm/envs/Dockerfile \
+#   docker build -t hdm-gate -f src/slime_hdm/envs/Dockerfile \
 #     --build-arg GIT_COMMIT=$(git rev-parse HEAD) .
 #
 #   # Are the site URLs even set? No --groups, no --decision-url, no server.
-#   docker run --rm htm-gate --venue webarena --check-env
+#   docker run --rm hdm-gate --venue webarena --check-env
 #
 #   # `--list` next. It runs nothing either, so it needs no decision service and
 #   # no site, but it does need --groups, because it prints them.
-#   docker run --rm --shm-size=1g htm-gate --list \
+#   docker run --rm --shm-size=1g hdm-gate --list \
 #     --venue webarena --groups gitlab,shopping,shopping_admin,map,reddit
 #
 #   # The ceiling measurement: no server, no API key, nothing external. Two
 #   # groups and no pooled one -- `click` is the measurement, `beyond-click` is
 #   # the control that is expected near zero because the agent cannot type.
-#   docker run --rm --shm-size=1g -v "$PWD/out":/out htm-gate \
+#   docker run --rm --shm-size=1g -v "$PWD/out":/out hdm-gate \
 #     --decision-url http://127.0.0.1:30001 --venue miniwob \
 #     --groups click,beyond-click \
 #     --output /out/miniwob-gate.json --rows /out/miniwob-gate.rows.jsonl
@@ -33,7 +33,7 @@
 #   docker run --rm --shm-size=1g -v "$PWD/out":/out \
 #     -e WA_SHOPPING -e WA_SHOPPING_ADMIN -e WA_REDDIT -e WA_GITLAB \
 #     -e WA_WIKIPEDIA -e WA_MAP -e WA_HOMEPAGE -e WA_FULL_RESET \
-#     htm-gate --decision-url http://127.0.0.1:30001 \
+#     hdm-gate --decision-url http://127.0.0.1:30001 \
 #       --venue webarena --groups gitlab --tasks-per-group 60 \
 #       --output /out/gate.json --rows /out/gate.rows.jsonl
 #
@@ -113,4 +113,4 @@ ARG GIT_COMMIT
 RUN test -n "$GIT_COMMIT" || (echo "build with --build-arg GIT_COMMIT=\$(git rev-parse HEAD)" >&2; exit 1)
 RUN printf 'commit %s\n' "$GIT_COMMIT" > /src/REVISION
 
-ENTRYPOINT ["python", "-m", "slime_htm.envs.gate"]
+ENTRYPOINT ["python", "-m", "slime_hdm.envs.gate"]

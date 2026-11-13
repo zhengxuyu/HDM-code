@@ -577,7 +577,7 @@ def run_episode(env, decider, task, policy, *, budget, max_steps, limit, seed,
     `policy` is `never` or `always` and nothing else: this script cannot route,
     and a policy name it does not know is a mistake rather than a default.
     """
-    from slime_htm.envs.browser import (
+    from slime_hdm.envs.browser import (
         StepTimeout,
         candidates,
         content_free_actions,
@@ -587,7 +587,7 @@ def run_episode(env, decider, task, policy, *, budget, max_steps, limit, seed,
         state_text,
         step_deadline,
     )
-    from slime_htm.envs.browser_environment import SLOW_INSTRUCTIONS
+    from slime_hdm.envs.browser_environment import SLOW_INSTRUCTIONS
 
     if policy not in ("never", "always"):
         raise ValueError(f"the gate runs never and always, not {policy!r}")
@@ -1045,7 +1045,7 @@ def main():
     from inference import DecisionClient
     from litjev.run.provenance import commit_now, describe_environment
     from litjev.run.streaming import Rows, completed
-    from slime_htm.envs.browser import close_env
+    from slime_hdm.envs.browser import close_env
     if args.list:
         for group in names:
             found = group_tasks(args.venue, group)
@@ -1168,7 +1168,7 @@ def main():
                         # that has served `--recycle-driver` episodes. Episode
                         # count is the only variable, which is what makes this a
                         # bound on the hypothesis rather than a guess at a cause.
-                        from slime_htm.envs.browser import forget_global_playwright
+                        from slime_hdm.envs.browser import forget_global_playwright
 
                         dropped = forget_global_playwright()
                         print(f"  recycling the browser driver after {played} "

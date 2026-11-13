@@ -8,7 +8,7 @@ and checks which ones a shard holds.
 import argparse
 import json
 
-from slime_htm.envs.alfworld.environment import SPLITS, AlfworldEnvironment, load_config
+from slime_hdm.envs.alfworld.environment import SPLITS, AlfworldEnvironment, load_config
 
 EXPECTED = {"train": 3553, "valid_seen": 140, "valid_unseen": 134}
 

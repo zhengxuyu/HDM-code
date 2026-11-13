@@ -128,7 +128,7 @@ def test_the_served_gain_is_the_one_the_loss_thresholds():
 
     Driven through the functions each consumer actually calls, not by re-deriving
     the formula here. The first version of this test re-derived it, which is why it
-    stayed green while `slime_htm.head_trainer` was left on the old difference:
+    stayed green while `slime_hdm.head_trainer` was left on the old difference:
     a test that recomputes a definition checks arithmetic, not agreement.
     """
     import math
@@ -159,7 +159,7 @@ def test_the_off_policy_update_scores_the_rule_the_rollout_followed():
     import torch
 
     from litjev.core.block import escalation_gain
-    from slime_htm.head_trainer import HeadRLConfig, _escalation_logprob
+    from slime_hdm.head_trainer import HeadRLConfig, _escalation_logprob
 
     config = HeadRLConfig()
     rng = np.random.default_rng(3)

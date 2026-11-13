@@ -5,7 +5,7 @@ without it is the ordering, the state text and the reward, and all three are.
 """
 import pytest
 
-from slime_htm.envs.alfworld.environment import SPLITS, AlfworldEnvironment, load_config
+from slime_hdm.envs.alfworld.environment import SPLITS, AlfworldEnvironment, load_config
 
 
 class FakeEngine:

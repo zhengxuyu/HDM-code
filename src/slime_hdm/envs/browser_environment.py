@@ -1,9 +1,9 @@
-"""The browser adapter: BrowserGym as `slime_htm.Environment`, for the RL loop.
+"""The browser adapter: BrowserGym as `slime_hdm.Environment`, for the RL loop.
 
-The gate (`slime_htm.envs.gate`) has its own loop because it runs two constant
+The gate (`slime_hdm.envs.gate`) has its own loop because it runs two constant
 policies and trains nothing. This is the other half: the same venues, the same
 candidate rule, behind the protocol the rollout drives. Without it the RL loop is
-an ALFWorld loop -- `scripts/htm_rl_loop.py` imports `AlfworldEnvironment` by
+an ALFWorld loop -- `scripts/hdm_rl_loop.py` imports `AlfworldEnvironment` by
 name -- and the method is not about ALFWorld.
 
 Three things are worth stating because they are not obvious from the protocol.
@@ -28,7 +28,7 @@ kept here and exposed, for the caller to put in `EpisodeResult.metadata`:
 construction and so can never show the loss.
 """
 
-from slime_htm.envs.browser import (
+from slime_hdm.envs.browser import (
     ACTION_ARITY,
     StepTimeout,
     browser_failure,
@@ -76,7 +76,7 @@ SLOW_INSTRUCTIONS = _slow_instructions()
 
 
 class BrowserEnvironment:
-    """One browsergym episode at a time, as `slime_htm.Environment`."""
+    """One browsergym episode at a time, as `slime_hdm.Environment`."""
 
     def __init__(self, tasks, *, seed=0, limit=52, state_chars=6000, headless=True,
                  history=6, extra=(), content_free=True, cycle=False,
@@ -441,60 +441,60 @@ def split_tasks(found, fraction=EVAL_FRACTION):
 
 
 def build(args, evaluation=False):
-    """The factory `--htm-environment-path slime_htm.envs.browser_environment:build` names.
+    """The factory `--hdm-environment-path slime_hdm.envs.browser_environment:build` names.
 
     Training and evaluation get disjoint task sets, enforced here rather than
     asserted in a comment: the two lists are built together and their intersection
-    is checked. `--htm-allow-eval-overlap` is the escape hatch for a deliberate
+    is checked. `--hdm-allow-eval-overlap` is the escape hatch for a deliberate
     debug run and has to be passed on purpose.
     """
     from importlib import import_module
 
-    from slime_htm.envs.gate import VENUES, chosen_tasks, group_tasks, missing_environment
+    from slime_hdm.envs.gate import VENUES, chosen_tasks, group_tasks, missing_environment
 
-    venue = getattr(args, "htm_venue", "miniwob")
-    group = getattr(args, "htm_group", "click")
+    venue = getattr(args, "hdm_venue", "miniwob")
+    group = getattr(args, "hdm_group", "click")
     absent = missing_environment(venue)
     if absent:
         raise RuntimeError(f"{venue} needs {', '.join(absent)} in the environment")
     import_module(VENUES[venue]["registers"])
 
     found = group_tasks(venue, group)
-    overlap_allowed = bool(getattr(args, "htm_allow_eval_overlap", False))
+    overlap_allowed = bool(getattr(args, "hdm_allow_eval_overlap", False))
     if overlap_allowed:
         training = evaluating = found
     else:
         training, evaluating = split_tasks(
-            found, getattr(args, "htm_eval_fraction", EVAL_FRACTION))
+            found, getattr(args, "hdm_eval_fraction", EVAL_FRACTION))
 
     side = evaluating if evaluation else training
-    count = (getattr(args, "htm_eval_games", 0) if evaluation
-             else getattr(args, "htm_games", 0))
-    offset = (getattr(args, "htm_eval_offset", 0) if evaluation
-              else getattr(args, "htm_offset", 0))
-    stride = getattr(args, "htm_task_stride", 0)
+    count = (getattr(args, "hdm_eval_games", 0) if evaluation
+             else getattr(args, "hdm_games", 0))
+    offset = (getattr(args, "hdm_eval_offset", 0) if evaluation
+              else getattr(args, "hdm_offset", 0))
+    stride = getattr(args, "hdm_task_stride", 0)
     tasks = chosen_tasks(side[offset:], count, stride)
     if not overlap_allowed:
         # The partition makes this impossible; the check is here because the
         # property is what matters and a future offset or stride could break it.
         other = chosen_tasks(
             (training if evaluation else evaluating)[
-                getattr(args, "htm_offset", 0) if evaluation
-                else getattr(args, "htm_eval_offset", 0):],
-            getattr(args, "htm_games", 0) if evaluation
-            else getattr(args, "htm_eval_games", 0),
+                getattr(args, "hdm_offset", 0) if evaluation
+                else getattr(args, "hdm_eval_offset", 0):],
+            getattr(args, "hdm_games", 0) if evaluation
+            else getattr(args, "hdm_eval_games", 0),
             stride)
         shared = sorted(set(tasks) & set(other))
         if shared:
             raise ValueError(
                 f"{len(shared)} task(s) are in both the training and evaluation sets, "
                 f"e.g. {shared[0]}; an RL run would report its training set as its "
-                f"evaluation. Pass --htm-allow-eval-overlap only to debug")
+                f"evaluation. Pass --hdm-allow-eval-overlap only to debug")
     return BrowserEnvironment(
         tasks,
-        seed=getattr(args, "htm_eval_seed", 0) if evaluation else getattr(args, "htm_seed", 0),
-        limit=getattr(args, "htm_candidates", 52),
-        state_chars=getattr(args, "htm_state_chars", 6000),
-        headless=not getattr(args, "htm_no_headless", False),
-        history=getattr(args, "htm_history", 6),
+        seed=getattr(args, "hdm_eval_seed", 0) if evaluation else getattr(args, "hdm_seed", 0),
+        limit=getattr(args, "hdm_candidates", 52),
+        state_chars=getattr(args, "hdm_state_chars", 6000),
+        headless=not getattr(args, "hdm_no_headless", False),
+        history=getattr(args, "hdm_history", 6),
     )

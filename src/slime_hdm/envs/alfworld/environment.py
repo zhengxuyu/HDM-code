@@ -79,7 +79,7 @@ def load_config(split, games, data=None, config_path=CONFIG):
 
 
 class AlfworldEnvironment:
-    """One ALFWorld episode at a time, as `slime_htm.Environment`."""
+    """One ALFWorld episode at a time, as `slime_hdm.Environment`."""
 
     def __init__(self, env, episodes, history=6, rules=RULES, game_files=(),
                  every=()):
@@ -220,18 +220,18 @@ class AlfworldEnvironment:
 
 
 def build(args, evaluation=False):
-    """The factory `--htm-environment-path slime_htm.envs.alfworld:build` names.
+    """The factory `--hdm-environment-path slime_hdm.envs.alfworld:build` names.
 
     Evaluation uses the unseen split and training the train split, so the two are
     one setting rather than two that can disagree.
     """
-    split = (getattr(args, "htm_eval_split", "valid_unseen") if evaluation
-             else getattr(args, "htm_train_split", "train"))
+    split = (getattr(args, "hdm_eval_split", "valid_unseen") if evaluation
+             else getattr(args, "hdm_train_split", "train"))
     return AlfworldEnvironment.load(
         split=split,
-        offset=getattr(args, "htm_eval_offset", 0) if evaluation
-        else getattr(args, "htm_offset", 0),
-        games=getattr(args, "htm_eval_games", 134) if evaluation
-        else getattr(args, "htm_games", 100),
-        history=getattr(args, "htm_history", 6),
+        offset=getattr(args, "hdm_eval_offset", 0) if evaluation
+        else getattr(args, "hdm_offset", 0),
+        games=getattr(args, "hdm_eval_games", 134) if evaluation
+        else getattr(args, "hdm_games", 100),
+        history=getattr(args, "hdm_history", 6),
     )

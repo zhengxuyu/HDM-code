@@ -30,22 +30,22 @@ import importlib
 
 # name -> the module that defines it, imported when the name is first read.
 _EXPORTS = {
-    "Environment": "slime_htm.environment",
-    "EpisodeResult": "slime_htm.environment",
-    "StepRecord": "slime_htm.environment",
-    "ClientScorer": "slime_htm.factory",
-    "StepScorer": "slime_htm.factory",
-    "build_head": "slime_htm.factory",
-    "build_scorer": "slime_htm.factory",
-    "load_environment": "slime_htm.factory",
-    "HeadRLConfig": "slime_htm.head_trainer",
-    "effective_sample_size": "slime_htm.head_trainer",
-    "train_head_on_episodes": "slime_htm.head_trainer",
-    "LoopConfig": "slime_htm.loop",
-    "run": "slime_htm.loop",
-    "generate_rollout": "slime_htm.rollout",
-    "rollout_episodes": "slime_htm.rollout",
-    "samples_from": "slime_htm.rollout",
+    "Environment": "slime_hdm.environment",
+    "EpisodeResult": "slime_hdm.environment",
+    "StepRecord": "slime_hdm.environment",
+    "ClientScorer": "slime_hdm.factory",
+    "StepScorer": "slime_hdm.factory",
+    "build_head": "slime_hdm.factory",
+    "build_scorer": "slime_hdm.factory",
+    "load_environment": "slime_hdm.factory",
+    "HeadRLConfig": "slime_hdm.head_trainer",
+    "effective_sample_size": "slime_hdm.head_trainer",
+    "train_head_on_episodes": "slime_hdm.head_trainer",
+    "LoopConfig": "slime_hdm.loop",
+    "run": "slime_hdm.loop",
+    "generate_rollout": "slime_hdm.rollout",
+    "rollout_episodes": "slime_hdm.rollout",
+    "samples_from": "slime_hdm.rollout",
 }
 
 

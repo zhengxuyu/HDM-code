@@ -10,9 +10,9 @@
 # because apt's signature check fails under qemu on an Apple Silicon host and
 # this image has to build on a laptop as well as on the machine that runs it.
 #
-#   docker build --platform linux/amd64 -t htm-scienceworld \
-#     -f src/slime_htm/envs/scienceworld/Dockerfile .
-#   docker run --rm --network host -v "$PWD/out":/out htm-scienceworld \
+#   docker build --platform linux/amd64 -t hdm-scienceworld \
+#     -f src/slime_hdm/envs/scienceworld/Dockerfile .
+#   docker run --rm --network host -v "$PWD/out":/out hdm-scienceworld \
 #     --decision-url http://localhost:30004 --episodes 30 --output /out/gate
 FROM eclipse-temurin:17-jre-jammy AS jre
 
@@ -30,4 +30,4 @@ COPY pyproject.toml README.md /src/
 COPY src /src/src
 RUN pip install --no-cache-dir -e /src --no-deps
 WORKDIR /src
-ENTRYPOINT ["python", "-m", "slime_htm.envs.scienceworld.gate"]
+ENTRYPOINT ["python", "-m", "slime_hdm.envs.scienceworld.gate"]

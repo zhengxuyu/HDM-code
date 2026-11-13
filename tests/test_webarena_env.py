@@ -9,14 +9,14 @@ import json
 
 import pytest
 
-from slime_htm.envs import webarena_env as wa
+from slime_hdm.envs import webarena_env as wa
 
 
 def test_all_seven_variables_are_produced_including_the_one_no_image_serves():
     """`gate.VENUES["webarena"]` refuses on any unset variable, and `WA_HOMEPAGE`
     has no container behind it -- in the original repo it is a static page. Six
     URLs and a missing seventh is a run that cannot start."""
-    from slime_htm.envs.gate import VENUES
+    from slime_hdm.envs.gate import VENUES
 
     values = wa.environment("node-7")
     assert set(values) == set(VENUES["webarena"]["requires_env"])
@@ -129,7 +129,7 @@ def test_the_plan_says_webarena_cannot_gate_a_click_only_fast_mode():
     from pathlib import Path
 
     plan = json.loads(Path(__file__).resolve().parent.parent.joinpath(
-        "src/slime_htm/envs/webarena-plan.json").read_text())
+        "src/slime_hdm/envs/webarena-plan.json").read_text())
 
     assert plan["gateable_with_a_click_only_fast_mode"] is False
     assert plan["verdict"].startswith("NO.")
@@ -156,7 +156,7 @@ def test_every_image_is_pinned_by_digest_not_by_tag():
     from pathlib import Path
 
     plan = json.loads(Path(__file__).resolve().parent.parent.joinpath(
-        "src/slime_htm/envs/webarena-plan.json").read_text())
+        "src/slime_hdm/envs/webarena-plan.json").read_text())
 
     for site, row in plan["sites"].items():
         assert row["digest"].startswith("sha256:"), site
@@ -170,7 +170,7 @@ def test_the_login_dependency_is_recorded_because_nothing_earlier_recorded_it():
     from pathlib import Path
 
     plan = json.loads(Path(__file__).resolve().parent.parent.joinpath(
-        "src/slime_htm/envs/webarena-plan.json").read_text())
+        "src/slime_hdm/envs/webarena-plan.json").read_text())
     assert "812" in plan["login"]["require_login"]
     assert "storage_state" in plan["login"]["note"]
     # The reset question stays open rather than being answered by the task file.

@@ -7,7 +7,7 @@ and if it does the readout needs a different encoding before any of this works.
 
 So this counts, before anything is built on top.
 
-It counts through `slime_htm.envs.browser.candidates`, the same function the gate
+It counts through `slime_hdm.envs.browser.candidates`, the same function the gate
 offers its actions from, because the previous version of this script counted
 `[bid]` occurrences in `observation["axtree_txt"]` -- **a key browsergym does not
 have.** The observation carries `axtree_object`, `dom_object` and
@@ -36,7 +36,7 @@ def main():
     import browsergym.miniwob  # noqa: F401  registers the environments
     import gymnasium as gym
 
-    from slime_htm.envs.browser import candidates
+    from slime_hdm.envs.browser import candidates
 
     names = [name for name in gym.registry if name.startswith("browsergym/miniwob")]
     print(f"{len(names)} miniwob tasks registered", flush=True)

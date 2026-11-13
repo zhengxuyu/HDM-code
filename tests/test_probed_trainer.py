@@ -14,7 +14,7 @@ import torch
 
 from litjev.core.block import HeadMetadata, escalation_gain_batch
 from litjev.core.block_utils import build_features
-from slime_htm.probed_trainer import (
+from slime_hdm.probed_trainer import (
     allowed_classes,
     flatten_probed,
     marginal_cross_entropy,
@@ -229,7 +229,7 @@ def test_without_probes_the_same_corpus_does_not_identify_the_gain():
     on the same episodes through the path that has no counterfactual, the gain
     collapses: the four states are no longer told apart.
     """
-    from slime_htm.head_trainer import HeadRLConfig, train_head_on_smeared_returns
+    from slime_hdm.head_trainer import HeadRLConfig, train_head_on_smeared_returns
 
     rows = corpus(probe=False)
     head, _ = train_head_on_smeared_returns(metadata(), rows, HeadRLConfig(), seed=0)
@@ -262,7 +262,7 @@ def test_a_per_step_reward_is_used_when_the_venue_pays_one():
     it gave nothing. The recorded fact is new: before the per-step reward was
     kept, a venue with intermediate signal was indistinguishable from one
     without."""
-    from slime_htm.probed_trainer import credit_is_per_step
+    from slime_hdm.probed_trainer import credit_is_per_step
 
     assert not credit_is_per_step(corpus(episodes=4))
     assert credit_is_per_step(rewarded_corpus(episodes=40))

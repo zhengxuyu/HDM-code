@@ -55,7 +55,7 @@ def test_two_starts_in_one_thread_is_the_defect_being_guarded_against():
 
 def test_forgetting_the_global_stops_it_so_the_next_start_works(browsergym_global):
     """What every recycle and every close-timeout recovery depends on."""
-    from slime_htm.envs.browser import forget_global_playwright
+    from slime_hdm.envs.browser import forget_global_playwright
 
     browsergym_global._set_global_playwright(playwright_api.sync_playwright().start())
     assert forget_global_playwright() is True
@@ -76,7 +76,7 @@ def test_it_works_after_the_driver_process_has_been_killed(browsergym_global):
     import signal
     import subprocess
 
-    from slime_htm.envs.browser import forget_global_playwright
+    from slime_hdm.envs.browser import forget_global_playwright
 
     browsergym_global._set_global_playwright(playwright_api.sync_playwright().start())
     # Only the driver, by name. `pgrep -P` alone would kill every child of the
@@ -103,7 +103,7 @@ def test_a_missing_browsergym_is_not_an_error(monkeypatch):
     """It runs during a recovery, so it reports rather than raising."""
     import sys
 
-    from slime_htm.envs.browser import forget_global_playwright
+    from slime_hdm.envs.browser import forget_global_playwright
 
     monkeypatch.setitem(sys.modules, "browsergym", None)
     monkeypatch.setitem(sys.modules, "browsergym.core", None)

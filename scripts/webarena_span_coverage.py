@@ -137,8 +137,8 @@ def main():
 
     from collections import Counter
 
-    from slime_htm.envs.browser import goal_spans
-    from slime_htm.envs.gate import _webarena_configs, judged_by_a_model
+    from slime_hdm.envs.browser import goal_spans
+    from slime_hdm.envs.gate import _webarena_configs, judged_by_a_model
 
     configs = [c for c in _webarena_configs() if not judged_by_a_model(c)]
     rows, counts = {}, Counter()

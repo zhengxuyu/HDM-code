@@ -8,8 +8,8 @@
 # spent encoding every prompt position as JSON. So the head stays with the
 # engine, and this image only drives the browser and draws the clock.
 #
-#   docker build -t htm-cua -f demo/Dockerfile .
-#   docker run --rm --shm-size=1g -v "$PWD/out":/out htm-cua \
+#   docker build -t hdm-cua -f demo/Dockerfile .
+#   docker run --rm --shm-size=1g -v "$PWD/out":/out hdm-cua \
 #     --decision-url http://<host>:30001 --output /out/run1 \
 #     --task browsergym/miniwob.click-checkboxes-large --headless
 #

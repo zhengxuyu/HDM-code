@@ -27,7 +27,7 @@ browsergym-miniwob   0.14.3
 
 gym registry 里 **125 个** `browsergym/miniwob.*` 任务,外加 1 个 `browsergym/openended`。**【实测】**
 
-我们自己的 `src/slime_htm/envs/gate.py:VENUES` 声明三个 venue:`miniwob` / `webarena` / `workarena`。其中只有 `miniwob` 在本环境可跑;另两个的 `packages` 字段列的依赖缺失,`--check-env` 会在排队之前拒绝。
+我们自己的 `src/slime_hdm/envs/gate.py:VENUES` 声明三个 venue:`miniwob` / `webarena` / `workarena`。其中只有 `miniwob` 在本环境可跑;另两个的 `packages` 字段列的依赖缺失,`--check-env` 会在排队之前拒绝。
 
 ### 1.2 先说清 `bid`,后面每个动作都带着它
 
@@ -208,7 +208,7 @@ CONTENT_FREE = (f"scroll(0, {SCROLL_STEP})", f"scroll(0, -{SCROLL_STEP})")
 
 ### 1.6 两份清单:不改代码就能选的,和必须产生内容的
 
-枚举在 **`src/slime_htm/envs/browsergym-actions.json`**,由
+枚举在 **`src/slime_hdm/envs/browsergym-actions.json`**,由
 `scripts/browsergym_actions.py` 生成。判据只有一条:**每个参数的取值,能不能从
 observation 的字段里列出来**(字段全名单在那个文件的 `observation_fields` 里,
 **【实测,`core/env.py:670-688`】**)。
@@ -250,7 +250,7 @@ observation 的字段里列出来**(字段全名单在那个文件的 `observati
 重跑:
 
 ```bash
-python scripts/browsergym_actions.py -o src/slime_htm/envs/browsergym-actions.json
+python scripts/browsergym_actions.py -o src/slime_hdm/envs/browsergym-actions.json
 ```
 
 ---
@@ -410,7 +410,7 @@ goto(1)   go_back(0)  hover(1)  press(2)
 
 ### 3.1 任务文件
 
-`test.raw.json`,**812 个任务**,sha256 `7b50386fd69163dbc05d615d834df4c6ed2c35596e97a1b10d17451c02537652` —— 与 `src/slime_htm/envs/webarena-plan.json` 预登记的摘要逐位一致,所以下面数的是同一份文件。**【实测】**
+`test.raw.json`,**812 个任务**,sha256 `7b50386fd69163dbc05d615d834df4c6ed2c35596e97a1b10d17451c02537652` —— 与 `src/slime_hdm/envs/webarena-plan.json` 预登记的摘要逐位一致,所以下面数的是同一份文件。**【实测】**
 
 每个任务带 `sites`、`intent`、`intent_template_id`、`eval`。评测器四个通道:
 
@@ -539,16 +539,16 @@ print('defined', len(defined), 'offered', len(offered),
       'unreachable', sorted(defined - offered))"
 
 # 两份动作清单(1.6),连同和上游签名的交叉验证
-python scripts/browsergym_actions.py -o src/slime_htm/envs/browsergym-actions.json
+python scripts/browsergym_actions.py -o src/slime_hdm/envs/browsergym-actions.json
 
 # MiniWoB 分组
-python -m slime_htm.envs.gate --venue miniwob --groups click --list | head -1
+python -m slime_hdm.envs.gate --venue miniwob --groups click --list | head -1
 
 # WebArena 逐站点(规则见 3.1、3.2;TYPED_KEYS = {q, query, search, keywords})
-python scripts/webarena_plan.py        # 产出 src/slime_htm/envs/webarena-plan.json
+python scripts/webarena_plan.py        # 产出 src/slime_hdm/envs/webarena-plan.json
 
 # MiniWoB 合并判定
-python -m slime_htm.envs.gate --venue miniwob \
+python -m slime_hdm.envs.gate --venue miniwob \
   --combine experiments/miniwob/results/miniwob-click-seed0-28831.json,\
 experiments/miniwob/results/miniwob-click-seed1-28832.json --output /tmp/combined.json
 ```

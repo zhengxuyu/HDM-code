@@ -122,7 +122,7 @@ def read_at(tokens, accuracy, budgets):
 def lines_for(venue, model, ours, extra):
     """Every rule's (tokens, accuracy) for one panel, as a dict of label to pair."""
     cell = ours[f"{venue},{model}"]
-    out = {"\\textsc{Hdm} (ours)": tuple(cell["htm"]),
+    out = {"\\textsc{Hdm} (ours)": tuple(cell["hdm"]),
            "Fast confidence": tuple(cell["confidence"])}
     for label, path in extra.items():
         if not path or not pathlib.Path(path).exists():

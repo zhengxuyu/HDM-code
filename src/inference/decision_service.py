@@ -330,7 +330,7 @@ def build_service(model_id, head_path, *, sglang_url=None, revision="main",
     on a cluster: one job holds the GPU and this sits beside it. Without one an
     engine is started in this process.
     """
-    from slime_htm import StepScorer
+    from slime_hdm import StepScorer
 
     head = load_head(head_path, device=head_device(device))
     layers = feature_layers_for(head)

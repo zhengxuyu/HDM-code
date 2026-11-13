@@ -114,7 +114,7 @@ def main():
                                              arguments.routers, arguments.point):
         lines, cell = lines_for(arguments.venue, model, ours,
                                 {"ThinkSwitcher (reproduced)": switch, "routers": routers})
-        mine = lines["\\textsc{Htm} (ours)"]
+        mine = lines["\\textsc{Hdm} (ours)"]
         reach = accuracy_at(*mine, spend)
         print(f"\n=== {arguments.venue}, {model}: {cell['n']} items, "
               f"fast {cell['fast']:.4f}, slow {cell['slow']:.4f} at "

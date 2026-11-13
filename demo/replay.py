@@ -389,7 +389,7 @@ def main():
     step_height = int(31 * scale)
     band = int(16 * scale) + len(lines) * step_height + (int(38 * scale) if plan else int(6 * scale))
 
-    staging = Path(tempfile.mkdtemp(prefix="htm-replay-"))
+    staging = Path(tempfile.mkdtemp(prefix="hdm-replay-"))
     try:
         for index in range(count):
             moment = index * arguments.speed / arguments.fps

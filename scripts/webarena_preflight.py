@@ -31,7 +31,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from slime_htm.envs import webarena_env as wa
+from slime_hdm.envs import webarena_env as wa
 
 # How each site's data is counted. The credentials are not secrets -- WebArena
 # publishes them, and `shopping_admin`'s own /status output prints
@@ -98,7 +98,7 @@ def check_ready(host, site, timeout=900.0):
 
 def check_variables(host, site, output_dir):
     """All seven set, and the one no image serves actually written."""
-    from slime_htm.envs.gate import VENUES, missing_environment
+    from slime_hdm.envs.gate import VENUES, missing_environment
 
     values = wa.environment(host)
     page = wa.write_homepage(Path(output_dir) / "homepage" / "index.html", host)
@@ -230,7 +230,7 @@ def main():
                              "most click-only-reachable intents, which the plan "
                              "finds is still too few to gate on")
     parser.add_argument("--plan",
-                        default="src/slime_htm/envs/webarena-plan.json")
+                        default="src/slime_hdm/envs/webarena-plan.json")
     parser.add_argument("--ready-timeout", type=float, default=900.0,
                         help="seconds to wait for every service. The largest "
                              "images take minutes; a short value is for checking "

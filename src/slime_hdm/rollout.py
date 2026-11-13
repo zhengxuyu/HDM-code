@@ -16,7 +16,7 @@ import numpy as np
 
 from litjev.core.block import escalation_gain, fast_confidence
 from litjev.core.block_utils import build_features
-from slime_htm.environment import EpisodeResult, StepRecord
+from slime_hdm.environment import EpisodeResult, StepRecord
 
 
 def _canonical(environment, text):
@@ -49,7 +49,7 @@ def rollout_episodes(environment, scorer, head, *, lambda_, episodes, budget,
     `probe_prob` runs the mode **not** taken at a step as well, and records what it
     would have done. It never changes which action is taken, so the trajectory
     distribution is identical with and without it and the episodes stay valid for
-    the off-policy update -- `tests/test_slime_htm_rollout.py` pins that by
+    the off-policy update -- `tests/test_slime_hdm_rollout.py` pins that by
     replaying the same seed both ways. It is how the two asymmetric outcome
     classes get any observation at all; see `StepRecord.probe_probabilities`.
 
@@ -327,7 +327,7 @@ def generate_rollout(args, rollout_id, data_buffer, evaluation=False):
     from slime.rollout.base_types import RolloutFnEvalOutput, RolloutFnTrainOutput
     from slime.utils.types import Sample
 
-    from slime_htm.factory import build_head, build_scorer, load_environment
+    from slime_hdm.factory import build_head, build_scorer, load_environment
 
     environment = load_environment(args, evaluation=evaluation)
     scorer = build_scorer(args)
@@ -336,22 +336,22 @@ def generate_rollout(args, rollout_id, data_buffer, evaluation=False):
                    environment.episodes)
     results = rollout_episodes(
         environment, scorer, head,
-        lambda_=getattr(args, "htm_lambda", 0.0),
+        lambda_=getattr(args, "hdm_lambda", 0.0),
         episodes=episodes,
-        budget=getattr(args, "htm_think_budget", 256),
-        escalate_prob=None if head is not None else getattr(args, "htm_escalate_prob", 0.5),
+        budget=getattr(args, "hdm_think_budget", 256),
+        escalate_prob=None if head is not None else getattr(args, "hdm_escalate_prob", 0.5),
         rng=np.random.default_rng(rollout_id),
-        max_steps=getattr(args, "htm_max_steps", 50),
+        max_steps=getattr(args, "hdm_max_steps", 50),
     )
     metrics = {
-        "htm/reward": float(np.mean([r.reward for r in results])),
-        "htm/escalations": float(np.mean([r.escalations for r in results])),
-        "htm/generated_tokens": float(np.mean([r.generated_tokens for r in results])),
-        "htm/finished": float(np.mean([r.finished for r in results])),
-        "htm/steps": float(np.mean([len(r.steps) for r in results])),
+        "hdm/reward": float(np.mean([r.reward for r in results])),
+        "hdm/escalations": float(np.mean([r.escalations for r in results])),
+        "hdm/generated_tokens": float(np.mean([r.generated_tokens for r in results])),
+        "hdm/finished": float(np.mean([r.finished for r in results])),
+        "hdm/steps": float(np.mean([len(r.steps) for r in results])),
     }
     if evaluation:
-        return RolloutFnEvalOutput(data={"htm": metrics}, metrics=metrics)
+        return RolloutFnEvalOutput(data={"hdm": metrics}, metrics=metrics)
     samples = samples_from(results, Sample, rollout_id=rollout_id,
-                           trainable=bool(getattr(args, "htm_train_backbone", False)))
+                           trainable=bool(getattr(args, "hdm_train_backbone", False)))
     return RolloutFnTrainOutput(samples=samples, metrics=metrics)

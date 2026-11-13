@@ -5,7 +5,7 @@ import time
 import numpy as np
 import pytest
 
-from slime_htm.rollout import rollout_episodes, samples_from
+from slime_hdm.rollout import rollout_episodes, samples_from
 
 
 class Corridor:
@@ -456,7 +456,7 @@ def test_probe_prob_reaches_the_collection_and_the_signature():
     import inspect
     import pathlib
 
-    from slime_htm.loop import LoopConfig, run
+    from slime_hdm.loop import LoopConfig, run
 
     assert "probe_prob" in {f for f in LoopConfig.__dataclass_fields__}
     assert LoopConfig().probe_prob == 0.0, "probing is opt-in"
@@ -746,8 +746,8 @@ def test_both_writers_write_the_same_row(tmp_path):
     import json
 
     from litjev._legacy.heads import HeadMetadata
-    from slime_htm.environment import EpisodeResult, StepRecord
-    from slime_htm.loop import LoopConfig, corpus_path, run
+    from slime_hdm.environment import EpisodeResult, StepRecord
+    from slime_hdm.loop import LoopConfig, corpus_path, run
 
     metadata = HeadMetadata(model_id="m", revision="r", hidden_size=4,
                             feature_layers=(-1,))

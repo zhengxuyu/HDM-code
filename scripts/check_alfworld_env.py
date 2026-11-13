@@ -13,7 +13,7 @@ REQUIRED = (
     "alfworld.agents.environment",
     "litjev._legacy.heads",
     "inference",                  # the SGLang backend
-    "slime_htm.envs.alfworld",    # the environment adapter
+    "slime_hdm.envs.alfworld",    # the environment adapter
     "torch",
     "transformers",
     "yaml",

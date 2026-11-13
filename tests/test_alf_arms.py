@@ -18,8 +18,8 @@ import numpy as np
 import pytest
 
 from conftest import load_script
-from slime_htm.rollout import rollout_episodes
-from test_slime_htm_rollout import Corridor, Scorer
+from slime_hdm.rollout import rollout_episodes
+from test_slime_hdm_rollout import Corridor, Scorer
 
 alf = load_script("alf_rollout")
 
@@ -158,7 +158,7 @@ def test_the_sglang_arm_writes_what_it_measured(tmp_path, monkeypatch):
     import argparse
 
     from inference.sglang_backend import SGLangScorer
-    from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+    from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
     class Games(Corridor):
         """A two-episode shard that also answers the shard questions."""
@@ -274,7 +274,7 @@ def test_a_rounds_head_records_its_own_fit_and_not_the_seed_heads(tmp_path):
     from dataclasses import replace
 
     from litjev.core.block import DecisionHead, HeadMetadata
-    from slime_htm.head_trainer import HeadRLConfig, train_head_on_episodes
+    from slime_hdm.head_trainer import HeadRLConfig, train_head_on_episodes
     from episode_corpus import corpus
 
     # A seed head carrying exactly the provenance that leaked.

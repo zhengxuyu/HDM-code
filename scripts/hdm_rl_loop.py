@@ -9,8 +9,8 @@ import json
 from pathlib import Path
 
 from litjev._legacy.heads import DecisionHead
-from slime_htm import HeadRLConfig, LoopConfig, StepScorer, run
-from slime_htm.envs.alfworld import AlfworldEnvironment
+from slime_hdm import HeadRLConfig, LoopConfig, StepScorer, run
+from slime_hdm.envs.alfworld import AlfworldEnvironment
 
 
 def _code():

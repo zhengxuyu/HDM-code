@@ -19,8 +19,8 @@ import numpy as np
 
 from litjev.core.block import escalation_gain
 from litjev.core.block_utils import build_features
-from slime_htm.head_trainer import HeadRLConfig, train_head_on_episodes
-from slime_htm.resume import (
+from slime_hdm.head_trainer import HeadRLConfig, train_head_on_episodes
+from slime_hdm.resume import (
     append_row,
     attempts_by_index,
     checked_rows,
@@ -29,9 +29,9 @@ from slime_htm.resume import (
     read_rows,
     resume_plan,
 )
-from slime_htm.rollout import rollout_episodes
+from slime_hdm.rollout import rollout_episodes
 
-# The bookkeeping moved to `slime_htm.resume`, so the collection here and the
+# The bookkeeping moved to `slime_hdm.resume`, so the collection here and the
 # evaluation in `scripts/browser_pmpo.py` resume through one implementation
 # rather than two. Kept under its old name for the callers that have it.
 _jsonable = jsonable
@@ -59,7 +59,7 @@ class LoopConfig:
     # by digest and a resume can silently merge them.
     probe_prob: float = 0.0
     head: HeadRLConfig = field(default_factory=HeadRLConfig)
-    output: str = "results/htm-rl"
+    output: str = "results/hdm-rl"
 
 
 def behaviour_probability(head, features, lambda_, temperature):
@@ -97,7 +97,7 @@ def load_corpus(path):
     return json.loads(str(stored["episodes"]))
 
 
-# Which field only a real episode carries, for `slime_htm.resume`: the markers in
+# Which field only a real episode carries, for `slime_hdm.resume`: the markers in
 # the same file have an index and an outcome and no features.
 EPISODE_KEY = "head_features"
 

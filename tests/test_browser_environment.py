@@ -9,8 +9,8 @@ repository has already had four times.
 """
 import pytest
 
-from slime_htm import Environment
-from slime_htm.envs.browser_environment import BrowserEnvironment
+from slime_hdm import Environment
+from slime_hdm.envs.browser_environment import BrowserEnvironment
 
 
 class FakePage:
@@ -50,7 +50,7 @@ def browser(monkeypatch, pages, **kwargs):
     import sys
     import types
 
-    from slime_htm.envs import browser as rule
+    from slime_hdm.envs import browser as rule
 
     made = []
     gym = types.ModuleType("gymnasium")
@@ -86,7 +86,7 @@ def browser(monkeypatch, pages, **kwargs):
     monkeypatch.setattr(rule, "state_text",
                         lambda observation, goal, trail, history=6, chars=4000:
                         f"{goal} | after {trail}")
-    import slime_htm.envs.browser_environment as module
+    import slime_hdm.envs.browser_environment as module
     monkeypatch.setattr(module, "candidates", rule.candidates)
     monkeypatch.setattr(module, "state_text", rule.state_text)
     return BrowserEnvironment(list(pages), **kwargs), made
@@ -256,8 +256,8 @@ def stub_group(monkeypatch, tasks):
     import sys
     import types
 
-    from slime_htm.envs import browser_environment as module
-    from slime_htm.envs import gate
+    from slime_hdm.envs import browser_environment as module
+    from slime_hdm.envs import gate
 
     monkeypatch.setattr(gate, "group_tasks", lambda venue, group: list(tasks))
     monkeypatch.setattr(gate, "missing_environment", lambda venue, environ=None: [])
@@ -291,7 +291,7 @@ def test_training_and_evaluation_get_different_tasks_on_defaults(monkeypatch):
 def test_both_sides_span_the_group_rather_than_splitting_it_in_half(monkeypatch):
     """Task names cluster by family, so the first quarter would evaluate on
     whichever families sort first while training on the others."""
-    from slime_htm.envs.browser_environment import split_tasks
+    from slime_hdm.envs.browser_environment import split_tasks
 
     level = [f"{family}-{index:02d}" for family in "abcde" for index in range(4)]
     training, evaluating = split_tasks(level)
@@ -302,7 +302,7 @@ def test_both_sides_span_the_group_rather_than_splitting_it_in_half(monkeypatch)
 
 
 def test_a_group_too_small_to_split_is_refused(monkeypatch):
-    from slime_htm.envs.browser_environment import split_tasks
+    from slime_hdm.envs.browser_environment import split_tasks
 
     with pytest.raises(ValueError, match="too small"):
         split_tasks(["one"])
@@ -315,7 +315,7 @@ def test_overlap_takes_an_explicit_flag(monkeypatch):
     accident, which is the whole point."""
     module = stub_group(monkeypatch, [f"browsergym/miniwob.t{i:02d}" for i in range(10)])
     args = Args()
-    args.htm_allow_eval_overlap = True
+    args.hdm_allow_eval_overlap = True
 
     training = module.build(args)
     evaluating = module.build(args, evaluation=True)

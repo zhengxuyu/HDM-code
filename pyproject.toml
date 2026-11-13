@@ -69,7 +69,7 @@ litjev-film = "litjev.games.cli:film"
 # inference/ is a package of its own rather than litjev.inference: it pulls in
 # SGLang, which litjev deliberately does not depend on, so a deployment that
 # serves through transformers never has to install it.
-packages = ["src/litjev", "src/inference", "src/slime_htm"]
+packages = ["src/litjev", "src/inference", "src/slime_hdm"]
 
 [tool.hatch.build.targets.sdist]
 include = [

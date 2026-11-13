@@ -128,7 +128,7 @@ def test_the_tree_id_names_the_working_changes_and_not_only_the_commit(tmp_path)
 def test_code_identity_answers_where_runs_actually_happen(tmp_path, capsys):
     """The defect this exists for: the pushed tree is not a checkout.
 
-    `htm_rl_loop.py` called `git rev-parse HEAD` in the job's cwd, which
+    `hdm_rl_loop.py` called `git rev-parse HEAD` in the job's cwd, which
     `sync.sh` rsyncs, so there is no `.git` and the collection signature
     recorded `None` -- in every ALFWorld run there has ever been. A field whose
     whole purpose is to keep two corpora that mean different things from pooling
@@ -155,7 +155,7 @@ def test_the_collection_signature_records_the_code_it_ran(tmp_path, monkeypatch)
 
     root = pathlib.Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location(
-        "htm_rl_loop_under_test", root / "scripts" / "htm_rl_loop.py")
+        "hdm_rl_loop_under_test", root / "scripts" / "hdm_rl_loop.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 

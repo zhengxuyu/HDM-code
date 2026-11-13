@@ -138,7 +138,7 @@ def main():
     # `append_row` rather than a new mechanism, because it is the idiom this tree
     # already has and it closes a truncated final line before appending -- which
     # is exactly what a wall-clock kill leaves behind.
-    from slime_htm.resume import append_row, read_rows
+    from slime_hdm.resume import append_row, read_rows
 
     out = Path(args.output)
     done = {}

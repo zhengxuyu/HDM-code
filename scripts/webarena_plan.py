@@ -6,7 +6,7 @@ task set *after* seeing the first 28 episodes of a run and described the result 
 the gate's README. Naming a subset in advance is not pre-registering an analysis
 of it. So the WebArena selection is computed here, written to a committed file,
 and the file is what a run reads -- the same shape as
-`src/slime_htm/envs/miniwob-action-split.json`.
+`src/slime_hdm/envs/miniwob-action-split.json`.
 
 **The site choice is the design decision, and it is made on the evaluator mix.**
 MiniWoB's click gate PASSED and the gain is almost all **reach**: combined over
@@ -45,7 +45,7 @@ but a 20.5 GB image, and `map` is mostly text-answer tasks. The choice is on the
 evaluator mix and the image size, both known before any task was run.
 
     python scripts/webarena_plan.py --configs path/to/test.raw.json \
-      -o src/slime_htm/envs/webarena-plan.json
+      -o src/slime_hdm/envs/webarena-plan.json
 """
 
 import argparse
@@ -269,7 +269,7 @@ def main():
     if args.configs:
         raw = Path(args.configs).read_bytes()
     else:
-        from slime_htm.envs.gate import _webarena_configs
+        from slime_hdm.envs.gate import _webarena_configs
         raw = json.dumps(_webarena_configs()).encode()
     configs = json.loads(raw)
 

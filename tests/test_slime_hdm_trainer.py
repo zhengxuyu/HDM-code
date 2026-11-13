@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from litjev._legacy.heads import HeadMetadata
-from slime_htm.head_trainer import (
+from slime_hdm.head_trainer import (
     HeadRLConfig,
     effective_sample_size,
     flatten_episodes,
@@ -67,7 +67,7 @@ def test_the_price_of_an_escalation_comes_off_the_reward_at_the_drawn_price():
 
     One price now, and the value moves with it, which is what lets one head serve
     every price."""
-    from slime_htm.head_trainer import priced_value
+    from slime_hdm.head_trainer import priced_value
 
     _, _, _, rewards, spent, _ = flatten_episodes(
         [episode(1.0, escalations=2)], HeadRLConfig())
@@ -143,7 +143,7 @@ def test_the_behaviour_probability_of_the_acting_head_is_recorded_not_assumed():
     """After round one the acting policy is a head, so its rate varies by step."""
     import numpy as np
 
-    from slime_htm.loop import behaviour_probability
+    from slime_hdm.loop import behaviour_probability
 
     class Head:
         def predict(self, features):
@@ -159,7 +159,7 @@ def test_a_drawn_price_lands_in_the_range_and_moves_between_epochs():
     """The range is what makes the gain ordered across prices rather than at one."""
     import torch
 
-    from slime_htm.head_trainer import HeadRLConfig, draw_prices
+    from slime_hdm.head_trainer import HeadRLConfig, draw_prices
 
     config = HeadRLConfig(lambda_range=(-0.2, 0.5))
     generator = torch.Generator().manual_seed(0)
@@ -172,7 +172,7 @@ def test_a_drawn_price_lands_in_the_range_and_moves_between_epochs():
 def test_without_a_range_every_decision_sees_the_same_price():
     import torch
 
-    from slime_htm.head_trainer import HeadRLConfig, draw_prices
+    from slime_hdm.head_trainer import HeadRLConfig, draw_prices
 
     prices = draw_prices(16, HeadRLConfig(lambda_=0.1), torch.Generator().manual_seed(0))
     assert torch.allclose(prices, torch.full((16,), 0.1))
@@ -182,7 +182,7 @@ def test_an_empty_range_is_refused_rather_than_silently_fixed():
     import pytest
     import torch
 
-    from slime_htm.head_trainer import HeadRLConfig, draw_prices
+    from slime_hdm.head_trainer import HeadRLConfig, draw_prices
 
     with pytest.raises(ValueError, match="interval"):
         draw_prices(4, HeadRLConfig(lambda_range=(0.5, 0.5)), torch.Generator())
@@ -193,7 +193,7 @@ def test_the_price_range_reaches_the_alfworld_launcher():
     the discount factor is exactly 1 and the policy term only cares which side of
     one threshold each gain falls on.
 
-    `htm_rl_loop.py` had `--lambda` and no range, so every ALFWorld run trained
+    `hdm_rl_loop.py` had `--lambda` and no range, so every ALFWorld run trained
     at a fixed price -- which is why a rerun at the defaults would have reproduced
     27608 round 0 numerically rather than testing the discounted reward. exps
     caught it. `browser_pmpo.py` has had the range all along, so this is the
@@ -203,7 +203,7 @@ def test_the_price_range_reaches_the_alfworld_launcher():
     import pathlib
 
     launcher = (pathlib.Path(__file__).resolve().parents[1]
-                / "scripts" / "htm_rl_loop.py").read_text()
+                / "scripts" / "hdm_rl_loop.py").read_text()
     assert '"--price-range"' in launcher, "no flag means nothing can set it"
     # And it must reach the head's config, not merely be parsed.
     assert "lambda_range=" in launcher, (
@@ -218,7 +218,7 @@ def test_a_single_price_leaves_the_discount_inert():
     cannot tell them apart."""
     import numpy as np
 
-    from slime_htm.head_trainer import HeadRLConfig, draw_prices, priced_value
+    from slime_hdm.head_trainer import HeadRLConfig, draw_prices, priced_value
 
     rewards = np.array([1.0, 1.0, 0.0, 1.0])
     spent = np.array([3.0, 0.0, 5.0, 11.0])
@@ -245,7 +245,7 @@ def test_the_alfworld_loop_signs_the_corpus_it_writes(tmp_path, monkeypatch):
     `checked_rows` returns unchecked when the signature is None -- so a reused
     `--output` silently resumes onto the earlier corpus.
 
-    `htm_rl_loop.py` called `run(...)` with no `signature=`, so every ALFWorld
+    `hdm_rl_loop.py` called `run(...)` with no `signature=`, so every ALFWorld
     corpus ever written carried no provenance: not the split, the offset, the
     episode count, the model, the code, lambda, or the price range. That was the
     fifth wiring gap of this shape, and it landed on the one requirement I had
@@ -263,7 +263,7 @@ def test_the_alfworld_loop_signs_the_corpus_it_writes(tmp_path, monkeypatch):
 
     root = pathlib.Path(__file__).resolve().parents[1]
     spec = importlib.util.spec_from_file_location(
-        "htm_rl_loop_signature", root / "scripts" / "htm_rl_loop.py")
+        "hdm_rl_loop_signature", root / "scripts" / "hdm_rl_loop.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
@@ -328,7 +328,7 @@ def test_alfworld_can_be_given_an_explicit_game_list():
     """
     import inspect
 
-    from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+    from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
     parameters = inspect.signature(AlfworldEnvironment.load).parameters
     assert "game_files" in parameters, (
@@ -348,7 +348,7 @@ def test_a_round_records_which_games_it_played():
     fact."""
     import inspect
 
-    from slime_htm.loop import run
+    from slime_hdm.loop import run
 
     source = inspect.getsource(run)
     assert '"games": (list(collecting.game_files)' in source, (
@@ -372,7 +372,7 @@ def test_both_alfworld_call_sites_can_name_their_games():
     import inspect
     import pathlib
 
-    from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+    from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
     assert "game_files" in inspect.signature(AlfworldEnvironment.load).parameters
     assert isinstance(AlfworldEnvironment.engine, property), (
@@ -386,7 +386,7 @@ def test_both_alfworld_call_sites_can_name_their_games():
         "and must select through the shared loader, not its own count mechanism")
     assert '"game_files": played' in rollout, "and must record what it played"
 
-    loop = (scripts / "htm_rl_loop.py").read_text()
+    loop = (scripts / "hdm_rl_loop.py").read_text()
     assert '"--train-games"' in loop and '"--eval-games"' in loop
 
 
@@ -399,7 +399,7 @@ def test_the_pinned_game_lists_are_regenerable_from_a_documented_command():
     import inspect
     import pathlib
 
-    from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+    from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
     assert hasattr(AlfworldEnvironment, "every_game"), (
         "the whole split must be readable without a second load at a different "

@@ -127,16 +127,16 @@ class ClientScorer:
 def load_environment(args, evaluation=False):
     """Import the environment named on `args` and construct it.
 
-    `htm_environment_path` is `module:factory`, and the factory takes the args and
+    `hdm_environment_path` is `module:factory`, and the factory takes the args and
     a flag saying whether this is evaluation, so a benchmark can hand back its
     held-out split without a second setting.
     """
-    path = getattr(args, "htm_environment_path", None)
+    path = getattr(args, "hdm_environment_path", None)
     if not path:
-        raise ValueError("set --htm-environment-path to module:factory")
+        raise ValueError("set --hdm-environment-path to module:factory")
     module_name, _, factory_name = path.partition(":")
     if not factory_name:
-        raise ValueError(f"--htm-environment-path must be module:factory, got {path!r}")
+        raise ValueError(f"--hdm-environment-path must be module:factory, got {path!r}")
     factory = getattr(importlib.import_module(module_name), factory_name)
     return factory(args, evaluation=evaluation)
 
@@ -144,7 +144,7 @@ def load_environment(args, evaluation=False):
 def build_scorer(args):
     """The backend the two modes run on. SGLang unless transformers is asked for."""
     head_layers = _head_layers(args)
-    backend = getattr(args, "htm_backend", "sglang")
+    backend = getattr(args, "hdm_backend", "sglang")
     if backend == "sglang":
         from inference import SGLangScorer, SGLangSettings
 
@@ -152,23 +152,23 @@ def build_scorer(args):
             model_id=args.hf_checkpoint,
             feature_layers=head_layers,
             batch_questions=False,
-            mem_fraction_static=getattr(args, "htm_mem_fraction_static", 0.8),
+            mem_fraction_static=getattr(args, "hdm_mem_fraction_static", 0.8),
         ))
     elif backend == "transformers":
         from litjev.backends.backend import ModelSettings, TransformersScorer
 
         provider = TransformersScorer.load(ModelSettings(
-            args.hf_checkpoint, "main", getattr(args, "htm_device_map", "cuda:0"),
+            args.hf_checkpoint, "main", getattr(args, "hdm_device_map", "cuda:0"),
             "bfloat16", feature_layers=head_layers))
     else:
-        raise ValueError(f"unknown --htm-backend {backend!r}")
-    return StepScorer(provider, instructions=getattr(args, "htm_instructions", INSTRUCTIONS))
+        raise ValueError(f"unknown --hdm-backend {backend!r}")
+    return StepScorer(provider, instructions=getattr(args, "hdm_instructions", INSTRUCTIONS))
 
 
 def _head_layers(args):
     from litjev.core.block import DecisionHead
 
-    path = getattr(args, "htm_decision_head", None)
+    path = getattr(args, "hdm_decision_head", None)
     if not path:
         return ()
     return DecisionHead.load(path).metadata.feature_layers
@@ -178,10 +178,10 @@ def build_head(args):
     """The head that decides, or None to explore at random instead.
 
     A head that has not been trained cannot explore, so the first rollout of a run
-    has none and `htm_escalate_prob` decides. Later rollouts load the head the
+    has none and `hdm_escalate_prob` decides. Later rollouts load the head the
     previous one produced.
     """
     from litjev.core.block import DecisionHead
 
-    path = getattr(args, "htm_decision_head", None)
+    path = getattr(args, "hdm_decision_head", None)
     return DecisionHead.load(path) if path else None

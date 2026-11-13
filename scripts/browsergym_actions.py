@@ -16,7 +16,7 @@
 每条记录都带 `candidates_from`:取值从哪个 observation 字段来。没有来源的就是
 `needs_content`,这是这份划分唯一的判据。
 
-    python scripts/browsergym_actions.py -o src/slime_htm/envs/browsergym-actions.json
+    python scripts/browsergym_actions.py -o src/slime_hdm/envs/browsergym-actions.json
 """
 
 import argparse
@@ -178,7 +178,7 @@ ACTIONS = {
 }
 
 # 现在真的在构造候选项的 —— 不是「原则上能」,是代码里有。
-# **【实测,src/slime_htm/envs/browser.py】** candidates() 遍历
+# **【实测,src/slime_hdm/envs/browser.py】** candidates() 遍历
 # extra_element_properties 产出 click,content_free_actions() 产出两个 scroll。
 WIRED_UP = ("click", "scroll")
 

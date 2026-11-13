@@ -22,8 +22,8 @@ this environment without conversion.
 **Two backends, and they are not interchangeable.** `--backend transformers` is
 the step loop below: its own prompt, built by `build_prompt`, and the candidate
 distribution read from `model(...)` logits. `--backend sglang` does not use that
-loop at all -- it runs `slime_htm.rollout.rollout_episodes`, which is the same
-step function `htm_rl_loop.py` collects through, over `AlfworldEnvironment` and
+loop at all -- it runs `slime_hdm.rollout.rollout_episodes`, which is the same
+step function `hdm_rl_loop.py` collects through, over `AlfworldEnvironment` and
 `StepScorer`.
 
 That is not a choice of engine. A head reads the hidden state at a readout
@@ -31,7 +31,7 @@ position *in a particular prompt*, and the two paths render different prompts, s
 the loop's head is off its own training distribution under the transformers loop
 however well the engine behaves. 29636 collected 150 episodes through the loop
 and then asked this script for the arms, which would have crossed both the prompt
-and the backend; it failed first for an unrelated reason (`htm-env`'s transformers
+and the backend; it failed first for an unrelated reason (`hdm-env`'s transformers
 has no `qwen3_5`), so the crossing never produced a number. Routing through the
 loop's own step function is what makes "the same prompt" structural rather than
 asserted, in the same way `--game-list` made "the same games" structural.
@@ -140,7 +140,7 @@ def confidence_rule(policy, cut):
 def play_through_the_loop(args):
     """The arms, run by the step function the head's training data was collected with.
 
-    `rollout_episodes` is what `htm_rl_loop.py` collects through, so an arm here is
+    `rollout_episodes` is what `hdm_rl_loop.py` collects through, so an arm here is
     that same function under a fixed decision rule: `escalate_prob` 0 never thinks,
     1 always thinks, and a head with no `escalate_prob` is the routed arm. The
     prompt, the candidate readout and the engine are the loop's, not reimplemented
@@ -155,9 +155,9 @@ def play_through_the_loop(args):
     measurement and has to be asked for deliberately.
     """
     from inference.sglang_backend import SGLangScorer, SGLangSettings
-    from slime_htm import StepScorer
-    from slime_htm.envs.alfworld.environment import AlfworldEnvironment
-    from slime_htm.rollout import rollout_episodes
+    from slime_hdm import StepScorer
+    from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
+    from slime_hdm.rollout import rollout_episodes
 
     data = os.environ.get("ALFWORLD_DATA", os.path.expanduser("~/.cache/alfworld"))
     os.environ["ALFWORLD_DATA"] = data
@@ -272,7 +272,7 @@ def main():
              "as by policy, and only the head arm refuses a missing flag. "
              "It has to be the path the head was "
              "fitted through**, and on this venue that is sglang: heads here come "
-             "from `htm_rl_loop.py`, which scores every step with `StepScorer` over "
+             "from `hdm_rl_loop.py`, which scores every step with `StepScorer` over "
              "an `SGLangScorer`. transformers runs this file's own step loop, with "
              "its own prompt, and is kept because it is what measured the endpoints "
              "in 27309 and 27343. The two are not comparable and no ALFWorld figure "
@@ -322,7 +322,7 @@ def main():
             # under. A second recorder here would write a thinner row under the
             # same name.
             parser.error("--record is the transformers loop's own recorder; collect "
-                         "through scripts/htm_rl_loop.py --output, which writes the "
+                         "through scripts/hdm_rl_loop.py --output, which writes the "
                          "corpus this venue trains on")
         if args.list_games:
             # It needs no engine and the transformers path already does it through
@@ -333,7 +333,7 @@ def main():
         return
     if args.policy == "head":
         # Refused rather than warned about. Every ALFWorld head so far comes from
-        # `htm_rl_loop.py`, which scores through `StepScorer` over an
+        # `hdm_rl_loop.py`, which scores through `StepScorer` over an
         # `SGLangScorer`, so its features are that prompt's readout under that
         # engine -- and this loop renders a different prompt. The run would
         # complete and report a routed success rate that is the head reading
@@ -383,7 +383,7 @@ def main():
         # Through the shared loader, so the list is exactly what a later
         # `--game-list` run will register. Enumerating it any other way would
         # reintroduce the two-mechanism problem these lists exist to close.
-        from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+        from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
         every = AlfworldEnvironment.load(split=args.split, offset=0,
                                          games=1, data=data)
@@ -396,7 +396,7 @@ def main():
         # structural rather than an alignment of two different mechanisms. The
         # loop slices `env.game_files`; this script set a count and burned resets
         # to reach an offset, and the two need not agree on anything.
-        from slime_htm.envs.alfworld.environment import AlfworldEnvironment
+        from slime_hdm.envs.alfworld.environment import AlfworldEnvironment
 
         names = [line.strip() for line in Path(args.game_list).read_text().splitlines()
                  if line.strip()]

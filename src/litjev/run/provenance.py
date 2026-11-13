@@ -161,7 +161,7 @@ def check_imported_tree(submit_dir=None, module=None, announce=False):
     return imported
 
 
-# The cluster has two of them -- a .venv on torch 2.11 and an htm-env on 2.9.1 --
+# The cluster has two of them -- a .venv on torch 2.11 and an hdm-env on 2.9.1 --
 # and which one a job used was written down nowhere. A number produced under one
 # is not the same number produced under the other, and a run that cannot name its
 # environment cannot be repeated.

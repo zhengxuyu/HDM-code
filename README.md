@@ -150,7 +150,7 @@ moves the operating point along the cost-accuracy curve without retraining.
 |---|---|
 | `src/litjev/` | the two modes: typed requests, readouts, the block, the pipeline |
 | `src/inference/` | SGLang backend, the decision service, and its standard-library client |
-| `src/slime_htm/` | episodic rollouts, the environment protocol, CDPO |
+| `src/slime_hdm/` | episodic rollouts, the environment protocol, CDPO |
 | `demo/` | one browser task under three policies, on the clock |
 | `docs/` | the API, the schema, how the readouts work, how to reproduce |
 

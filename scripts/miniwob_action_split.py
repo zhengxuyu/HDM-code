@@ -89,7 +89,7 @@ def split(pages, names):
 
 def default_output():
     """Beside the gate module, which is the only place a run can read it from."""
-    from slime_htm.envs.gate import miniwob_split_path
+    from slime_hdm.envs.gate import miniwob_split_path
 
     return miniwob_split_path()
 
