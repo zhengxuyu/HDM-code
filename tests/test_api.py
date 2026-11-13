@@ -1,9 +1,12 @@
+import math
 from pathlib import Path
 
 import numpy as np
+import pytest
 from fastapi.testclient import TestClient
 
 from hde.api import create_app
+from hde.core.block import escalation_gain
 from hde.core.pipeline import SchemaDecisionEngine
 from hde.core.pipeline_utils import RawFieldScores
 
@@ -200,6 +203,25 @@ def test_the_slider_reaches_past_where_the_gain_commonly_sits():
     maximum = float(re.search(r'max="(-?[0-9.]+)"', slider).group(1))
     assert 'min="-1"' in slider, slider
     assert maximum > 1.0, slider
+
+
+def test_the_routing_page_describes_the_gain_the_engine_computes():
+    """The page explains the rule it is demonstrating, so the explanation is a
+    claim about the code and can be wrong. It said `v = o[2] - o[1]`, a
+    difference of two probabilities bounded by [-1, 1], while
+    `escalation_gain` had become `log P(slow right) - log P(fast right)`, which
+    is unbounded; the slider hint beside it already said so, and the two
+    contradicted each other on the same screen.
+    """
+    markup = (Path(__file__).resolve().parents[1]
+              / "src/hde/static/routing.html").read_text()
+    assert "o[2] - o[1]" not in markup, "the pseudocode is the old difference"
+    assert "lies in [−1, 1]" not in markup, "the page still claims a bound"
+    assert "log(s) - log(c)" in markup, "the pseudocode no longer shows the ratio"
+
+    outcome = [0.1, 0.2, 0.6, 0.1]
+    gain = escalation_gain(outcome)
+    assert gain == pytest.approx(math.log(0.7) - math.log(0.3), abs=1e-9)
 
 
 def test_the_engine_reports_a_stage_breakdown_and_the_api_keeps_it():

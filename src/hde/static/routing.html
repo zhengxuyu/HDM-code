@@ -65,11 +65,12 @@ p, h = fast(state, question)
 # the self-routing block: hidden state + eight statistics of p
 o = block(h, stats(p))            # in the 4-simplex
 c = o[0] + o[1]                   # P(fast is right)
-v = o[2] - o[1]                   # the value of thinking
+s = o[0] + o[2]                   # P(slow is right)
+v = log(s) - log(c)               # the value of thinking
 escalate = v &gt; lambda_            # the price comes from the request
-answer = slow(state, question) if escalate else argmax(p)</pre><p class="hint"><code>v</code> is a difference of two probabilities and so lies in [−1, 1]. When <code>c</code> comes from the decision head, diagnostics reports <code>confidence_method</code> as <code>decision_head_outcome_v1</code>; without a head it falls back to the distribution's concentration, <code>normalized_gini_concentration_v1</code>. The two are not interchangeable.</p></div>
+answer = slow(state, question) if escalate else argmax(p)</pre><p class="hint"><code>v</code> is a log ratio, not a difference of two probabilities: it is zero when the two modes are equally likely to be right, and it has no bound at either end, so the dial's range is a choice about which prices are worth showing rather than the range <code>v</code> can take. When <code>c</code> comes from the decision head, diagnostics reports <code>confidence_method</code> as <code>decision_head_outcome_v1</code>; without a head it falls back to the distribution's concentration, <code>normalized_gini_concentration_v1</code>. The two are not interchangeable.</p></div>
         <div><h3>Response JSON: what comes from the model?</h3><div class="table-scroll"><table><thead><tr><th>Field</th><th>Source and meaning</th></tr></thead><tbody>
-          <tr><td><code>diagnostics.fields.*.escalation_gain</code></td><td><strong>From the self-routing block.</strong> This is <code>v</code>, computed as <code>o₃ − o₂</code>; without a decision head the field is absent.</td></tr>
+          <tr><td><code>diagnostics.fields.*.escalation_gain</code></td><td><strong>From the self-routing block.</strong> This is <code>v</code>, computed as <code>log(o₁ + o₃) − log(o₁ + o₂)</code>; without a decision head the field is absent.</td></tr>
           <tr><td><code>diagnostics.fields.*.outcome</code></td><td>The block's four joint-outcome probabilities, keyed as in OUTCOME_CLASSES.</td></tr>
           <tr><td><code>diagnostics.fields.*.system</code></td><td><code>one</code> if the fast-thinking mode answered, <code>two</code> if the question was escalated.</td></tr>
           <tr><td><code>diagnostics.routing.escalated</code></td><td>The question ids escalated on this request. <code>lambda</code> and <code>budget</code> are the values that actually applied.</td></tr>
