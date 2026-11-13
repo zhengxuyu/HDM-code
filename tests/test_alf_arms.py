@@ -275,7 +275,7 @@ def test_a_rounds_head_records_its_own_fit_and_not_the_seed_heads(tmp_path):
 
     from litjev.core.block import DecisionHead, HeadMetadata
     from slime_htm.head_trainer import HeadRLConfig, train_head_on_episodes
-    from test_browser_pmpo import corpus
+    from episode_corpus import corpus
 
     # A seed head carrying exactly the provenance that leaked.
     seed_meta = HeadMetadata(

@@ -15,8 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_readme_request_is_a_valid_schema():
     request = SystemOneRequest.model_validate_json((ROOT / "examples/request.json").read_text())
     schema = request.to_schema()
-    assert schema.names == tuple(f"q{i}" for i in range(1, 11))
-    assert len(schema["q1"].choices) == 3
+    # The file the playground loads and the file the README points at are the
+    # same file: they drifted once, and a reader who pasted one got a request
+    # the other's assertions did not describe.
+    assert schema.names == ("tool_selection", "intent", "review_trap", "service_credit")
+    assert len(schema["tool_selection"].choices) == 5
     client = TestClient(create_app(lambda: None))
     assert client.get("/example").json() == request.model_dump()
 

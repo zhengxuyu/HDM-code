@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use this code or the blocks in weights/, please cite the paper."
+message: "If you use this code or the published blocks, please cite the paper."
 type: software
 title: "HDM: a hybrid decision model"
 abstract: >-
@@ -20,6 +20,7 @@ authors:
   - family-names: Wang
     given-names: Jun
 repository-code: "https://github.com/zhengxuyu/HDM-code"
+version: "0.1.0"
 license: Apache-2.0
 preferred-citation:
   type: article

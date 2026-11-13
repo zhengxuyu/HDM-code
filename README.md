@@ -10,8 +10,9 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2611.16961-b31b1b)](https://arxiv.org/abs/2611.16961)
 [![weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--blocks-yellow)](https://huggingface.co/fredreick/HDM-blocks)
 
-*One backbone, two decision modes, and a learned block that prices thinking
-before either mode runs.*
+*Rather than deciding how much to think, the model decides whether autoregressive
+generation is needed at all: a question costs either no token, or the T a reasoning
+pass takes.*
 
 </div>
 
@@ -43,7 +44,7 @@ pass takes. Nothing in between, and nothing is parsed out of generated text.
 > difference. The reward discounts tokens rather than subtracting them, and a
 > difference shrinks exactly where thinking is worth most.
 
-## Where the block sits
+## The hybrid decision model
 
 <div align="center">
 <img src="assets/architecture.png" alt="The backbone, the self-routing block, and the two modes" width="88%">

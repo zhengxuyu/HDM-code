@@ -187,16 +187,19 @@ def test_the_slider_never_sends_a_request_by_itself():
     assert 'el("routing-form").addEventListener("submit"' in script, "the button is the trigger"
 
 
-def test_the_slider_spans_the_whole_range_the_gain_can_take():
-    """v = o3 - o2 is a difference of two probabilities, so it lies in [-1, 1].
-    Both ends of the slider are therefore baselines: at -1 every question clears
-    `v > lambda`, at 1 none can. A narrower maximum would hide the second one."""
+def test_the_slider_reaches_past_where_the_gain_commonly_sits():
+    """The value of thinking is a log ratio, not a difference of probabilities, so
+    it has no upper bound: a question the block rates three times more likely to be
+    answered by the slow mode carries v = 1.1. A dial that stopped at 1 escalated
+    every such question at every price it could reach, and looked inert."""
     import re
 
     markup = (Path(__file__).resolve().parents[1]
               / "src/litjev/static/routing.html").read_text()
     slider = re.search(r'<input id="lambda"[^>]*>', markup, re.S).group(0)
-    assert 'min="-1"' in slider and 'max="1"' in slider, slider
+    maximum = float(re.search(r'max="(-?[0-9.]+)"', slider).group(1))
+    assert 'min="-1"' in slider, slider
+    assert maximum > 1.0, slider
 
 
 def test_the_engine_reports_a_stage_breakdown_and_the_api_keeps_it():
