@@ -122,7 +122,7 @@ def main():
     print("slots separates them (P3 in experiments/EXP.md).")
 
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
 
         write_json_atomic(arguments.output, {
             "rows": arguments.rows, "rank": arguments.rank,

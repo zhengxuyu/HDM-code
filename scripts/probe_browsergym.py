@@ -20,7 +20,7 @@ actually uses is the only version of this that can be wrong in a visible way.
 import argparse
 from collections import Counter
 
-from litjev.run.streaming import write_json_atomic
+from hde.run.streaming import write_json_atomic
 
 
 def main():

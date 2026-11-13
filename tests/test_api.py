@@ -3,9 +3,9 @@ from pathlib import Path
 import numpy as np
 from fastapi.testclient import TestClient
 
-from litjev.api import create_app
-from litjev.core.pipeline import SchemaDecisionEngine
-from litjev.core.pipeline_utils import RawFieldScores
+from hde.api import create_app
+from hde.core.pipeline import SchemaDecisionEngine
+from hde.core.pipeline_utils import RawFieldScores
 
 
 class FakeProvider:
@@ -56,7 +56,7 @@ class ThinkingEngine(SchemaDecisionEngine):
 
 def _routing_page():
     """The markup and the script together: the page's data path lives in the JS."""
-    static = Path(__file__).resolve().parents[1] / "src/litjev/static"
+    static = Path(__file__).resolve().parents[1] / "src/hde/static"
     return (static / "routing.html").read_text() + (static / "routing.js").read_text()
 
 
@@ -80,7 +80,7 @@ def test_the_routing_page_reads_fields_the_api_actually_returns():
     """
     client = TestClient(create_app(ThinkingEngine))
     reply = client.post("/v1/systemtwo/debug", json={
-        "model": "litjev",
+        "model": "hde",
         "state": "s",
         "questions": {"q": {"type": "choice", "instructions": "Pick",
                             "criteria": {"A": "1", "B": "2"}}},
@@ -118,7 +118,7 @@ def test_the_routing_page_reads_fields_the_api_actually_returns():
 def test_a_server_without_a_head_says_so_in_a_field_the_page_renders():
     client = TestClient(create_app(FakeEngine))
     reply = client.post("/v1/systemtwo/debug", json={
-        "model": "litjev", "state": "s",
+        "model": "hde", "state": "s",
         "questions": {"q": {"type": "choice", "instructions": "Pick",
                             "criteria": {"A": "1", "B": "2"}}},
         "routing": {"lambda": 0.0, "budget": 64},
@@ -165,7 +165,7 @@ def test_the_script_only_reaches_for_ids_the_markup_defines():
     otherwise."""
     import re
 
-    static = Path(__file__).resolve().parents[1] / "src/litjev/static"
+    static = Path(__file__).resolve().parents[1] / "src/hde/static"
     script = (static / "routing.js").read_text()
     markup = (static / "routing.html").read_text()
     wanted = sorted({m.group(1) for m in re.finditer(r'el\("([a-z-]+)"\)', script)})
@@ -180,7 +180,7 @@ def test_the_slider_never_sends_a_request_by_itself():
     that makes every adjustment cost a round of inference before the next one
     can be tried."""
     script = (Path(__file__).resolve().parents[1]
-              / "src/litjev/static/routing.js").read_text()
+              / "src/hde/static/routing.js").read_text()
     assert 'addEventListener("input", () => {' in script, "the readout still follows the drag"
     for event in ("input", "change"):
         assert f'el("lambda").addEventListener("{event}", run)' not in script
@@ -195,7 +195,7 @@ def test_the_slider_reaches_past_where_the_gain_commonly_sits():
     import re
 
     markup = (Path(__file__).resolve().parents[1]
-              / "src/litjev/static/routing.html").read_text()
+              / "src/hde/static/routing.html").read_text()
     slider = re.search(r'<input id="lambda"[^>]*>', markup, re.S).group(0)
     maximum = float(re.search(r'max="(-?[0-9.]+)"', slider).group(1))
     assert 'min="-1"' in slider, slider
@@ -208,7 +208,7 @@ def test_the_engine_reports_a_stage_breakdown_and_the_api_keeps_it():
     numbers, and must update that dict rather than replace it."""
     client = TestClient(create_app(ThinkingEngine))
     reply = client.post("/v1/systemtwo/debug", json={
-        "model": "litjev", "state": "s",
+        "model": "hde", "state": "s",
         "questions": {"q": {"type": "choice", "instructions": "Pick",
                             "criteria": {"A": "1", "B": "2"}}},
         "routing": {"lambda": -1.0, "budget": 64},
@@ -235,7 +235,7 @@ def test_the_routing_page_is_in_one_language():
     string-by-string edit leaves behind."""
     import re
 
-    static = Path(__file__).resolve().parents[1] / "src/litjev/static"
+    static = Path(__file__).resolve().parents[1] / "src/hde/static"
     for name in ("routing.html", "routing.js", "routing.css"):
         text = (static / name).read_text()
         han = re.findall(r"[一-鿿]+", text)

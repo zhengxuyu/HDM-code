@@ -44,12 +44,12 @@ STATE = "Answer each question using its listed options."
 def main():
     import numpy as np
 
-    from litjev.candidates.proposing import load_proposer
-    from litjev.data.datasets import LOADERS, describe_selection, load, select_questions
-    from litjev.data.schema import Choice, DecisionSchema
-    from litjev.readout.content_readout import as_record, chosen_index
-    from litjev.run.provenance import check_imported_tree, commit_now, describe_environment
-    from litjev.run.streaming import Rows, completed, write_json_atomic
+    from hde.candidates.proposing import load_proposer
+    from hde.data.datasets import LOADERS, describe_selection, load, select_questions
+    from hde.data.schema import Choice, DecisionSchema
+    from hde.readout.content_readout import as_record, chosen_index
+    from hde.run.provenance import check_imported_tree, commit_now, describe_environment
+    from hde.run.streaming import Rows, completed, write_json_atomic
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dataset", choices=sorted(LOADERS), default="mmlu-pro")
@@ -140,7 +140,7 @@ def main():
         if name not in labels:
             raise KeyError(f"{name} has no gold answer; scoring it as a miss would "
                            f"understate every column here at once")
-        # Built the way `litjev.mmlu` builds it, rather than asked of the record:
+        # Built the way `hde.mmlu` builds it, rather than asked of the record:
         # a question that arrives with options keeps them, in source order, and
         # nothing is constructed.
         body = Choice(instructions=question.prompt, criteria=question.options)

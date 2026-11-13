@@ -42,8 +42,8 @@ from __future__ import annotations
 import numpy as np
 import torch
 
-from litjev.core.block import DecisionHead, escalation_gain_batch
-from litjev.core.block_utils import build_features
+from hde.core.block import DecisionHead, escalation_gain_batch
+from hde.core.block_utils import build_features
 
 # The four outcome classes, in the order the head emits them.
 BOTH_RIGHT, FAST_ONLY, SLOW_ONLY, NEITHER = 0, 1, 2, 3

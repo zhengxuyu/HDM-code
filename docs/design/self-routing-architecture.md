@@ -97,9 +97,9 @@ escalate = gain > λ          # λ 是每次升级的成本，运行时参数
 - 训练数据清单和日期
 
 任何一项变了头就失效，和现在 `calibration.json` 的失效规则一致。
-加载：`litjev --model Qwen/Qwen3.8-27B --decision-head head.safetensors`。没有头时行为和现在完全一样。
+加载：`hde --model Qwen/Qwen3.8-27B --decision-head head.safetensors`。没有头时行为和现在完全一样。
 
-## 6. 在 LitJev 里的落点
+## 6. 在 HDE 里的落点
 
 改动集中，骨干加载路径不动：
 
@@ -109,7 +109,7 @@ escalate = gain > λ          # λ 是每次升级的成本，运行时参数
 - 新模块 `routing.py`：四类概率到 escalate 决策，λ 是参数。
 - `decision.py`：`confidence` 改为头给的 P(快对)，`concentration` 保留在 debug 里对照；
   每题 provenance 加 `system: "one" | "two"` 和四类概率。
-- 新命令 `litjev-collect`：跑 S1 + S2，导出特征和标签；`litjev-train-head`：训头。
+- 新命令 `hde-collect`：跑 S1 + S2，导出特征和标签；`hde-train-head`：训头。
 - `/v1/systemone` 不动。自路由走 `/v1/systemtwo`，请求体多一个可选 `routing: {"lambda": 0.1, "budget": 512}`。
 
 ## 7. 评测
@@ -151,7 +151,7 @@ MMLU-Pro 测试集加至少一个训练没见过的数据集，三条基线一�
 - `heads.py`：`DecisionHead`（MLP，四类输出）、特征构造、训练、AUROC、coverage 曲线。
 - `routing.py`：`gain = P(2) − P(1) > λ` 的升级规则。
 - `decision.py`：有头时 `confidence = P(快对)`；升级题的答案由慢路径读头给出。
-- `collect.py` / `training.py` + `litjev-collect` / `litjev-train-head`：自动标签、按类别划分、逐层探针。
+- `collect.py` / `training.py` + `hde-collect` / `hde-train-head`：自动标签、按类别划分、逐层探针。
 - `api.py`：`/v1/systemtwo`，请求体多一个可选 `routing`；`/v1/systemone` 不变。
 - `scripts/collect.sbatch`：Slurm 分片采集。
 

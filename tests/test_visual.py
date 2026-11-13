@@ -7,11 +7,11 @@ from test_api import FakeEngine
 from test_backend import TinyTokenizer
 from transformers import Qwen3_5Config, Qwen3_5ForConditionalGeneration
 
-from litjev._legacy.decision import SchemaDecisionEngine
-from litjev.api import create_app
-from litjev.backends.backend import TransformersScorer
-from litjev.data.schema import Choice, DecisionSchema
-from litjev.vision import VisualState, decode_image, encode_image
+from hde._legacy.decision import SchemaDecisionEngine
+from hde.api import create_app
+from hde.backends.backend import TransformersScorer
+from hde.data.schema import Choice, DecisionSchema
+from hde.vision import VisualState, decode_image, encode_image
 
 
 class ImageTokenizer(TinyTokenizer):
@@ -125,7 +125,7 @@ def test_image_api_and_validation_happen_before_model_load():
     client = TestClient(create_app(lambda: RecordingEngine()))
     payload = {
         "state": "Look",
-        "model": "litjev",
+        "model": "hde",
         "questions": {
             "a": {"type": "choice", "instructions": "Pick", "criteria": {"A": None, "B": None}}
         },

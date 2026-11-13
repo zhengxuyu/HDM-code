@@ -2,7 +2,7 @@ import asyncio
 import json
 from time import monotonic, sleep
 
-from litjev.games.live import LiveSession
+from hde.games.live import LiveSession
 
 
 class Preview:

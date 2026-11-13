@@ -8,10 +8,10 @@ here is therefore read off the collection alone, so the comparison is internal.
 """
 import numpy as np
 
-from litjev.core.block import HeadMetadata, escalation_gain
-from litjev.core.objective import outcome_labels, train_head
-from litjev.data.collect import open_records
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import HeadMetadata, escalation_gain
+from hde.core.objective import outcome_labels, train_head
+from hde.data.collect import open_records
+from hde.train.training import features_for, holdout_mask
 
 import argparse
 

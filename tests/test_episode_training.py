@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from litjev.train.episode_training import (
+from hde.train.episode_training import (
     EpisodeCDPOConfig,
     episode_loss,
     expected_progress_and_cost,
@@ -73,7 +73,7 @@ def test_the_discounted_return_is_eq_return_and_not_discounted_progress():
     import numpy as np
     import torch
 
-    from litjev.train.episode_training import expected_progress_and_cost
+    from hde.train.episode_training import expected_progress_and_cost
 
     def exhaustive(p, fast, slow, lam):
         def walk(t, prob, reached, esc):
@@ -126,7 +126,7 @@ def test_a_price_cannot_make_progress_worth_less_than_none():
 
     import torch
 
-    from litjev.train.episode_training import expected_progress_and_cost
+    from hde.train.episode_training import expected_progress_and_cost
 
     def value(fast, slow, lam):
         p = torch.full((1, len(fast)), 0.999, dtype=torch.float64)   # escalate

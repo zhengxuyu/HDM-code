@@ -14,7 +14,7 @@ behaviour is checked against a served model, not here.
 
 import pytest
 
-from litjev.core.prompts_utils import (
+from hde.core.prompts_utils import (
     CLOSE_THINKING,
     OPEN_THINKING,
     close_thinking,
@@ -112,7 +112,7 @@ def test_the_sglang_renderer_cuts_both_modes_from_one_string(tokenizer):
     an escalation re-prefilled the whole prompt.
     """
     from inference.sglang_backend import SGLangScorer, SGLangSettings  # noqa: PLC0415
-    from litjev.data.schema import Choice, DecisionSchema  # noqa: PLC0415
+    from hde.data.schema import Choice, DecisionSchema  # noqa: PLC0415
 
     engine = SGLangScorer(engine=None, tokenizer=tokenizer,
                           settings=SGLangSettings(model_id="m", feature_layers=(-1,)),

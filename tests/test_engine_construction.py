@@ -10,10 +10,10 @@ be reached through one call and why every caller had to remember to construct.
 import numpy
 import pytest
 
-from litjev._legacy.decision import SchemaDecisionEngine
-from litjev.candidates.construct import DEGENERATE
-from litjev.candidates.construction_settings import ConstructionSettings
-from litjev.data.schema import Choice, DecisionSchema
+from hde._legacy.decision import SchemaDecisionEngine
+from hde.candidates.construct import DEGENERATE
+from hde.candidates.construction_settings import ConstructionSettings
+from hde.data.schema import Choice, DecisionSchema
 
 
 class Proposer:
@@ -128,7 +128,7 @@ def test_the_prompt_an_enumerated_question_gets_is_unchanged_by_this_work():
     """A comparison run is in flight against the code before the conversion. For a
     question that arrives with its options, the rendered prompt must be the same
     string, or those numbers measure an interim state rather than this one."""
-    from litjev._legacy.prompting import unlabelled_suffix
+    from hde._legacy.prompting import unlabelled_suffix
 
     question = Choice(instructions="What is 2+2?", criteria={"A": "three", "B": "four"})
     assert unlabelled_suffix(question) == (
@@ -147,7 +147,7 @@ class Readout(Proposer):
     def score(self, state, schema):
         import numpy as np
 
-        from litjev._legacy.decision import RawFieldScores
+        from hde._legacy.decision import RawFieldScores
 
         return tuple(
             RawFieldScores(name, np.arange(len(schema[name].choices), dtype=float),
@@ -231,8 +231,8 @@ class Escalating(Readout):
     def think(self, state, schema, names, budget):
         import numpy as np
 
-        from litjev._legacy.decision import RawFieldScores
-        from litjev._legacy.prompting import question_body
+        from hde._legacy.decision import RawFieldScores
+        from hde._legacy.prompting import question_body
 
         for name in names:
             question = schema[name]
@@ -244,7 +244,7 @@ class Escalating(Readout):
             for name in names)
 
     def solve(self, state, question, budget, answer_tokens=48):
-        from litjev._legacy.prompting import build_open_thinking_messages
+        from hde._legacy.prompting import build_open_thinking_messages
 
         rendered = " ".join(m["content"] for m in build_open_thinking_messages(state, question))
         self.solved.append(rendered)
@@ -252,8 +252,8 @@ class Escalating(Readout):
 
 
 def routed_engine(answers=("4", "5", "6")):
-    from litjev._legacy.heads import HeadMetadata
-    from litjev._legacy.routing import RoutingPolicy
+    from hde._legacy.heads import HeadMetadata
+    from hde._legacy.routing import RoutingPolicy
 
     class AlwaysEscalate:
         metadata = HeadMetadata("m", "r", hidden_size=0, feature_layers=())
@@ -374,7 +374,7 @@ def test_constructed_candidates_are_shuffled_unless_rank_order_is_asked_for():
     also one particular rank -- the runner-up on all but one of 478 questions --
     and rotation found the bias positional, so the confound outlives the labels
     the content readout removes."""
-    from litjev.candidates.construction_settings import DEFAULT_SHUFFLE
+    from hde.candidates.construction_settings import DEFAULT_SHUFFLE
 
     assert ConstructionSettings().shuffle == DEFAULT_SHUFFLE
     assert ConstructionSettings(shuffle=None).shuffle is None
@@ -386,7 +386,7 @@ def test_the_launcher_can_reach_both(capsys):
     """The flag existing with no path to it is how three faults here worked."""
     import argparse
 
-    from litjev.candidates.proposing import add_proposal_arguments
+    from hde.candidates.proposing import add_proposal_arguments
 
     parser = add_proposal_arguments(argparse.ArgumentParser())
     assert parser.parse_args([]).shuffle == ConstructionSettings().shuffle
@@ -398,7 +398,7 @@ def test_the_launcher_can_reach_both(capsys):
 
 
 def test_a_head_says_which_readout_its_features_came_from():
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     assert HeadMetadata("m", "r", hidden_size=4, feature_layers=(-1,)).readout == "coded"
     assert HeadMetadata("m", "r", hidden_size=4, feature_layers=(-1,),
@@ -410,7 +410,7 @@ def test_a_coded_head_is_refused_under_the_content_readout():
     over letter codes against a softmax over option scores -- so a head fitted to
     one would be reading numbers that do not mean what it learned they meant, and
     its output would look ordinary."""
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     metadata = HeadMetadata("m", "r", hidden_size=4, feature_layers=(-1,))
     with pytest.raises(ValueError, match="different quantities"):
@@ -422,7 +422,7 @@ def test_a_coded_head_is_refused_under_the_content_readout():
 def test_the_engine_refuses_the_mismatch_when_it_is_built():
     """At construction rather than at the first prediction, so a run does not load
     a model and then fail on question one."""
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     class Head:
         metadata = HeadMetadata("m", "r", hidden_size=0, feature_layers=(),
@@ -446,7 +446,7 @@ def test_the_engine_refuses_the_mismatch_when_it_is_built():
 def test_the_model_check_compares_the_engines_model_not_the_heads_own():
     """Passing the head's own id compared a value with itself and passed whatever
     it held, so the model check at that call site never checked anything."""
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     class Head:
         metadata = HeadMetadata("trained-on-this", "r", hidden_size=0, feature_layers=())
@@ -478,7 +478,7 @@ class ContentScorer(Proposer):
     hidden = numpy.ones((1, 4), dtype=numpy.float32)
 
     def score_options(self, state, question, content_free=False):
-        from litjev.readout.content_readout import OptionScore
+        from hde.readout.content_readout import OptionScore
 
         # "aa" is the better total; "bbbb" the better per token. So which option
         # comes back says which normalisation actually drove the readout.
@@ -585,7 +585,7 @@ def test_coded_is_what_an_engine_reads_out_with_unless_told_otherwise():
     The part worth keeping from the first ruling is unchanged: whichever readout a
     run uses, it names it. The content readout's own advantages are accuracy, bias
     and confidence, none of which is cost, and `--readout content` buys them."""
-    from litjev._legacy.decision import DEFAULT_READOUT
+    from hde._legacy.decision import DEFAULT_READOUT
 
     assert DEFAULT_READOUT == "coded"
     assert SchemaDecisionEngine(Readout()).readout == "coded"
@@ -597,7 +597,7 @@ def test_a_head_cannot_be_served_under_the_readout_it_was_not_trained_on():
     property rather than the direction. Under the content default a coded head was
     the one refused; under the coded default it is a content head, and every head
     trained so far is coded, so this is now the case that bites."""
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     class ContentHead:
         metadata = HeadMetadata("m", "r", hidden_size=0, feature_layers=(),
@@ -633,8 +633,8 @@ def test_the_constructed_path_follows_the_global_default_and_says_so():
     run asks for it, and the MATH-500 line was designed around that readout."""
     import argparse
 
-    from litjev._legacy.decision import DEFAULT_READOUT
-    from litjev.candidates.proposing import add_proposal_arguments
+    from hde._legacy.decision import DEFAULT_READOUT
+    from hde.candidates.proposing import add_proposal_arguments
 
     parser = add_proposal_arguments(argparse.ArgumentParser())
     parser.add_argument("--readout", choices=["coded", "content"], default=DEFAULT_READOUT)
@@ -708,7 +708,7 @@ def test_a_content_head_can_now_be_served_under_the_content_readout():
     readouts -- a softmax over option scores and a distribution over letter codes are
     different quantities -- but a head trained under content is now servable at all,
     which is what made routing a coded-only path."""
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
 
     class ContentHead:
         metadata = HeadMetadata("m", "r", hidden_size=4, feature_layers=(-1,),

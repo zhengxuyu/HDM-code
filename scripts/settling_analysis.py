@@ -18,8 +18,8 @@ import json
 
 import numpy as np
 
-from litjev._legacy.heads import auroc, outcome_labels
-from litjev.run.streaming import write_json_atomic
+from hde._legacy.heads import auroc, outcome_labels
+from hde.run.streaming import write_json_atomic
 
 
 def settling_layer(logits, count):

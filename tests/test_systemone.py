@@ -4,9 +4,9 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-from litjev.api import create_app
-from litjev.data.schema import DecisionSchema
+from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+from hde.api import create_app
+from hde.data.schema import DecisionSchema
 
 
 class Provider:
@@ -26,7 +26,7 @@ def test_standard_and_debug_share_canonical_answers():
         "rate": {"type": "score", "instructions": {"task": "Rate"}, "criteria": [None, {"x": 2}]},
         "yes": {"type": "noul", "instructions": "Is it?"},
     }
-    payload = {"model": "litjev", "state": [{"value": 3}], "questions": questions}
+    payload = {"model": "hde", "state": [{"value": 3}], "questions": questions}
     response = client.post("/v1/systemone", json=payload)
     assert response.status_code == 200, response.text
     result = response.json()
@@ -61,7 +61,7 @@ def test_invalid_questions_fail_before_model_load(question):
 
     client = TestClient(create_app(forbidden))
     response = client.post(
-        "/v1/systemone", json={"model": "litjev", "state": "", "questions": {"q": question}}
+        "/v1/systemone", json={"model": "hde", "state": "", "questions": {"q": question}}
     )
     assert response.status_code == 422
 
@@ -78,7 +78,7 @@ def test_ten_questions_in_one_call_and_unknown_model_rejected():
         create_app(lambda: SchemaDecisionEngine(CountingProvider(), model_id="qwen", readout="coded"))
     )
     payload = {
-        "model": "litjev",
+        "model": "hde",
         "state": "",
         "questions": {
             f"q{i}": {"type": "choice", "instructions": "Pick", "criteria": {"A": "1", "B": "2"}}

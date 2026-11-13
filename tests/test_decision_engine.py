@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine, concentration
-from litjev.data.schema import Choice, DecisionSchema, Noul
+from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine, concentration
+from hde.data.schema import Choice, DecisionSchema, Noul
 
 
 class FakeLogitProvider:

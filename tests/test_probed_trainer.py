@@ -12,8 +12,8 @@ import numpy as np
 import pytest
 import torch
 
-from litjev.core.block import HeadMetadata, escalation_gain_batch
-from litjev.core.block_utils import build_features
+from hde.core.block import HeadMetadata, escalation_gain_batch
+from hde.core.block_utils import build_features
 from slime_hdm.probed_trainer import (
     allowed_classes,
     flatten_probed,

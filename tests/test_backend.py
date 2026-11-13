@@ -3,8 +3,8 @@ import pytest
 import torch
 from transformers import LlamaConfig, LlamaForCausalLM
 
-from litjev.backends.backend import TransformersScorer
-from litjev.data.schema import Choice, DecisionSchema
+from hde.backends.backend import TransformersScorer
+from hde.data.schema import Choice, DecisionSchema
 
 
 class TinyTokenizer:

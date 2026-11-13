@@ -3,7 +3,7 @@ from time import monotonic, sleep
 import pytest
 from fastapi.testclient import TestClient
 
-from litjev.games.preview import create_preview_app
+from hde.games.preview import create_preview_app
 
 
 def test_random_preview_runs_real_doom_without_model():

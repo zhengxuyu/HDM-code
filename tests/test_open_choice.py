@@ -8,7 +8,7 @@ reached through one entry point. `criteria=None` puts it in the request.
 import pytest
 from pydantic import ValidationError
 
-from litjev.data.schema import Choice, DecisionSchema, SystemOneRequest
+from hde.data.schema import Choice, DecisionSchema, SystemOneRequest
 
 
 def test_a_question_may_arrive_without_its_answers():
@@ -53,7 +53,7 @@ def test_an_empty_mapping_is_still_refused():
 
 def test_it_round_trips_through_a_request():
     request = SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"open": Choice(instructions="What is 2+2?", criteria=None),
                    "closed": Choice(instructions="Pick", criteria={"A": "1", "B": "2"})})
     again = SystemOneRequest.model_validate_json(request.model_dump_json())

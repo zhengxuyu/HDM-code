@@ -1,6 +1,6 @@
 """SGLang-backed inference for the hybrid-thinking model.
 
-`litjev.backend.TransformersScorer` runs the two modes through transformers,
+`hde.backend.TransformersScorer` runs the two modes through transformers,
 which is what every recorded number so far came from. It is slow where it
 matters most: the slow-thinking mode decodes one sequence at a time, and a
 reasoning step on a 27B backbone costs minutes. Anything that collects

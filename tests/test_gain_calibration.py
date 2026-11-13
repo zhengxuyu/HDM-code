@@ -1,6 +1,6 @@
 import numpy as np
 
-from litjev.train.training import gain_calibration
+from hde.train.training import gain_calibration
 
 # Five groups with known success rates, and the predicted gain set to each
 # group's true log ratio. The rates are built exactly rather than sampled -- each

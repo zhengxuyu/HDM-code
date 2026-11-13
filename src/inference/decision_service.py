@@ -28,9 +28,9 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from inference.client import DecisionClient  # noqa: F401  re-exported
-from litjev.core.block import escalation_gain, fast_confidence
-from litjev.core.block_utils import build_features
-from litjev.serving import attach_head, feature_layers_for, load_head
+from hde.core.block import escalation_gain, fast_confidence
+from hde.core.block_utils import build_features
+from hde.serving import attach_head, feature_layers_for, load_head
 
 CHOICE = "choice"
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-from litjev.online import online_thresholds, run_online, solve_values
+from hde.online import online_thresholds, run_online, solve_values
 
 
 def test_values_grow_with_steps_and_with_budget():

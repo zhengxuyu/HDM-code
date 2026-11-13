@@ -8,13 +8,13 @@ def test_the_supervised_objective_is_unweighted_by_default():
     """Class weighting is the handicap the loss study found; it is opt-in now."""
     import inspect
 
-    from litjev._legacy.heads import train_head
+    from hde._legacy.heads import train_head
 
     assert inspect.signature(train_head).parameters["weighted_supervised"].default is False
 
 
 def test_the_cdpo_anchor_is_unweighted_by_default():
-    from litjev._legacy.heads import CDPOConfig
+    from hde._legacy.heads import CDPOConfig
 
     assert CDPOConfig().weighted_anchor is False
 
@@ -23,7 +23,7 @@ def test_a_saved_head_records_the_objective_it_was_trained_under(tmp_path):
     """A checkpoint that does not say how it was trained invites benchmarking the wrong one."""
     import numpy as np
 
-    from litjev._legacy.heads import DecisionHead, HeadMetadata
+    from hde._legacy.heads import DecisionHead, HeadMetadata
 
     metadata = HeadMetadata(
         model_id="m", revision="r", hidden_size=8, feature_layers=(1,),
@@ -47,7 +47,7 @@ def test_the_objectives_former_name_still_works_and_normalises():
     the name the paper uses now."""
     import numpy as np
 
-    from litjev._legacy.heads import (
+    from hde._legacy.heads import (
         CDPOConfig,
         HeadMetadata,
         PMPOConfig,
@@ -88,7 +88,7 @@ def test_the_report_is_keyed_by_the_canonical_name_not_the_one_passed_in():
     fails if one of them stops."""
     import re
 
-    from litjev._legacy.heads import OBJECTIVES, normalise_objective
+    from hde._legacy.heads import OBJECTIVES, normalise_objective
 
     assert normalise_objective("pmpo") not in ("pmpo",), "the former name is not a key"
     assert normalise_objective("pmpo") in OBJECTIVES
@@ -106,8 +106,8 @@ def test_both_names_of_the_config_argument_at_once_is_refused_everywhere():
 
     import numpy as np
 
-    from litjev._legacy.heads import CDPOConfig, HeadMetadata, train_head
-    from litjev.train.training import run_training
+    from hde._legacy.heads import CDPOConfig, HeadMetadata, train_head
+    from hde.train.training import run_training
 
     meta = HeadMetadata(model_id="m", revision="r", hidden_size=4, feature_layers=(-1,))
     features = np.zeros((16, meta.input_dim), dtype="float32")
@@ -136,7 +136,7 @@ def test_the_served_gain_is_the_one_the_loss_thresholds():
     import numpy as np
     import torch
 
-    from litjev.core.block import escalation_gain, escalation_gain_batch
+    from hde.core.block import escalation_gain, escalation_gain_batch
 
     rng = np.random.default_rng(0)
     outcomes = rng.dirichlet(np.ones(4), size=50)
@@ -158,7 +158,7 @@ def test_the_off_policy_update_scores_the_rule_the_rollout_followed():
     import numpy as np
     import torch
 
-    from litjev.core.block import escalation_gain
+    from hde.core.block import escalation_gain
     from slime_hdm.head_trainer import HeadRLConfig, _escalation_logprob
 
     config = HeadRLConfig()
@@ -184,7 +184,7 @@ def test_the_off_policy_update_scores_the_rule_the_rollout_followed():
 
 
 def test_no_module_re_derives_the_gain_as_a_difference():
-    """One definition, in `litjev.core.block`. There were three copies of the old
+    """One definition, in `hde.core.block`. There were three copies of the old
     difference when the reward became a discount and one was missed, so the shape
     of that mistake is what this forbids."""
     import re
@@ -210,7 +210,7 @@ def test_the_gain_is_a_log_ratio_and_not_a_difference():
     mode already gets wrong, so it shrinks where thinking is worth most."""
     import math
 
-    from litjev.core.block import escalation_gain
+    from hde.core.block import escalation_gain
 
     # Same difference, very different ratio: the second is where thinking matters.
     strong = [0.85, 0.05, 0.10, 0.00]   # P(fast)=0.90  P(slow)=0.95
@@ -224,7 +224,7 @@ def test_the_gain_is_a_log_ratio_and_not_a_difference():
 
 
 def test_a_saturated_head_does_not_return_an_infinity():
-    from litjev.core.block import escalation_gain
+    from hde.core.block import escalation_gain
 
     assert escalation_gain([0.0, 1.0, 0.0, 0.0]) < 0
     assert escalation_gain([0.0, 0.0, 1.0, 0.0]) > 0
@@ -250,7 +250,7 @@ def test_the_pca_projection_does_not_depend_on_the_svds_sign_convention(monkeypa
     import numpy as np
     import torch
 
-    from litjev.core.block import DecisionHead, HeadMetadata
+    from hde.core.block import DecisionHead, HeadMetadata
 
     meta = HeadMetadata(model_id="m", revision="r", hidden_size=16,
                         feature_layers=(-1,), hidden_width=8, pca_dim=4)
@@ -302,9 +302,9 @@ def test_a_feature_constant_in_training_does_not_saturate_the_head():
     import numpy as np
     import torch
 
-    from litjev.core.block import DecisionHead, HeadMetadata
-    from litjev.core.block_utils import build_features
-    from litjev._legacy.routing import escalation_gain
+    from hde.core.block import DecisionHead, HeadMetadata
+    from hde.core.block_utils import build_features
+    from hde._legacy.routing import escalation_gain
 
     rng = np.random.default_rng(0)
     meta = HeadMetadata(model_id="m", revision="r", hidden_size=16, feature_layers=(-1,))
@@ -345,7 +345,7 @@ def test_an_old_head_refuses_to_saturate_instead_of_returning_one_answer():
     import pytest
     import torch
 
-    from litjev.core.block import DecisionHead, HeadMetadata
+    from hde.core.block import DecisionHead, HeadMetadata
 
     meta = HeadMetadata(model_id="m", revision="r", hidden_size=16, feature_layers=(-1,))
     rng = np.random.default_rng(0)

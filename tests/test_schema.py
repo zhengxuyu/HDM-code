@@ -1,6 +1,6 @@
 import pytest
 
-from litjev.data.schema import Choice, DecisionSchema, Noul, Score
+from hde.data.schema import Choice, DecisionSchema, Noul, Score
 
 
 def test_canonical_types_and_structured_content():

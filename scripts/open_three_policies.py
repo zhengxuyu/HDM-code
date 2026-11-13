@@ -34,24 +34,24 @@ import numpy as np
 
 def scores_as_correct(answer, gold, symbolic):
     """Strict, because this becomes an accuracy column."""
-    from litjev.candidates.construct import correct
+    from hde.candidates.construct import correct
 
     return correct(str(answer), str(gold), symbolic=symbolic)
 
 
 def covered_by(answer, gold, symbolic):
     """Lenient, because this becomes a ceiling and a missed match understates it."""
-    from litjev.candidates.construct import equivalent
+    from hde.candidates.construct import equivalent
 
     return equivalent(str(answer), str(gold), symbolic=symbolic)
 
 
 def main():
-    from litjev._legacy.decision import DEFAULT_READOUT, READOUTS, SchemaDecisionEngine
-    from litjev._legacy.heads import parse_feature_layers
-    from litjev.candidates.construct import extract_answer, strip_enumerator
-    from litjev.candidates.construction_settings import ConstructionSettings
-    from litjev.candidates.proposing import (
+    from hde._legacy.decision import DEFAULT_READOUT, READOUTS, SchemaDecisionEngine
+    from hde._legacy.heads import parse_feature_layers
+    from hde.candidates.construct import extract_answer, strip_enumerator
+    from hde.candidates.construction_settings import ConstructionSettings
+    from hde.candidates.proposing import (
         add_proposal_arguments,
         check_proposal_arguments,
         load_proposer,
@@ -60,10 +60,10 @@ def main():
         propose,
         watch_proposals,
     )
-    from litjev.data.datasets import LOADERS, load
-    from litjev.data.schema import Choice, DecisionSchema
-    from litjev.run.provenance import check_imported_tree, commit_now, describe_environment
-    from litjev.run.streaming import Rows, completed, write_json_atomic
+    from hde.data.datasets import LOADERS, load
+    from hde.data.schema import Choice, DecisionSchema
+    from hde.run.provenance import check_imported_tree, commit_now, describe_environment
+    from hde.run.streaming import Rows, completed, write_json_atomic
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dataset", choices=sorted(LOADERS), default="aime-2025")

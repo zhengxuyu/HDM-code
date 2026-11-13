@@ -7,8 +7,8 @@ from pathlib import Path
 
 from transformers import AutoTokenizer
 
-from litjev.backends.slots import compile_slots
-from litjev.data.schema import SystemOneRequest
+from hde.backends.slots import compile_slots
+from hde.data.schema import SystemOneRequest
 
 
 def main():

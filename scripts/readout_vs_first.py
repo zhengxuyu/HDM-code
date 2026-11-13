@@ -123,7 +123,7 @@ def main():
     print("set, the denominator explains it. If it survives both cuts, the readout does.")
 
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
 
         write_json_atomic(arguments.output,
                           {"reports": arguments.reports, "rank": arguments.rank,

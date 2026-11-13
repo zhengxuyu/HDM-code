@@ -16,7 +16,7 @@ import math
 
 import pytest
 
-from litjev.readout.content_readout import (
+from hde.readout.content_readout import (
     OptionScore,
     as_record,
     chosen_index,
@@ -142,8 +142,8 @@ def test_only_the_options_own_tokens_are_counted():
 def test_the_scorer_returns_one_score_per_option(tmp_path):
     from test_systemtwo import CharTokenizer, tiny_model
 
-    from litjev.backends.backend import TransformersScorer
-    from litjev.data.schema import Choice
+    from hde.backends.backend import TransformersScorer
+    from hde.data.schema import Choice
 
     scorer = TransformersScorer(tiny_model(), CharTokenizer())
     question = Choice(instructions="What is 2+2?",
@@ -162,8 +162,8 @@ def test_the_scorer_returns_one_score_per_option(tmp_path):
 def test_the_content_free_pass_can_be_turned_off():
     from test_systemtwo import CharTokenizer, tiny_model
 
-    from litjev.backends.backend import TransformersScorer
-    from litjev.data.schema import Choice
+    from hde.backends.backend import TransformersScorer
+    from hde.data.schema import Choice
 
     scorer = TransformersScorer(tiny_model(), CharTokenizer())
     question = Choice(instructions="q", criteria={"A": "aa", "B": "bb"})
@@ -173,8 +173,8 @@ def test_the_content_free_pass_can_be_turned_off():
 
 def test_the_prompt_carries_no_label_for_an_option():
     """The whole point: there is no code for a prior to attach to."""
-    from litjev._legacy.prompting import unlabelled_suffix
-    from litjev.data.schema import Choice
+    from hde._legacy.prompting import unlabelled_suffix
+    from hde.data.schema import Choice
 
     question = Choice(instructions="What is 2+2?", criteria={"A": "3", "B": "4"})
     rendered = unlabelled_suffix(question)
@@ -197,10 +197,10 @@ def test_the_comparison_script_runs_end_to_end(tmp_path, monkeypatch, pytestconf
 import json, sys, types
 sys.path.insert(0, "tests")
 from test_systemtwo import tiny_model, CharTokenizer
-from litjev.backends.backend import TransformersScorer, ModelSettings
-from litjev.data.datasets import LoadedDataset
-import litjev.data.datasets as datasets
-from litjev.data.mmlu import McqQuestion
+from hde.backends.backend import TransformersScorer, ModelSettings
+from hde.data.datasets import LoadedDataset
+import hde.data.datasets as datasets
+from hde.data.mmlu import McqQuestion
 
 TransformersScorer.load = classmethod(
     lambda cls, settings: cls(tiny_model(), CharTokenizer()))
@@ -278,8 +278,8 @@ def test_a_prompt_ending_in_a_space_is_what_would_have_broken_it():
         for option in REAL)
     assert broken, "this tokenizer would not have shown the fault; the test guards nothing"
 
-    from litjev._legacy.prompting import unlabelled_suffix
-    from litjev.data.schema import Choice
+    from hde._legacy.prompting import unlabelled_suffix
+    from hde.data.schema import Choice
 
     rendered = unlabelled_suffix(Choice(instructions="q", criteria={"A": "a", "B": "b"}))
     assert not rendered.endswith(" "), "the space belongs to the option"
@@ -289,8 +289,8 @@ def test_the_prompt_shows_the_text_that_is_scored():
     r"""Through json.dumps the model reads "\\frac{1}{2}", escaped and quoted,
     while the score is for \frac{1}{2}: the system prompt asks for an option
     exactly as written and the thing scored is not what was written."""
-    from litjev._legacy.prompting import unlabelled_suffix
-    from litjev.data.schema import Choice
+    from hde._legacy.prompting import unlabelled_suffix
+    from hde.data.schema import Choice
 
     option = r"\frac{1}{2}"
     rendered = unlabelled_suffix(Choice(instructions="q", criteria={"A": option, "B": "3"}))
@@ -302,8 +302,8 @@ def test_the_prompt_shows_the_text_that_is_scored():
 def test_the_listing_is_one_line_per_option_however_the_option_arrived():
     """The count the prompt shows and the count being scored have to agree. A
     carriage return does it as surely as a newline."""
-    from litjev._legacy.prompting import listable_options, unlabelled_body
-    from litjev.data.schema import Choice
+    from hde._legacy.prompting import listable_options, unlabelled_body
+    from hde.data.schema import Choice
 
     fine = Choice(instructions="q", criteria={"A": "3", "B": "4"})
     assert unlabelled_body(fine).count("\n") == 3, "instructions, Options:, two options"
@@ -349,10 +349,10 @@ def test_the_comparison_runs_a_line_break_under_the_pipelines_own_policy(tmp_pat
 import sys
 sys.path.insert(0, "tests")
 from test_systemtwo import tiny_model, CharTokenizer
-from litjev.backends.backend import TransformersScorer
-from litjev.data.datasets import LoadedDataset
-import litjev.data.datasets as datasets
-from litjev.data.mmlu import McqQuestion
+from hde.backends.backend import TransformersScorer
+from hde.data.datasets import LoadedDataset
+import hde.data.datasets as datasets
+from hde.data.mmlu import McqQuestion
 
 TransformersScorer.load = classmethod(
     lambda cls, settings: cls(tiny_model(), CharTokenizer()))
@@ -382,8 +382,8 @@ def test_the_count_of_rewritten_options_is_returned_not_left_on_the_scorer():
     whatever the last question happened to need."""
     from test_systemtwo import CharTokenizer, tiny_model
 
-    from litjev.backends.backend import TransformersScorer
-    from litjev.data.schema import Choice
+    from hde.backends.backend import TransformersScorer
+    from hde.data.schema import Choice
 
     scorer = TransformersScorer(tiny_model(), CharTokenizer())
     assert not hasattr(scorer, "rewritten_options"), "it must not be instance state"
@@ -410,8 +410,8 @@ def test_the_content_free_pass_does_not_report_its_own_rewriting():
     -- but the number returned must be the real question's, not the last pass's."""
     from test_systemtwo import CharTokenizer, tiny_model
 
-    from litjev.backends.backend import TransformersScorer
-    from litjev.data.schema import Choice
+    from hde.backends.backend import TransformersScorer
+    from hde.data.schema import Choice
 
     scorer = TransformersScorer(tiny_model(), CharTokenizer())
     question = Choice(instructions="q",
@@ -432,10 +432,10 @@ def test_the_coded_column_can_be_skipped(tmp_path, pytestconfig):
 import sys
 sys.path.insert(0, "tests")
 from test_systemtwo import tiny_model, CharTokenizer
-from litjev.backends.backend import TransformersScorer
-from litjev.data.datasets import LoadedDataset
-import litjev.data.datasets as datasets
-from litjev.data.mmlu import McqQuestion
+from hde.backends.backend import TransformersScorer
+from hde.data.datasets import LoadedDataset
+import hde.data.datasets as datasets
+from hde.data.mmlu import McqQuestion
 
 class NoCoded(TransformersScorer):
     def score(self, state, schema):
@@ -484,10 +484,10 @@ def test_the_comparison_takes_a_backend_and_records_which_one_ran(tmp_path, pyte
 import sys
 sys.path.insert(0, "tests")
 from test_systemtwo import tiny_model, CharTokenizer
-from litjev.backends.backend import TransformersScorer
-from litjev.data.datasets import LoadedDataset
-import litjev.data.datasets as datasets
-from litjev.data.mmlu import McqQuestion
+from hde.backends.backend import TransformersScorer
+from hde.data.datasets import LoadedDataset
+import hde.data.datasets as datasets
+from hde.data.mmlu import McqQuestion
 
 TransformersScorer.load = classmethod(
     lambda cls, settings: cls(tiny_model(), CharTokenizer()))

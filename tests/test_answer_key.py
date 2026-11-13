@@ -1,5 +1,5 @@
-from litjev._legacy.decision import ChoiceAnswer, NoulAnswer, ScoreAnswer
-from litjev.bench.routing_bench import _answer_key
+from hde._legacy.decision import ChoiceAnswer, NoulAnswer, ScoreAnswer
+from hde.bench.routing_bench import _answer_key
 
 
 def test_a_choice_answers_with_its_key():

@@ -12,11 +12,11 @@ from pathlib import Path
 import torch
 import transformers
 
-from litjev._legacy.decision import SchemaDecisionEngine
-from litjev.backends.backend import ModelSettings, TransformersScorer
-from litjev.backends.slots import SLOT_FORMAT
-from litjev.bench.benchmark import evaluate
-from litjev.data.schema import DecisionSchema, SystemOneRequest
+from hde._legacy.decision import SchemaDecisionEngine
+from hde.backends.backend import ModelSettings, TransformersScorer
+from hde.backends.slots import SLOT_FORMAT
+from hde.bench.benchmark import evaluate
+from hde.data.schema import DecisionSchema, SystemOneRequest
 
 
 def main():

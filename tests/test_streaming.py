@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from litjev.run.streaming import Rows, completed, write_json_atomic
+from hde.run.streaming import Rows, completed, write_json_atomic
 
 
 def test_nothing_written_yet_resumes_from_the_start(tmp_path):

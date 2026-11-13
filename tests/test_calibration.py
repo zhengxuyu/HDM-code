@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from litjev.readout.calibration import CalibrationProfile, TemperatureCalibrator
+from hde.readout.calibration import CalibrationProfile, TemperatureCalibrator
 
 
 def test_temperature_calibration_reduces_overconfident_nll() -> None:

@@ -11,7 +11,7 @@ import json
 
 import numpy as np
 
-from litjev.run.streaming import write_json_atomic
+from hde.run.streaming import write_json_atomic
 
 
 def main():

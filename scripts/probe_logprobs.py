@@ -6,7 +6,7 @@ had and crashed on a None. This prints it instead.
 """
 import argparse
 
-from litjev.run.streaming import write_json_atomic
+from hde.run.streaming import write_json_atomic
 
 
 def main():

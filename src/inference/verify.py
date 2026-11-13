@@ -60,7 +60,7 @@ def option_questions():
     length would hide it in a constant that cancels in the ranking; uneven ones do
     not, and the longest option is where it is worst.
     """
-    from litjev.data.schema import Choice
+    from hde.data.schema import Choice
 
     return [
         ("A customer writes: my order arrived broken and I need it replaced today.",
@@ -241,8 +241,8 @@ def head_disagreement(head, reference, candidate, lambdas=(0.1, 0.05, 0.0, -0.05
     somebody has to pick. What matters instead is measurable: the gain the head
     reads off it, and whether that gain lands on the same side of lambda.
     """
-    from litjev.core.block import escalation_gain, fast_confidence
-    from litjev.core.block_utils import build_features
+    from hde.core.block import escalation_gain, fast_confidence
+    from hde.core.block_utils import build_features
 
     # A flat candidate distribution, so the statistics contribute the same thing to
     # both sides and only the hidden state differs, which is what is being compared.
@@ -301,7 +301,7 @@ def write_reference(args):
     the same choice that produced every recorded number, so the reference is from
     the same object the experiments used rather than from one assembled here.
     """
-    from litjev.backends.backend import ModelSettings, TransformersScorer
+    from hde.backends.backend import ModelSettings, TransformersScorer
 
     scorer = TransformersScorer.load(ModelSettings(
         args.model, revision="main", device_map="cuda:0", dtype="bfloat16"))
@@ -320,7 +320,7 @@ def write_reference(args):
 
 def compare(args):
     """Pass two: SGLang against the file, where SGLang lives."""
-    from litjev.run.streaming import write_json_atomic
+    from hde.run.streaming import write_json_atomic
 
     stored = np.load(args.reference_in, allow_pickle=True)
     reference = stored["reference"]
@@ -389,7 +389,7 @@ def compare(args):
         options_agree = options_agree and batched_agree
 
     if args.decision_head:
-        from litjev.core.block import DecisionHead
+        from hde.core.block import DecisionHead
 
         head = DecisionHead.load(args.decision_head)
         if tuple(head.metadata.feature_layers) != (args.layer,):

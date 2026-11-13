@@ -11,18 +11,18 @@ import sys
 
 import numpy as np
 
-from litjev._legacy.heads import CDPOConfig, HeadMetadata, outcome_labels, train_head
-from litjev.data.collect import open_records
-from litjev.episodes import (
+from hde._legacy.heads import CDPOConfig, HeadMetadata, outcome_labels, train_head
+from hde.data.collect import open_records
+from hde.episodes import (
     form_episodes,
     greedy_progress_allocation,
     mode_probabilities,
     oracle_allocation,
     realised_progress,
 )
-from litjev.run.streaming import write_json_atomic
-from litjev.train.episode_training import EpisodeCDPOConfig, train_episode_head
-from litjev.train.training import features_for, holdout_mask
+from hde.run.streaming import write_json_atomic
+from hde.train.episode_training import EpisodeCDPOConfig, train_episode_head
+from hde.train.training import features_for, holdout_mask
 
 records, meta = open_records(sys.argv[1])
 LAYER, EPOCHS = 24, 30

@@ -9,7 +9,7 @@ It is not. Table 1 reports the held-out categories -- chemistry, economics and
 psychology -- and 27948 covered every category. Restricted to the three, the
 independently collected rows give 0.6590 against the table's 0.6647 and 0.5376
 against its 0.538, on the same 346 questions, from a different job, through a
-different code path (`litjev-collect --fast-only` rather than `bench_routing`),
+different code path (`hde-collect --fast-only` rather than `bench_routing`),
 and for both backbones.
 
 So this is not a regression test on a constant. It pins Table 1's fast column to

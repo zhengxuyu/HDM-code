@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LitJev Fast and Slow</title>
+<title>HDE Fast and Slow</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   :root {
@@ -57,12 +57,12 @@
 <body>
 
 <div class="wrap">
-  <h1>How LitJev routes between fast and slow thinking</h1>
+  <h1>How HDE routes between fast and slow thinking</h1>
   <p class="lede">One prefill and one branch forward read the fast answer. A small trained decision head sits beside the same hidden state and judges whether slow thinking would pay off. The backbone is frozen; the slow path is the backbone's own thinking mode; every final answer still comes from the readout.</p>
 
   <figure>
     <div class="scroll">
-      <svg viewBox="0 0 1200 600" role="img" aria-label="LitJev request flow: the state is prefilled once into a cache, copied N ways and joined with each question's suffix for one batched forward; the hidden state at the Answer colon feeds both lm_head, giving the fast answer, and the decision head, giving a four-class outcome distribution; questions whose escalation gain exceeds lambda take the slow path, which generates reasoning in thinking mode and then reads the same Answer boundary; the response merges fast and slow answers.">
+      <svg viewBox="0 0 1200 600" role="img" aria-label="HDE request flow: the state is prefilled once into a cache, copied N ways and joined with each question's suffix for one batched forward; the hidden state at the Answer colon feeds both lm_head, giving the fast answer, and the decision head, giving a four-class outcome distribution; questions whose escalation gain exceeds lambda take the slow path, which generates reasoning in thinking mode and then reads the same Answer boundary; the response merges fast and slow answers.">
         <defs>
           <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>

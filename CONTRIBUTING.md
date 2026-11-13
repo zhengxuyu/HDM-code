@@ -1,6 +1,6 @@
 # Contributing
 
-LitJev is a research preview. The first supported checkpoint is Qwen/Qwen3.8-27B.
+HDE is a research preview. The first supported checkpoint is Qwen/Qwen3.8-27B.
 Distinguish tested behavior from proposed features or support for other models.
 
 ## Local setup
@@ -12,8 +12,8 @@ uv run ruff check .
 uv build
 ```
 
-Package code belongs in `src/litjev`, tests in `tests`, and request examples in
-`examples`. UI assets live in `src/litjev/static` and must be bundled in wheels.
+Package code belongs in `src/hde`, tests in `tests`, and request examples in
+`examples`. UI assets live in `src/hde/static` and must be bundled in wheels.
 Use uv for dependency changes and include the updated lockfile.
 
 - Add regression tests before changing inference, token positions, cache replication,

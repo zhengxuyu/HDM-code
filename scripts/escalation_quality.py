@@ -17,10 +17,10 @@ from math import comb, lgamma
 
 import numpy as np
 
-from litjev.core.block import escalation_gain
-from litjev.data.collect import open_records
-from litjev.serving import load_head
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import escalation_gain
+from hde.data.collect import open_records
+from hde.serving import load_head
+from hde.train.training import features_for, holdout_mask
 
 def fisher_exact(a, b, c, d):
     """Two-sided Fisher exact on [[a,b],[c,d]], summing tables no likelier than this.

@@ -1,7 +1,7 @@
-# System One + System Two：在 LitJev 上加慢思考的可能性
+# System One + System Two：在 HDE 上加慢思考的可能性
 
 讨论稿，2026-09-18。**已被 `self-routing-architecture.md` 取代**：方向定为冻结骨干、只训并列决策头，
-由模型自己决定快答还是慢想。本稿保留作为引擎外门控方案的对照。目标是回答一个问题：LitJev 现在是一只纯 System One（一次前向读头，零输出 token）。
+由模型自己决定快答还是慢想。本稿保留作为引擎外门控方案的对照。目标是回答一个问题：HDE 现在是一只纯 System One（一次前向读头，零输出 token）。
 在不破坏 Jev 协议、不训练的前提下，能不能在同一只 Qwen 上接一层 System Two，让它在需要时慢下来想一想？
 
 ## 0. 代码现状决定了哪些事是免费的
@@ -88,14 +88,14 @@ L3 的门控质量取决于 L5。
 然后把它塞进 state，用 System One 的 `noul` 问"这个答案对吗"，用 `score` 问"质量几档"。
 生成的是候选，裁决的仍是读头。
 
-这一层不需要改协议：调用方发两次请求就能拼出来。LitJev 可以提供一个便利端点，但不是必须。
+这一层不需要改协议：调用方发两次请求就能拼出来。HDE 可以提供一个便利端点，但不是必须。
 
 ### L5：System Two 给 System One 当老师（RLCD-lite）
 
 问题：读头的概率不是校准过的。Jev 靠 RLCD 对齐，我们没有。
 
 做法：在无标签数据上跑 L2 得到 System Two 的答案，把它当伪标签，
-用来拟合 System One 的温度（现有 `litjev-calibrate` 直接能用），
+用来拟合 System One 的温度（现有 `hde-calibrate` 直接能用），
 或者进一步对 System One 的读头做轻量微调，让它的分布逼近 System Two 的分布。
 
 这是自蒸馏，不是 RLCD，但方向一致：让快系统的置信度更诚实。
@@ -109,7 +109,7 @@ L3 的门控质量取决于 L5。
 
 ```json
 {
-  "model": "litjev",
+  "model": "hde",
   "state": "...",
   "questions": { "...": {} },
   "thinking": { "budget": 256, "escalate_below": 0.6 }
@@ -145,7 +145,7 @@ L3 的门控质量取决于 L5。
 ## 4. 怎么验证它值得做
 
 MMLU-Pro 是现成的测试床，因为它的直答和 CoT 差距是公开数据里最大的之一。
-用现有 `litjev-mmlu` 加一个 `--thinking-budget` 参数，跑四条线：
+用现有 `hde-mmlu` 加一个 `--thinking-budget` 参数，跑四条线：
 
 | 线 | 配置 | 看什么 |
 |---|---|---|

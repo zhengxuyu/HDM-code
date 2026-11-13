@@ -58,9 +58,9 @@ from pathlib import Path
 
 import numpy as np
 
-from litjev._legacy.heads import DecisionHead
-from litjev.run.provenance import commit_now
-from litjev.run.streaming import write_json_atomic
+from hde._legacy.heads import DecisionHead
+from hde.run.provenance import commit_now
+from hde.run.streaming import write_json_atomic
 from slime_hdm import ClientScorer, HeadRLConfig, LoopConfig, run
 from slime_hdm.head_trainer import train_head_on_smeared_returns
 from slime_hdm.loop import BLIND_EPISODES, ENVIRONMENT_BROKEN

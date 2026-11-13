@@ -1,15 +1,15 @@
 # Benchmarking
 
-Two kinds of benchmarks ship with LitJev: text decisions on MMLU-Pro, and visual
+Two kinds of benchmarks ship with HDE: text decisions on MMLU-Pro, and visual
 decisions in Doom and chess. Both use the same off-the-shelf Qwen weights, without
-training, and both talk to the running LitJev server.
+training, and both talk to the running HDE server.
 
 ## MMLU-Pro
 
 With the server running:
 
 ```bash
-uv run litjev-mmlu --split test --limit 10 --output mmlu-results.json
+uv run hde-mmlu --split test --limit 10 --output mmlu-results.json
 ```
 
 Downloads `TIGER-Lab/MMLU-Pro`, sends ten questions per request, and scores labels
@@ -33,15 +33,15 @@ paths, hostnames, and dataset text.
 ## Visual games: Doom and chess
 
 Play from screenshots. The ported Doom (seven buttons) and chess (five controller
-keys) examples share a Gymnasium interface and a LitJev policy supporting either
+keys) examples share a Gymnasium interface and an HDE policy supporting either
 local inference or HTTP.
 
 ```bash
 # Start the model server, then run a game in another terminal.
-uv run --locked --extra games litjev --model Qwen/Qwen3.8-27B
-uv run --locked --extra games litjev-play chess --max-steps 100 --output runs/chess.json
-uv run --locked --extra games litjev-play doom --max-steps 100 --output runs/doom.json
-uv run --locked --extra games litjev-film runs/chess.json --output runs/chess.html
+uv run --locked --extra games hde --model Qwen/Qwen3.8-27B
+uv run --locked --extra games hde-play chess --max-steps 100 --output runs/chess.json
+uv run --locked --extra games hde-play doom --max-steps 100 --output runs/doom.json
+uv run --locked --extra games hde-film runs/chess.json --output runs/chess.html
 ```
 
 Open `/film` to inspect traces, or open the standalone HTML. The screenshot playground

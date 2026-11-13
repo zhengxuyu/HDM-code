@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pytest
 
-from litjev._legacy.heads import HeadMetadata
+from hde._legacy.heads import HeadMetadata
 from slime_hdm.head_trainer import (
     HeadRLConfig,
     effective_sample_size,

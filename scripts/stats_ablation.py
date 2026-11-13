@@ -25,11 +25,11 @@ import argparse
 
 import numpy as np
 
-from litjev.core.block import HeadMetadata
-from litjev.core.objective import outcome_labels, train_head
-from litjev.train.training import (DEFAULT_LAMBDAS, evaluate_head, features_for,
+from hde.core.block import HeadMetadata
+from hde.core.objective import outcome_labels, train_head
+from hde.train.training import (DEFAULT_LAMBDAS, evaluate_head, features_for,
                                    group_folds, holdout_mask)
-from litjev.data.collect import open_records
+from hde.data.collect import open_records
 
 
 def probe(meta, features, labels, fast, slow, train_index, folds, test, seed, epochs):

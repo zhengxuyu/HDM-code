@@ -1,6 +1,6 @@
 # System Two: self-routed slow thinking
 
-LitJev's standard endpoint is pure System One: one prefill, one branch forward, zero
+HDE's standard endpoint is pure System One: one prefill, one branch forward, zero
 generated tokens. `/v1/systemtwo` adds a slow path that the model routes to itself.
 The backbone is never modified or trained; the only trained component is a small
 **decision head** read beside `lm_head` at the answer boundary. Design notes are in
@@ -26,7 +26,7 @@ so a client can keep the Jev schema and switch endpoints.
 
 ```json
 {
-  "model": "litjev",
+  "model": "hde",
   "state": "...",
   "questions": {"...": {}},
   "routing": {"lambda": 0.05, "budget": 512}
@@ -48,15 +48,15 @@ think" are needed. Gold labels never enter prompts.
 # 1. Collect records (features + outcomes). Layers are hidden_states indices;
 #    -1 is the final normalized output, 40 is decoder layer 40's output.
 #    Use the --layers=... form: a value starting with "-" is otherwise read as a flag.
-uv run litjev-collect --model Qwen/Qwen3.8-27B --split test --limit 2000 \
+uv run hde-collect --model Qwen/Qwen3.8-27B --split test --limit 2000 \
   --layers=-1,40,48 --budget 512 --output records-0.npz
 
 # 2. Layer sweep, train, evaluate on held-out categories, save the head.
-uv run litjev-train-head records-*.npz --output decision-head.safetensors \
+uv run hde-train-head records-*.npz --output decision-head.safetensors \
   --report decision-head-report.json --holdout-fraction 0.25 --select-layers 1
 
 # 3. Serve with routing.
-uv run litjev --model Qwen/Qwen3.8-27B --decision-head decision-head.safetensors \
+uv run hde --model Qwen/Qwen3.8-27B --decision-head decision-head.safetensors \
   --lambda 0.05 --think-budget 512
 ```
 
@@ -69,9 +69,9 @@ prompt format and layers; serving refuses a head that does not match.
 On Slurm, `scripts/collect.sbatch` shards collection across an array:
 
 ```bash
-export LITJEV_MODEL=/path/to/checkpoint LITJEV_LAYERS=-1,40,48 LITJEV_SHARD=500
+export HDE_MODEL=/path/to/checkpoint HDE_LAYERS=-1,40,48 HDE_SHARD=500
 sbatch --array=0-9 --partition=P --account=A scripts/collect.sbatch
-uv run litjev-train-head results/records-*.npz
+uv run hde-train-head results/records-*.npz
 ```
 
 ## First results (Qwen3.5-4B, 2026-09-21)
@@ -110,7 +110,7 @@ seed and one checkpoint; treat them as a pipeline check, not a benchmark result.
 
 ## Training objective: cross-entropy or CDPO
 
-`litjev-train-head --objective cdpo` trains the same head with **Calibrated Decision
+`hde-train-head --objective cdpo` trains the same head with **Calibrated Decision
 Policy Optimisation** instead of four-class cross-entropy. The head's gain
 `g = P(fast✗,slow✓) − P(fast✓,slow✗)` defines a soft routing policy
 `σ((g − λ)/T)`; because both outcomes are recorded for every question, the expected

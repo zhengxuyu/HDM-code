@@ -11,8 +11,8 @@ import pathlib
 
 import pytest
 
-from litjev.core.block import HeadMetadata
-from litjev.serving import attach_head, feature_layers_for, load_head
+from hde.core.block import HeadMetadata
+from hde.serving import attach_head, feature_layers_for, load_head
 
 SRC = pathlib.Path(__file__).resolve().parents[1] / "src"
 
@@ -71,7 +71,7 @@ def test_a_scorer_that_does_not_report_a_hidden_size_is_not_second_guessed():
     assert attach_head(head, object(), "org/model") is head
 
 
-@pytest.mark.parametrize("path", ["litjev/cli.py", "inference/decision_service.py"])
+@pytest.mark.parametrize("path", ["hde/cli.py", "inference/decision_service.py"])
 def test_both_startup_paths_call_the_stage(path):
     """Neither may load a head and reach a serving object without attach_head.
 

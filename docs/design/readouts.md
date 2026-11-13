@@ -6,7 +6,7 @@ else — the cost, the positional bias, the fact that one needs letters and the
 other does not — follows from that.
 
 Written by `exps` on 2026-10-01 from the implementation, not from the design
-notes: `TransformersScorer.score_options`, `litjev.prompting` (the prompt) and
+notes: `TransformersScorer.score_options`, `hde.prompting` (the prompt) and
 `SGLangScorer.score_options` (the SGLang port) -- named by symbol, because line
 numbers move. Figures
 are measured, with their job ids.

@@ -14,7 +14,7 @@ import types
 
 import pytest
 
-from litjev.run.provenance import (UNKNOWN, check_imported_tree, code_identity,
+from hde.run.provenance import (UNKNOWN, check_imported_tree, code_identity,
                                    commit_in, commit_now, tree_id_in)
 
 
@@ -60,7 +60,7 @@ def test_neither_one_says_so_out_loud(tmp_path, capsys):
     assert "warning" in capsys.readouterr().err
 
 
-def package(tmp_path, name="litjev"):
+def package(tmp_path, name="hde"):
     where = tmp_path / name
     where.mkdir(parents=True)
     (where / "__init__.py").write_text("")
@@ -70,7 +70,7 @@ def package(tmp_path, name="litjev"):
 def test_importing_from_the_submitted_tree_is_accepted(tmp_path):
     submitted = tmp_path / "code" / "abc123"
     module = package(submitted / "src")
-    assert check_imported_tree(submitted, module) == (submitted / "src" / "litjev")
+    assert check_imported_tree(submitted, module) == (submitted / "src" / "hde")
 
 
 def test_importing_from_anywhere_else_stops_the_job(tmp_path):
@@ -92,12 +92,12 @@ def test_the_submit_directory_comes_from_slurm(monkeypatch, tmp_path):
     submitted = tmp_path / "code" / "abc123"
     monkeypatch.setenv("SLURM_SUBMIT_DIR", str(submitted))
     module = package(submitted / "src")
-    assert check_imported_tree(module=module) == (submitted / "src" / "litjev")
+    assert check_imported_tree(module=module) == (submitted / "src" / "hde")
 
 
 def test_the_environment_is_named_without_importing_it():
     """Two cluster environments carry different torch, and nothing recorded which."""
-    from litjev.run.provenance import RECORDED, describe_environment
+    from hde.run.provenance import RECORDED, describe_environment
 
     facts = describe_environment()
     assert facts["python"] == sys.executable

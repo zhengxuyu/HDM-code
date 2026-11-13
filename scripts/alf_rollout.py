@@ -15,7 +15,7 @@ Policies:
           that covers both actions at every state
   head    think when the decision head's predicted gain exceeds --lambda
 
-The features are built by litjev._legacy.heads.build_features, the same function the
+The features are built by hde._legacy.heads.build_features, the same function the
 MMLU-Pro heads were trained through, so a head trained there can be pointed at
 this environment without conversion.
 
@@ -47,9 +47,9 @@ import numpy as np
 import torch
 import yaml
 
-from litjev._legacy.heads import DecisionHead, build_features
-from litjev._legacy.routing import escalation_gain
-from litjev.run.streaming import write_json_atomic
+from hde._legacy.heads import DecisionHead, build_features
+from hde._legacy.routing import escalation_gain
+from hde.run.streaming import write_json_atomic
 
 CODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 BOUNDARY = "\nAction:"

@@ -128,8 +128,8 @@ def test_both_backends_read_the_same_candidate_token_ids():
     """The one assertion that would have caught it. Each path was self-consistent;
     what nothing checked was that they agree with each other."""
     from inference.sglang_backend import SGLangScorer, SGLangSettings
-    from litjev.backends.slots import compile_prefix_slots
-    from litjev.data.schema import Choice, DecisionSchema
+    from hde.backends.slots import compile_prefix_slots
+    from hde.data.schema import Choice, DecisionSchema
 
     tokenizer = SpacedCodeTokenizer()
     schema = DecisionSchema({"q": Choice(instructions="Pick",

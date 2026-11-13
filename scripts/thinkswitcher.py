@@ -48,8 +48,8 @@ import numpy as np
 import torch
 from torch import nn
 
-from litjev.data.collect import open_records
-from litjev.train.training import features_for, holdout_mask
+from hde.data.collect import open_records
+from hde.train.training import features_for, holdout_mask
 
 
 class Switcher(nn.Module):
@@ -310,7 +310,7 @@ def main():
         print(f"{row['tau']:6.2f} {row['long_share']:11.1%} {row['tokens']:8.0f} "
               f"{row['accuracy']:9.4f}")
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
         write_json_atomic(arguments.output, {"model": data["model"], "curve": curve,
                                              "k": 1, "test_items": len(test["features"]),
                                              "trials": arguments.trials, "chosen": chosen})

@@ -21,11 +21,11 @@ import pytest
 from conftest import repo_path  # noqa: E402
 from test_systemtwo import CharTokenizer, tiny_model
 
-from litjev._legacy.heads import STATS_DIM
-from litjev.backends.backend import TransformersScorer
-from litjev.backends.slots import SLOT_FORMAT
-from litjev.data.collect import MAX_OPTIONS, RECORD_FORMAT
-from litjev.data.schema import Choice, SystemOneRequest
+from hde._legacy.heads import STATS_DIM
+from hde.backends.backend import TransformersScorer
+from hde.backends.slots import SLOT_FORMAT
+from hde.data.collect import MAX_OPTIONS, RECORD_FORMAT
+from hde.data.schema import Choice, SystemOneRequest
 
 SCRIPT = str(repo_path("scripts", "position_bias.py"))
 OPTIONS = 10
@@ -109,12 +109,12 @@ def test_records_without_the_columns_say_so_rather_than_report_a_histogram(tmp_p
 def test_a_fast_only_pass_records_the_positions_and_no_slow_answer(tmp_path):
     """The diagnostic wants the fast readout's positions on 1500 questions. Asking
     for the thinking too is most of the cost and none of the answer."""
-    from litjev.data.collect import ABSENT, collect_batch, load_records, save_records
+    from hde.data.collect import ABSENT, collect_batch, load_records, save_records
 
     model = tiny_model()
     scorer = TransformersScorer(model, CharTokenizer(), feature_layers=(-1, 1))
     request = SystemOneRequest(
-        model="litjev", state="Answer.",
+        model="hde", state="Answer.",
         questions={f"q{i}": Choice(instructions=f"Pick {i}", criteria={"A": "1", "B": "2"})
                    for i in range(4)})
     labels = {f"q{i}": "A" for i in range(4)}
@@ -154,14 +154,14 @@ def test_a_fast_only_pass_records_the_positions_and_no_slow_answer(tmp_path):
 def test_a_checkpoint_is_refused_the_way_a_fast_only_file_is(tmp_path, drawn):
     """`partial: True` was written every five batches and read by nothing.
 
-    `litjev-collect --checkpoint-every` defaults to 5 and rewrites the output as
+    `hde-collect --checkpoint-every` defaults to 5 and rewrites the output as
     it goes, so a timeout keeps what was collected -- which is the right design
     and was never the gap. The gap is the read side: a collection killed at 900
     of 1500 left a file that loaded, trained and reported as though it held the
     whole selection, with no trace but a `count` nobody compares against the
     `limit` recorded beside it. The salvage is still reachable, deliberately.
     """
-    from litjev.data.collect import load_records
+    from hde.data.collect import load_records
 
     gold = drawn.integers(0, OPTIONS, 900)
     path = records(tmp_path / "checkpoint.npz", gold.copy(), gold,
@@ -187,7 +187,7 @@ def test_a_checkpoint_is_refused_the_way_a_fast_only_file_is(tmp_path, drawn):
 
 def test_a_fast_only_file_is_not_concatenated_with_an_ordinary_one(tmp_path, drawn):
     """One slow column describing half the rows is worse than neither."""
-    from litjev.data.collect import load_records
+    from hde.data.collect import load_records
 
     gold = drawn.integers(0, OPTIONS, 8)
     ordinary = records(tmp_path / "ordinary.npz", gold.copy(), gold)
@@ -204,7 +204,7 @@ def test_a_fast_only_file_is_not_concatenated_with_an_ordinary_one(tmp_path, dra
 
 def test_a_file_from_before_the_column_is_one_the_slow_path_ran_for(tmp_path, drawn):
     """-1 would be a truthy int standing in for a boolean nobody checks the dtype of."""
-    from litjev.data.collect import load_records
+    from hde.data.collect import load_records
 
     gold = drawn.integers(0, OPTIONS, 6)
     old_file = records(tmp_path / "old.npz", gold.copy(), gold,
@@ -217,7 +217,7 @@ def test_a_file_from_before_the_column_is_one_the_slow_path_ran_for(tmp_path, dr
 
 def test_records_with_and_without_a_slow_answer_cannot_be_saved_together(tmp_path):
     """Nothing downstream could tell which half a slow column described."""
-    from litjev.data.collect import ABSENT, Record, save_records
+    from hde.data.collect import ABSENT, Record, save_records
 
     def record(slow):
         return Record(question_id="q", category="m", question_type="choice",

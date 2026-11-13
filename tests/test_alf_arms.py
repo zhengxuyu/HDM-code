@@ -238,7 +238,7 @@ class _Provider:
         return 4
 
     def score(self, context, schema):
-        from litjev.core.pipeline_utils import RawFieldScores
+        from hde.core.pipeline_utils import RawFieldScores
 
         (name, question), = schema.items()
         return (RawFieldScores(
@@ -247,7 +247,7 @@ class _Provider:
             generated_tokens=0, provenance={}),)
 
     def think(self, context, schema, names, budget):
-        from litjev.core.pipeline_utils import RawFieldScores
+        from hde.core.pipeline_utils import RawFieldScores
 
         (name, question), = schema.items()
         # The slow mode prefers the first action, as the stub scorer above does.
@@ -273,7 +273,7 @@ def test_a_rounds_head_records_its_own_fit_and_not_the_seed_heads(tmp_path):
     """
     from dataclasses import replace
 
-    from litjev.core.block import DecisionHead, HeadMetadata
+    from hde.core.block import DecisionHead, HeadMetadata
     from slime_hdm.head_trainer import HeadRLConfig, train_head_on_episodes
     from episode_corpus import corpus
 

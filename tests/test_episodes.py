@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from litjev.episodes import (
+from hde.episodes import (
     additive_score,
     allocate,
     episode_success,
@@ -71,14 +71,14 @@ def test_allocation_is_sized_by_the_scores_not_by_the_episodes():
 
 
 def test_progress_is_a_sum_of_prefix_products():
-    from litjev.episodes import expected_progress
+    from hde.episodes import expected_progress
     assert expected_progress([1.0, 1.0, 1.0]) == pytest.approx(3.0)
     assert expected_progress([0.5, 1.0]) == pytest.approx(0.5 + 0.5)
     assert expected_progress([0.0, 1.0]) == pytest.approx(0.0)
 
 
 def test_progress_allocation_prefers_the_earlier_step_at_equal_gain():
-    from litjev.episodes import greedy_progress_allocation
+    from hde.episodes import greedy_progress_allocation
     # Both steps gain 0.3 from thinking, but fixing the first one also lets the
     # episode reach the second.
     episodes = [np.array([0, 1])]
@@ -89,7 +89,7 @@ def test_progress_allocation_prefers_the_earlier_step_at_equal_gain():
 
 
 def test_realised_progress_stops_at_the_first_wrong_step():
-    from litjev.episodes import realised_progress
+    from hde.episodes import realised_progress
     episodes = [np.array([0, 1, 2])]
     fast = np.array([True, False, True])
     slow = np.array([True, True, True])

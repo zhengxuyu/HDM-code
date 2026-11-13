@@ -1,6 +1,6 @@
 import numpy as np
 
-from litjev.readout.scoring import calibrated_distribution
+from hde.readout.scoring import calibrated_distribution
 
 
 def test_calibrated_distribution_only_uses_allowed_candidates() -> None:

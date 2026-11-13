@@ -89,7 +89,7 @@ class SGLangServerScorer(SGLangScorer):
             raise ValueError(
                 f"the server returns only the last hidden layer; this head reads "
                 f"{list(settings.feature_layers)}. Train one with "
-                f"litjev-train-head --candidate layer_-1.")
+                f"hde-train-head --candidate layer_-1.")
         engine = _HttpEngine(settings.base_url, settings.timeout)
         tokenizer = AutoTokenizer.from_pretrained(settings.model_id,
                                                   revision=settings.revision)

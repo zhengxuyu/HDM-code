@@ -1,4 +1,4 @@
-from litjev.data.mmlu import convert_rows, ten_question_batches
+from hde.data.mmlu import convert_rows, ten_question_batches
 
 
 def test_real_mcq_only_and_gold_never_in_request():

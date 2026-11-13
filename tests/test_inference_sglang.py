@@ -302,7 +302,7 @@ def content_scorer(engine, batch=False, layers=()):
 
 
 def a_question():
-    from litjev.data.schema import Choice
+    from hde.data.schema import Choice
 
     return Choice(instructions="What is 2+2?",
                   criteria={"A": "three", "B": "four", "C": "five point one"})
@@ -418,7 +418,7 @@ def test_the_engine_now_builds_on_sglang_under_the_content_readout():
     property this test is for is unchanged: an SGLang scorer can be built under the
     content readout at all, which before `89fb410` it could not.
     """
-    from litjev._legacy.decision import SchemaDecisionEngine
+    from hde._legacy.decision import SchemaDecisionEngine
 
     engine = SchemaDecisionEngine(content_scorer(FakeEngine()), readout="content")
     assert engine.readout == "content"
@@ -693,7 +693,7 @@ def test_the_slow_mode_does_not_ask_for_states_nothing_reads():
                 "output_token_ids_logprobs": rows, "completion_tokens": 3,
                 "hidden_states": [[[0.0] * 5120]]}} for _ in prompts]
 
-    from litjev.data.schema import Choice, DecisionSchema
+    from hde.data.schema import Choice, DecisionSchema
 
     settings = SGLangSettings(model_id="m", feature_layers=(-1,))
     scorer = SGLangScorer(engine=Engine(), tokenizer=_RealEnoughTokenizer(),
@@ -748,7 +748,7 @@ def test_what_the_engine_reused_and_sent_back_is_recorded():
                 "hidden_states": [[[0.0] * 5120 for _ in range(positions)]]}}
                 for _ in prompts]
 
-    from litjev.data.schema import Choice, DecisionSchema
+    from hde.data.schema import Choice, DecisionSchema
 
     scorer = SGLangScorer(engine=Engine(), tokenizer=_RealEnoughTokenizer(),
                           settings=SGLangSettings(model_id="m", feature_layers=(-1,)),

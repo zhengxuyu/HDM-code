@@ -74,9 +74,9 @@ uv sync                                   # or: pip install -e .
 huggingface-cli download fredreick/HDM-blocks \
     head-4b-mmlu-pro.safetensors --local-dir weights/
 
-litjev-serve --model Qwen/Qwen3.5-4B \
-             --decision-head weights/head-4b-mmlu-pro.safetensors \
-             --readout coded --port 8000
+hde-serve --model Qwen/Qwen3.5-4B \
+          --decision-head weights/head-4b-mmlu-pro.safetensors \
+          --readout coded --port 8000
 ```
 
 The checkpoint downloads on the first call, so the first request is slow and the
@@ -84,8 +84,8 @@ rest are not. Then open <http://127.0.0.1:8000>:
 
 | page | what it shows |
 |---|---|
-| `/` | one typed request answered by the fast mode: the distribution and the confidence, with no token generated |
-| `/routing` | the same request at several prices side by side, so you can see where the block escalates and what it costs |
+| `/` and `/routing` | one typed request at a price you set: where the block puts the value of thinking, whether that clears the price, and what the answer cost |
+| `/systemone` | the same request answered by the fast mode alone: the distribution and the confidence, with no token generated |
 | `/health` | whether weights are loaded |
 
 Drop `--decision-head` and the fast mode still answers; there is simply nothing
@@ -94,9 +94,9 @@ to route on, and `/routing` will say so.
 On a GPU large enough for the 27B, the slow mode is far faster through SGLang:
 
 ```bash
-litjev-serve --model /path/to/Qwen3.8-27B \
-             --decision-head weights/head-27b-mmlu-pro.safetensors \
-             --backend sglang --readout coded --preload --port 8000
+hde-serve --model /path/to/Qwen3.8-27B \
+          --decision-head weights/head-27b-mmlu-pro.safetensors \
+          --backend sglang --readout coded --preload --port 8000
 ```
 
 `--readout` has to be the one the block was fitted under, and the server refuses a
@@ -133,7 +133,7 @@ questions throughout, only the price changes. Recorded at twice speed.</sub>
 routing block in the body and decides for itself:
 
 ```json
-{"model": "litjev",
+{"model": "hde",
  "state": "All customers cannot sign in. No records are lost.",
  "questions": {"impact": {"type": "score", "instructions": "...", "criteria": ["..."]}},
  "routing": {"lambda": 0.0, "budget": 4096}}
@@ -148,10 +148,10 @@ moves the operating point along the cost-accuracy curve without retraining.
 
 | | |
 |---|---|
-| `src/litjev/` | the two modes: typed requests, readouts, the block, the pipeline |
+| `src/hde/` | HDE, the hybrid decision engine: typed requests, readouts, the block, the pipeline |
 | `src/inference/` | SGLang backend, the decision service, and its standard-library client |
 | `src/slime_hdm/` | episodic rollouts, the environment protocol, CDPO |
-| `demo/` | one browser task under three policies, on the clock |
+| `demo/` | one browser task under two policies, on the clock |
 | `docs/` | the API, the schema, how the readouts work, how to reproduce |
 
 ## Routing inside an agent loop

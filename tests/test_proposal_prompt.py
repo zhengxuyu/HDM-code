@@ -11,7 +11,7 @@ hand. These read the prompt instead.
 """
 import pytest
 
-from litjev._legacy.prompting import (
+from hde._legacy.prompting import (
     build_decision_messages,
     build_proposal_messages,
     build_thinking_messages,
@@ -65,7 +65,7 @@ def test_both_backends_render_the_proposal_prompt(backend, monkeypatch):
             return seen["text"]
 
     if backend == "transformers":
-        from litjev.backends.backend import TransformersScorer
+        from hde.backends.backend import TransformersScorer
 
         scorer = TransformersScorer.__new__(TransformersScorer)
         scorer.tokenizer = Tokenizer()
@@ -89,7 +89,7 @@ def test_both_backends_render_the_proposal_prompt(backend, monkeypatch):
 
 
 def test_option_letters_are_recognised_as_not_answers():
-    from litjev.candidates.proposing import looks_like_codes
+    from hde.candidates.proposing import looks_like_codes
 
     assert looks_like_codes([("B", -0.1), ("C", -0.4), ("A", -0.9)])
     assert not looks_like_codes([("42", -0.1), ("41", -0.4)])
@@ -97,7 +97,7 @@ def test_option_letters_are_recognised_as_not_answers():
 
 
 def test_a_run_of_letters_is_stopped_once_there_is_enough_to_say_so():
-    from litjev.candidates.proposing import watch_proposals
+    from hde.candidates.proposing import watch_proposals
 
     assert watch_proposals(10, [2] * 10, 10) == (None, None), "too early to judge"
     assert "option letters" in watch_proposals(20, [8] * 20, 15)[0]
@@ -106,7 +106,7 @@ def test_a_run_of_letters_is_stopped_once_there_is_enough_to_say_so():
 
 def test_a_collapsed_candidate_set_is_reported_and_not_aborted():
     """Low temperature collapses the set; the sweep is there to measure where."""
-    from litjev.candidates.proposing import watch_proposals
+    from hde.candidates.proposing import watch_proposals
 
     abort, warning = watch_proposals(20, [1] * 12 + [3] * 8, 0)
     assert abort is None, "aborting here would kill the run that measures the collapse"
@@ -114,14 +114,14 @@ def test_a_collapsed_candidate_set_is_reported_and_not_aborted():
 
 
 def test_letters_still_abort_however_many_distinct_there_are():
-    from litjev.candidates.proposing import watch_proposals
+    from hde.candidates.proposing import watch_proposals
 
     abort, _ = watch_proposals(20, [8] * 20, 15)
     assert abort and "option letters" in abort
 
 
 def test_a_caller_can_ask_for_a_minimum_and_get_an_abort():
-    from litjev.candidates.proposing import watch_proposals
+    from hde.candidates.proposing import watch_proposals
 
     abort, _ = watch_proposals(20, [2] * 20, 0, minimum_distinct=3)
     assert abort and "asked for" in abort
@@ -139,7 +139,7 @@ def test_the_sglang_refusal_names_only_the_setting_at_fault():
     caller got right sends them to change it."""
     import pytest
 
-    from litjev.candidates.proposing import load_proposer
+    from hde.candidates.proposing import load_proposer
 
     with pytest.raises(ValueError) as refusal:
         load_proposer("m", backend="sglang", dtype="bfloat16", device_map="cuda:0")

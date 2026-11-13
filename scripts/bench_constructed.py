@@ -1,6 +1,6 @@
 """Fast-only, slow-only and routed policies on a typed-request dataset.
 
-litjev-bench-routing reads a multiple-choice benchmark and batches ten questions
+hde-bench-routing reads a multiple-choice benchmark and batches ten questions
 into a synthetic request. This reads requests as they are actually written: a
 shared state, several questions of mixed type, and the candidate sets the caller
 declared. Each request is one batch, because its questions genuinely arrive
@@ -16,12 +16,12 @@ import time
 
 import torch
 
-from litjev._legacy.decision import SchemaDecisionEngine
-from litjev._legacy.heads import DecisionHead
-from litjev.backends.backend import ModelSettings, TransformersScorer
-from litjev.bench.routing_bench import bench_policies, format_table
-from litjev.data.schema import SystemOneRequest
-from litjev.run.streaming import write_json_atomic
+from hde._legacy.decision import SchemaDecisionEngine
+from hde._legacy.heads import DecisionHead
+from hde.backends.backend import ModelSettings, TransformersScorer
+from hde.bench.routing_bench import bench_policies, format_table
+from hde.data.schema import SystemOneRequest
+from hde.run.streaming import write_json_atomic
 
 
 def main():

@@ -1,10 +1,10 @@
 """Token-accuracy curves for each router, on one record set."""
 import json, sys
 import numpy as np
-from litjev.core.block import escalation_gain
-from litjev.data.collect import open_records
-from litjev.serving import load_head
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import escalation_gain
+from hde.data.collect import open_records
+from hde.serving import load_head
+from hde.train.training import features_for, holdout_mask
 
 def sweep(score, higher, fast, slow, tok, grid):
     xs, ys = [], []

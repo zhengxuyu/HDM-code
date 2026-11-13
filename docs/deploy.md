@@ -37,7 +37,7 @@ The transformers backend loads a checkpoint in process and needs no server. Weig
 download on the first call, so the first request is slow and the rest are not.
 
 ```bash
-litjev-serve --model Qwen/Qwen3.5-4B --port 8000
+hde-serve --model Qwen/Qwen3.5-4B --port 8000
 ```
 
 Open <http://127.0.0.1:8000>. This serves the fast mode only: with no block
@@ -50,7 +50,7 @@ backbone it was fitted on; the server refuses a pairing it was not trained for
 rather than reading noise.
 
 ```bash
-litjev-serve --model Qwen/Qwen3.5-4B \
+hde-serve --model Qwen/Qwen3.5-4B \
              --decision-head weights/head-4b-mmlu-pro.safetensors \
              --readout coded --port 8000
 ```
@@ -65,7 +65,7 @@ SGLang is far faster at the slow mode. The engine is built in process, which is 
 inside the first request.
 
 ```bash
-litjev-serve --model /path/to/Qwen3.8-27B \
+hde-serve --model /path/to/Qwen3.8-27B \
              --decision-head weights/head-27b-mmlu-pro.safetensors \
              --backend sglang --readout coded --preload \
              --host 0.0.0.0 --port 8000

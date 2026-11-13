@@ -3,14 +3,14 @@ from collections import Counter
 
 import pytest
 
-from litjev.data.datasets import (
+from hde.data.datasets import (
     AGIEVAL_EN_MCQ,
     LoadedDataset,
     load,
     load_agieval,
     load_gpqa_diamond,
 )
-from litjev.data.mmlu import McqQuestion
+from hde.data.mmlu import McqQuestion
 
 
 def fake_agieval(rows_by_task):
@@ -176,7 +176,7 @@ def test_a_loader_with_one_split_refuses_another_rather_than_ignoring_it():
     a run recorded `test` while reading `v1_1`, and nothing downstream could tell."""
     import pytest
 
-    from litjev.data.datasets import AGIEVAL_SPLIT, GPQA_SPLIT, load_agieval, load_gpqa_diamond
+    from hde.data.datasets import AGIEVAL_SPLIT, GPQA_SPLIT, load_agieval, load_gpqa_diamond
 
     with pytest.raises(ValueError, match="one split"):
         load_agieval(split="test", fetch=lambda url: b"")
@@ -195,7 +195,7 @@ def test_the_bench_header_records_the_split_the_data_is():
     refused by the loader now, and if it ever is not, the header has to say `v1_1`."""
     import argparse
 
-    from litjev.cli import bench_header
+    from hde.cli import bench_header
 
     args = argparse.Namespace(
         model="m", backend="transformers", decision_head=None, dataset="agieval",
@@ -210,7 +210,7 @@ def test_an_unset_split_is_left_to_the_dataset_rather_than_forwarded():
     right, and broke every entry point, which was not: they all default `--split` to
     `test` and send it to whichever dataset was named. The Table 2 launcher failed at
     startup. `None` now means "whatever this one calls its own"."""
-    import litjev.data.datasets as datasets
+    import hde.data.datasets as datasets
 
     seen = {}
     original = dict(datasets.LOADERS)
@@ -227,7 +227,7 @@ def test_an_unset_split_is_left_to_the_dataset_rather_than_forwarded():
 
 
 def test_the_pinned_loaders_accept_an_unset_split():
-    from litjev.data.datasets import AGIEVAL_SPLIT, load_agieval
+    from hde.data.datasets import AGIEVAL_SPLIT, load_agieval
 
     loaded = load_agieval(split=None, tasks=(), fetch=lambda url: b"")
     assert loaded.provenance["split"] == AGIEVAL_SPLIT
@@ -235,7 +235,7 @@ def test_the_pinned_loaders_accept_an_unset_split():
 
 def test_no_entry_point_sends_a_split_the_dataset_may_not_have():
     """Every `--split` that reaches `load()` defaults to None. The one exception is
-    `litjev-mmlu`, which reads MMLU-Pro straight from `load_dataset`, where None means
+    `hde-mmlu`, which reads MMLU-Pro straight from `load_dataset`, where None means
     every split rather than one -- so it keeps its own default and its choices.
 
     A source test because the parsers are built inside the functions that run them,
@@ -246,7 +246,7 @@ def test_no_entry_point_sends_a_split_the_dataset_may_not_have():
 
     from conftest import repo_path
 
-    for path in (repo_path("src/litjev/cli.py"),
+    for path in (repo_path("src/hde/cli.py"),
                  repo_path("scripts/content_vs_coded.py"),
                  repo_path("scripts/propose_gate.py"),
                  repo_path("scripts/open_three_policies.py"),
@@ -255,7 +255,7 @@ def test_no_entry_point_sends_a_split_the_dataset_may_not_have():
         for match in re.finditer(r'add_argument\(\s*\n?\s*"--split",([^)]*)\)', source):
             body = match.group(1)
             if "choices=" in body:
-                assert "litjev-mmlu" in source or "load_dataset(" in source, path
+                assert "hde-mmlu" in source or "load_dataset(" in source, path
                 continue
             assert "default=None" in body, f"{path} sends a split the dataset may not have"
 
@@ -271,7 +271,7 @@ def test_banking77_is_twenty_way_and_says_what_it_could_not_match():
     """
     pytest.importorskip("datasets")
 
-    from litjev.data.datasets import load
+    from hde.data.datasets import load
 
     found = load("banking77")
     assert len(found.questions) == 300, "their n"
@@ -342,8 +342,8 @@ def test_the_head_can_read_a_twenty_way_question_though_collection_cannot():
     """
     import numpy as np
 
-    from litjev._legacy.heads import distribution_stats
-    from litjev.data.collect import MAX_OPTIONS
+    from hde._legacy.heads import distribution_stats
+    from hde.data.collect import MAX_OPTIONS
 
     assert MAX_OPTIONS == 16 < 20, "the constraint this test is about"
 
@@ -391,7 +391,7 @@ def test_any_prefix_of_banking77_is_a_sample_and_not_a_subset_of_intents():
     """
     pytest.importorskip("datasets")
 
-    from litjev.data.datasets import load
+    from hde.data.datasets import load
 
     found = load("banking77")
     ids = [question.question_id for question in found.questions]
@@ -415,7 +415,7 @@ def test_any_prefix_of_banking77_is_a_sample_and_not_a_subset_of_intents():
 
 
 def test_collect_and_bench_select_the_same_questions_for_one_category_filter():
-    """`litjev-collect --categories` has to agree with the bench's identical flag.
+    """`hde-collect --categories` has to agree with the bench's identical flag.
 
     The two commands build a run's question set independently, and a record file
     whose questions are not the ones the bench will serve is a head fitted on a
@@ -427,7 +427,7 @@ def test_collect_and_bench_select_the_same_questions_for_one_category_filter():
     categories costs about a quarter as much with it, since the slow pass runs on
     everything collected.
     """
-    from litjev.data.datasets import select_questions
+    from hde.data.datasets import select_questions
 
     class Q:
         def __init__(self, qid):

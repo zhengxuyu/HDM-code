@@ -16,11 +16,11 @@ import argparse
 
 import numpy as np
 
-from litjev._legacy.heads import HeadMetadata, auroc, outcome_labels
-from litjev._legacy.routing import escalation_gain
-from litjev.data.collect import open_records
-from litjev.run.streaming import write_json_atomic
-from litjev.train.training import features_for, holdout_mask, train_head
+from hde._legacy.heads import HeadMetadata, auroc, outcome_labels
+from hde._legacy.routing import escalation_gain
+from hde.data.collect import open_records
+from hde.run.streaming import write_json_atomic
+from hde.train.training import features_for, holdout_mask, train_head
 
 # The order distribution_stats writes them in.
 STATS = {"max probability": 0, "normalised entropy": 1, "top-two margin": 2,

@@ -23,10 +23,10 @@ from math import comb
 
 import numpy as np
 
-from litjev.core.block import escalation_gain
-from litjev.data.collect import open_records
-from litjev.serving import load_head
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import escalation_gain
+from hde.data.collect import open_records
+from hde.serving import load_head
+from hde.train.training import features_for, holdout_mask
 
 CONFIDENCES = (0.9, 0.8, 0.5, 0.3)
 PRICES = (0.0, 0.05, 0.1, 0.5)   # the prices Table 1 publishes
@@ -185,7 +185,7 @@ def main():
                   f"{win:4d}/{lose:4d} {p:6.3f}  {verdict}")
 
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
         write_json_atomic(arguments.output, {
             "records": arguments.records, "head": arguments.head,
             "model_id": metadata["model_id"], "readout": collected,

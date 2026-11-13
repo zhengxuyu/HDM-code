@@ -28,8 +28,8 @@ only reason it is worth recording.
 """
 import torch
 
-from litjev.backends.backend import TransformersScorer
-from litjev.data.schema import Choice
+from hde.backends.backend import TransformersScorer
+from hde.data.schema import Choice
 from test_unified_prompt_transformers import PaddingTokenizer
 
 STATE = "A bag holds two red marbles."

@@ -9,19 +9,19 @@
 
 Ported/adapted files:
 
-| Upstream | LitJev | Changes |
+| Upstream | HDE | Changes |
 | --- | --- | --- |
-| `examples/chess/keys.py` | `src/litjev/games/chess/controller.py` | Relative imports; remove standalone test entry point |
-| `examples/chess/render.py` | `src/litjev/games/chess/rendering.py` | Keep pixel rendering; remove training observation/standalone helpers |
-| `examples/doom/environment.py` | `src/litjev/games/doom.py` | Gymnasium lifecycle; RGB-only observation; remove training helpers |
-| `examples/film/build-film.mjs` | `src/litjev/games/film.py` | Port self-contained trace embedding to Python and new trace schema |
-| `examples/film/film.html` | `src/litjev/static/film.html` | Redesign for actual Qwen logits, probabilities and timing, not option-head activations |
+| `examples/chess/keys.py` | `src/hde/games/chess/controller.py` | Relative imports; remove standalone test entry point |
+| `examples/chess/render.py` | `src/hde/games/chess/rendering.py` | Keep pixel rendering; remove training observation/standalone helpers |
+| `examples/doom/environment.py` | `src/hde/games/doom.py` | Gymnasium lifecycle; RGB-only observation; remove training helpers |
+| `examples/film/build-film.mjs` | `src/hde/games/film.py` | Port self-contained trace embedding to Python and new trace schema |
+| `examples/film/film.html` | `src/hde/static/film.html` | Redesign for actual Qwen logits, probabilities and timing, not option-head activations |
 | `examples/film/render-film.mjs` | `examples/film/render-film.mjs` | Explicit input/output, wait for image decode, bounded capture and cleanup |
 
-The adapted MIT files retain their upstream notices. Original LitJev integration
+The adapted MIT files retain their upstream notices. Original HDE integration
 code is Apache-2.0. Both licenses are included in built distributions. Upstream
 weights, datasets, training scripts, architecture SVG, and soundtrack are **not**
-included. No upstream results are presented as LitJev results.
+included. No upstream results are presented as HDE results.
 
 ## Runtime dependencies
 

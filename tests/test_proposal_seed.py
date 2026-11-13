@@ -178,7 +178,7 @@ def test_without_a_seed_nothing_claims_one(installed):
 def test_a_beam_refuses_a_seed_rather_than_accepting_one():
     """There is no draw to fix, so a seed would describe something that did not
     happen -- the argument the temperature already makes on this backend."""
-    from litjev.backends.backend import TransformersScorer
+    from hde.backends.backend import TransformersScorer
 
     scorer = TransformersScorer.__new__(TransformersScorer)
     with pytest.raises(ValueError) as raised:
@@ -189,7 +189,7 @@ def test_a_beam_refuses_a_seed_rather_than_accepting_one():
 def test_the_argument_parser_refuses_the_same_combination():
     import argparse
 
-    from litjev.candidates.proposing import add_proposal_arguments, check_proposal_arguments
+    from hde.candidates.proposing import add_proposal_arguments, check_proposal_arguments
 
     parser = add_proposal_arguments(argparse.ArgumentParser())
     arguments = parser.parse_args(["--backend", "transformers", "--seed", "3"])
@@ -206,7 +206,7 @@ def test_the_argument_parser_refuses_the_same_combination():
 # returns `width` identical proposals, every question is degenerate, and the run
 # records that artefact as a finding about the model rather than about the seed.
 def watch(seen, distinct, **rest):
-    from litjev.candidates.proposing import watch_proposals
+    from hde.candidates.proposing import watch_proposals
 
     return watch_proposals(seen, distinct, coded=0, **rest)
 
@@ -261,7 +261,7 @@ class Sampler:
 
 
 def probe(scorer, questions=("q1", "q2", "q3")):
-    from litjev.candidates.proposing import probe_sampler
+    from hde.candidates.proposing import probe_sampler
 
     return probe_sampler(scorer, "Answer.", questions, 4, 8, seed=7)
 
@@ -304,6 +304,6 @@ def test_the_probe_asks_one_question_twice_and_stops_as_soon_as_it_knows():
 
 def test_the_probe_runs_at_a_temperature_of_its_own():
     """The run's temperature can be 0.1, where nothing varies and nothing is learnt."""
-    from litjev.candidates.proposing import PROBE_TEMPERATURE
+    from hde.candidates.proposing import PROBE_TEMPERATURE
 
     assert PROBE_TEMPERATURE >= 1.0

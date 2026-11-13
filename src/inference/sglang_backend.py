@@ -1,6 +1,6 @@
 """The hybrid-thinking model's two modes, served by SGLang.
 
-Implements the same surface as `litjev.backend.TransformersScorer`:
+Implements the same surface as `hde.backend.TransformersScorer`:
 
     hidden_size                              the backbone's width
     score(state, schema)                     the fast mode, one RawFieldScores per question
@@ -15,10 +15,10 @@ from dataclasses import dataclass, field, replace
 
 import numpy as np
 
-from litjev.backends.slots import SLOT_FORMAT, boundary_candidate_ids, candidate_codes
-from litjev.core.pipeline_utils import RawFieldScores
-from litjev.core.prompts import build_content_messages, build_messages
-from litjev.core.prompts_utils import (
+from hde.backends.slots import SLOT_FORMAT, boundary_candidate_ids, candidate_codes
+from hde.core.pipeline_utils import RawFieldScores
+from hde.core.prompts import build_content_messages, build_messages
+from hde.core.prompts_utils import (
     ANSWER_BOUNDARY,
     CONTENT_FREE_INSTRUCTIONS,
     close_thinking,
@@ -28,7 +28,7 @@ from litjev.core.prompts_utils import (
     shared_prefix,
     unlabelled_suffix,
 )
-from litjev.readout.content_readout import OptionScore, option_token_ids
+from hde.readout.content_readout import OptionScore, option_token_ids
 
 # `generate` takes `sampling_params` as a plain dict, so a key it does not know is
 # dropped without a word -- an unseeded run reporting a seed. The name is therefore
@@ -303,7 +303,7 @@ class SGLangScorer:
             raise ValueError(
                 f"this engine returns only the last hidden layer, so a head reading "
                 f"{list(settings.feature_layers)} cannot be served through it. Train one "
-                f"with litjev-train-head --candidate layer_-1, or serve it on transformers")
+                f"with hde-train-head --candidate layer_-1, or serve it on transformers")
 
     @classmethod
     def load(cls, settings):
@@ -496,7 +496,7 @@ class SGLangScorer:
         reads: it reads the readout's distribution over the constructed codes,
         which is a later forward pass either way. What changes is the ranking,
         and sampling supplies one a beam cannot — how many of the samples agree
-        on an answer (`litjev.construct.FREQUENCY`) as well as how likely each
+        on an answer (`hde.construct.FREQUENCY`) as well as how likely each
         one is (`LIKELIHOOD`, the summed token logprobs returned here).
 
         Duplicates are returned rather than collapsed, since the repeats are the
@@ -524,7 +524,7 @@ class SGLangScorer:
         started for deterministic inference. A seeded number is reproducible on the
         same engine settings and reports which draw it came from either way.
         """
-        from litjev.core.prompts import build_proposal_messages
+        from hde.core.prompts import build_proposal_messages
 
         if width < 2:
             raise ValueError("fewer than two proposals is not a choice")
@@ -562,7 +562,7 @@ class SGLangScorer:
 
         Returns `(text, thinking_tokens, truncated)`.
         """
-        from litjev.core.prompts import build_open_thinking_messages
+        from hde.core.prompts import build_open_thinking_messages
 
         prompt = self.tokenizer.apply_chat_template(
             build_open_thinking_messages(state, question), tokenize=False,

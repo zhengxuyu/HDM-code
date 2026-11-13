@@ -75,8 +75,8 @@ def main():
 
     from anyjev import Tacit
 
-    from litjev.data.datasets import load
-    from litjev.run.provenance import commit_now, describe_environment
+    from hde.data.datasets import load
+    from hde.run.provenance import commit_now, describe_environment
 
     # **The pin is resolved here, not in the launcher.** code-reviewer found the
     # RED: a launcher that calls `snapshot_download(name, revision=sha)` and then

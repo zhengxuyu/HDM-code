@@ -14,8 +14,8 @@ from dataclasses import replace
 
 import numpy as np
 
-from litjev.core.block import escalation_gain, fast_confidence
-from litjev.core.block_utils import build_features
+from hde.core.block import escalation_gain, fast_confidence
+from hde.core.block_utils import build_features
 from slime_hdm.environment import EpisodeResult, StepRecord
 
 

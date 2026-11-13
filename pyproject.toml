@@ -3,7 +3,7 @@ requires = ["hatchling>=1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "litjev"
+name = "hde"
 version = "0.1.0"
 description = "HDM: one backbone, two decision modes, and a self-routing block that prices thinking"
 readme = "README.md"
@@ -54,22 +54,22 @@ Repository = "https://github.com/zhengxuyu/HDM-code"
 Issues = "https://github.com/zhengxuyu/HDM-code/issues"
 
 [project.scripts]
-litjev = "litjev.cli:serve"
-litjev-serve = "litjev.cli:serve"
-litjev-mmlu = "litjev.cli:mmlu"
-litjev-calibrate = "litjev.cli:calibrate"
-litjev-collect = "litjev.cli:collect"
-litjev-train-head = "litjev.cli:train_head"
-litjev-bench-routing = "litjev.cli:bench_routing"
-litjev-datasets = "litjev.cli:datasets_manifest"
-litjev-play = "litjev.games.cli:play"
-litjev-film = "litjev.games.cli:film"
+hde = "hde.cli:serve"
+hde-serve = "hde.cli:serve"
+hde-mmlu = "hde.cli:mmlu"
+hde-calibrate = "hde.cli:calibrate"
+hde-collect = "hde.cli:collect"
+hde-train-head = "hde.cli:train_head"
+hde-bench-routing = "hde.cli:bench_routing"
+hde-datasets = "hde.cli:datasets_manifest"
+hde-play = "hde.games.cli:play"
+hde-film = "hde.games.cli:film"
 
 [tool.hatch.build.targets.wheel]
-# inference/ is a package of its own rather than litjev.inference: it pulls in
-# SGLang, which litjev deliberately does not depend on, so a deployment that
+# inference/ is a package of its own rather than hde.inference: it pulls in
+# SGLang, which hde deliberately does not depend on, so a deployment that
 # serves through transformers never has to install it.
-packages = ["src/litjev", "src/inference", "src/slime_hdm"]
+packages = ["src/hde", "src/inference", "src/slime_hdm"]
 
 [tool.hatch.build.targets.sdist]
 include = [

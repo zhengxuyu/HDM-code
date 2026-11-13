@@ -13,7 +13,7 @@ curl --fail-with-body http://127.0.0.1:8000/v1/systemone \
 
 ```json
 {
-  "model": "litjev",
+  "model": "hde",
   "state": "Answer each question using its listed options.",
   "questions": {
     "math": {
@@ -39,7 +39,7 @@ playground example contain the same ten questions. `state` accepts a string, obj
 or array. `instructions` and criterion descriptions accept strings, objects, arrays,
 or null. `instructions` may be omitted. Question IDs are never sent to the model.
 
-Request `model` must be `litjev` (local alias) or the loaded checkpoint ID; the
+Request `model` must be `hde` (local alias) or the loaded checkpoint ID; the
 response reports the actual checkpoint, never pretends to be `jev-latest`.
 
 ## Question types
@@ -86,9 +86,9 @@ converted. See the [migration matrix](jev-schema.md).
 ```python
 from dataclasses import asdict
 
-from litjev.backends.backend import ModelSettings, TransformersScorer
-from litjev.core.pipeline import SchemaDecisionEngine
-from litjev import DecisionSchema
+from hde.backends.backend import ModelSettings, TransformersScorer
+from hde.core.pipeline import SchemaDecisionEngine
+from hde import DecisionSchema
 
 model = "Qwen/Qwen3.8-27B"
 scorer = TransformersScorer.load(ModelSettings(model_id=model))

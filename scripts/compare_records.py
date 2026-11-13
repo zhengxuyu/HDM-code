@@ -22,7 +22,7 @@ import sys
 
 import numpy as np
 
-from litjev.data.collect import open_records
+from hde.data.collect import open_records
 
 # Must match, or the two files are not over the same work.
 SELECTION = ("model_id", "revision", "dataset_name", "dataset_split", "dataset_revision",

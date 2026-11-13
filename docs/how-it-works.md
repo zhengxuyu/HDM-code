@@ -1,7 +1,7 @@
 # How it works
 
-LitJev reads candidate scores from the model's output head and builds typed
-responses in Python: no generated JSON, no answer-text parsing, and no generated
+HDE, the hybrid decision engine, reads candidate scores from the model's output
+head and builds typed responses in Python: no generated JSON, no answer-text parsing, and no generated
 answer tokens.
 
 1. **Shared prefill:** encode only the state and generic instructions once.
@@ -24,13 +24,13 @@ and latency numbers must not be applied to it without re-evaluation.
 
 ## Relationship to Jev
 
-LitJev is a hypothesis-based reproduction of Jev's decision layer from public
+HDE is a hypothesis-based reproduction of Jev's decision layer from public
 information. It is not a connection to the official Jev API, and it does not
 reproduce Jev's training or proprietary internals.
 
 - `/v1/systemone` follows the public `model / state / questions` request and typed
   response shapes, including structured criteria. See the [migration matrix](jev-schema.md).
-- Jev's exact confidence formula is not published in the referenced docs. LitJev
+- Jev's exact confidence formula is not published in the referenced docs. HDE
   uses normalized Gini concentration: `(K * sum(p_i²) - 1) / (K - 1)` for K > 1,
   and 1 for a single option. Uniform distributions yield 0, point masses yield 1.
   This is **not max probability**, not an accuracy estimate, and not a claim of
@@ -49,10 +49,10 @@ Optional post-hoc temperature fitting is available:
 
 ```bash
 # With the uncalibrated server running:
-uv run litjev-mmlu --split validation --limit 70 --export-logits validation-logits.jsonl
-uv run litjev-calibrate validation-logits.jsonl --model Qwen/Qwen3.8-27B --output calibration.json
+uv run hde-mmlu --split validation --limit 70 --export-logits validation-logits.jsonl
+uv run hde-calibrate validation-logits.jsonl --model Qwen/Qwen3.8-27B --output calibration.json
 # Stop the old server, then restart with the profile:
-uv run litjev --model Qwen/Qwen3.8-27B --calibration calibration.json
+uv run hde --model Qwen/Qwen3.8-27B --calibration calibration.json
 ```
 
 Never fit on test labels. Keep model revision, prompt, option order, and evaluation
@@ -72,4 +72,4 @@ authority for consequential actions.
   benchmarked here. CPU-only 27B inference is not a supported performance target.
 
 Server options: `--model`, `--revision`, `--dtype` (`bfloat16`, `float16`,
-`float32`), `--device-map`, `--port`, `--calibration`. Run `uv run litjev --help`.
+`float32`), `--device-map`, `--port`, `--calibration`. Run `uv run hde --help`.

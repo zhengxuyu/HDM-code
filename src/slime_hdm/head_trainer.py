@@ -28,8 +28,8 @@ from dataclasses import dataclass, replace
 import numpy as np
 import torch
 
-from litjev.core.block import DecisionHead, escalation_gain_batch
-from litjev.core.block_utils import build_features
+from hde.core.block import DecisionHead, escalation_gain_batch
+from hde.core.block_utils import build_features
 
 
 @dataclass(frozen=True)

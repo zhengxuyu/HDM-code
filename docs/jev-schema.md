@@ -24,9 +24,9 @@ Dataset labels remain outside requests.
 
 ## Deliberate differences from the hosted service
 
-- Model: `litjev` resolves to the loaded local checkpoint. Unknown model names fail;
+- Model: `hde` resolves to the loaded local checkpoint. Unknown model names fail;
   we do not impersonate TypeSafe weights or expose their model catalog.
-- Confidence: normalized Gini concentration, explicitly a LitJev approximation.
+- Confidence: normalized Gini concentration, explicitly an HDE approximation.
   Exact Jev numerical confidence and its learned calibration are not reproduced.
 - Inference: two top-level forwards, zero generated output tokens. This is not a
   reproduction of proprietary training or a one-forward architecture.
@@ -38,7 +38,7 @@ Dataset labels remain outside requests.
 ## Breaking changes
 
 Old endpoints return 404; old fields at the standard endpoint return 422.
-Re-prepare MMLU request files with `litjev-mmlu --prepare-only`; archived reports are
+Re-prepare MMLU request files with `hde-mmlu --prepare-only`; archived reports are
 not silently rewritten. Refit calibration after this prompt change. Old performance
 measurements remain historical and do not validate the new prompt.
 

@@ -13,7 +13,7 @@ import importlib
 
 import numpy as np
 
-from litjev.data.schema import Choice, DecisionSchema
+from hde.data.schema import Choice, DecisionSchema
 
 ACTION = "action"
 INSTRUCTIONS = "Choose the action that makes most progress on the task."
@@ -68,7 +68,7 @@ class StepScorer:
         whose right action is text was unwinnable at every price, and a gate run
         that way reports a restriction of ours as a property of the venue.
 
-        This is the other shape, and it is the one `litjev.construct` already
+        This is the other shape, and it is the one `hde.construct` already
         relies on for questions whose answers were never enumerated -- the
         backends have had `solve` all along. The caller parses what comes back,
         strictly, and records a refusal rather than substituting a click.
@@ -155,7 +155,7 @@ def build_scorer(args):
             mem_fraction_static=getattr(args, "hdm_mem_fraction_static", 0.8),
         ))
     elif backend == "transformers":
-        from litjev.backends.backend import ModelSettings, TransformersScorer
+        from hde.backends.backend import ModelSettings, TransformersScorer
 
         provider = TransformersScorer.load(ModelSettings(
             args.hf_checkpoint, "main", getattr(args, "hdm_device_map", "cuda:0"),
@@ -166,7 +166,7 @@ def build_scorer(args):
 
 
 def _head_layers(args):
-    from litjev.core.block import DecisionHead
+    from hde.core.block import DecisionHead
 
     path = getattr(args, "hdm_decision_head", None)
     if not path:
@@ -181,7 +181,7 @@ def build_head(args):
     has none and `hdm_escalate_prob` decides. Later rollouts load the head the
     previous one produced.
     """
-    from litjev.core.block import DecisionHead
+    from hde.core.block import DecisionHead
 
     path = getattr(args, "hdm_decision_head", None)
     return DecisionHead.load(path) if path else None

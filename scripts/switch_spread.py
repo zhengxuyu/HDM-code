@@ -22,7 +22,7 @@ import argparse
 import numpy as np
 import torch
 
-from litjev.train.training import holdout_mask
+from hde.train.training import holdout_mask
 from thinkswitcher import Switcher, _train_once, one_file, sweep
 
 

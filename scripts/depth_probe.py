@@ -57,7 +57,7 @@ def walk(table, start, steps):
 
 def build_request(depths, symbols, generator, index):
     """One table, one question per depth, so a batch holds the whole depth axis."""
-    from litjev.data.schema import Choice, SystemOneRequest
+    from hde.data.schema import Choice, SystemOneRequest
 
     table = make_table(symbols, generator)
     lines = "\n".join(f"{source} -> {target}" for source, target in table.items())
@@ -72,12 +72,12 @@ def build_request(depths, symbols, generator, index):
             criteria={symbol: symbol for symbol in symbols})
         answers[name] = walk(table, start, depth)
         meta[name] = depth
-    return SystemOneRequest(model="litjev", state=state, questions=questions), answers, meta
+    return SystemOneRequest(model="hde", state=state, questions=questions), answers, meta
 
 
 def main():
-    from litjev.backends.backend import ModelSettings, TransformersScorer
-    from litjev.data.collect import collect_batch, save_records
+    from hde.backends.backend import ModelSettings, TransformersScorer
+    from hde.data.collect import collect_batch, save_records
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--model", default="Qwen/Qwen3.5-4B")
@@ -93,7 +93,7 @@ def main():
     parser.add_argument("--output", default="depth-4b.npz")
     arguments = parser.parse_args()
 
-    from litjev._legacy.heads import parse_feature_layers
+    from hde._legacy.heads import parse_feature_layers
 
     depths = [int(value) for value in arguments.depths.split(",")]
     symbols = SYMBOLS[: arguments.symbols]

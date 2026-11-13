@@ -1,6 +1,6 @@
 # Reproducing the reported numbers
 
-Every experiment resolves its data through `src/litjev/datasets.py`, which pins
+Every experiment resolves its data through `src/hde/datasets.py`, which pins
 each source and records a content digest. Check the digest before comparing
 numbers: a run whose manifest differs from the one below read different
 questions, and its results are not comparable to ours.
@@ -32,7 +32,7 @@ built where `nvcc` exists; see `scripts/build_kernel.sbatch`.
 No GPU is needed to resolve the benchmarks and print their manifests:
 
 ```bash
-uv run litjev-datasets --output datasets.json
+uv run hde-datasets --output datasets.json
 ```
 
 | Benchmark | Source | Pinned at | Account needed |
@@ -66,14 +66,14 @@ Collect records, train the head, then benchmark the policies. The head is
 trained once and every later evaluation reuses it.
 
 ```bash
-uv run litjev-collect --model "$MODEL" --device-map cuda:0 \
+uv run hde-collect --model "$MODEL" --device-map cuda:0 \
   --dataset mmlu-pro --split test --stride 8 --limit 1500 \
   --layers=-1,16,24 --budget 1024 --output results/records.npz
 
-uv run litjev-train-head --records results/records.npz \
+uv run hde-train-head --records results/records.npz \
   --objective cdpo --train-seed 0 --output results/head.safetensors
 
-uv run litjev-bench-routing --model "$MODEL" --device-map cuda:0 \
+uv run hde-bench-routing --model "$MODEL" --device-map cuda:0 \
   --decision-head results/head.safetensors --dataset mmlu-pro \
   --split test --stride 8 --limit 1500 \
   --categories chemistry,economics,psychology \
@@ -100,7 +100,7 @@ sizes for each benchmark. Set `RUN_GPQA=0` to skip the gated dataset.
 
 ## 5. What each run records
 
-`litjev-bench-routing` writes accuracy, generated tokens and wall-clock seconds
+`hde-bench-routing` writes accuracy, generated tokens and wall-clock seconds
 per policy, plus the dataset manifest, the selected question ids, the head
 metadata and the device. Those fields are what a comparison needs: a report
 that does not carry the same dataset digest is measuring something else.

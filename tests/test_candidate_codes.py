@@ -1,7 +1,7 @@
 import pytest
 
-from litjev.backends.slots import compile_prefix_slots
-from litjev.data.schema import Choice, DecisionSchema
+from hde.backends.slots import compile_prefix_slots
+from hde.data.schema import Choice, DecisionSchema
 
 
 class CodeTokenizer:

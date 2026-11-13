@@ -11,7 +11,7 @@ import sys
 REQUIRED = (
     "causal_conv1d",              # the fused kernel; without it timings are meaningless
     "alfworld.agents.environment",
-    "litjev._legacy.heads",
+    "hde._legacy.heads",
     "inference",                  # the SGLang backend
     "slime_hdm.envs.alfworld",    # the environment adapter
     "torch",

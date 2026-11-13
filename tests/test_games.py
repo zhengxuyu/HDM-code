@@ -8,9 +8,9 @@ pytest.importorskip("chess")
 
 from gymnasium.utils.env_checker import check_env
 
-from litjev.games import make_env
-from litjev.games.policy import LitJevPolicy
-from litjev.games.rollout import record_episode
+from hde.games import make_env
+from hde.games.policy import HDEPolicy
+from hde.games.rollout import record_episode
 
 
 def test_chess_gym_contract_seed_and_controller_move():
@@ -108,7 +108,7 @@ def test_same_policy_and_trace_for_both_environments(tmp_path):
     for name in ["chess", "doom"]:
         client = RecordingClient()
         with make_env(name, max_steps=2) as env:
-            policy = LitJevPolicy(client, env.unwrapped.action_names, env.unwrapped.instructions)
+            policy = HDEPolicy(client, env.unwrapped.action_names, env.unwrapped.instructions)
             trace = record_episode(env, policy, seed=3, episode=1)
         assert len(client.calls) == 2
         assert trace["schema_version"] == "litjev.trace.v1"
@@ -125,7 +125,7 @@ def test_same_policy_and_trace_for_both_environments(tmp_path):
 
 def test_policy_rejects_unknown_answer_and_wrong_probability_shape():
     client = RecordingClient()
-    policy = LitJevPolicy(client, ("left", "right"), "Choose a key.")
+    policy = HDEPolicy(client, ("left", "right"), "Choose a key.")
     client.decide = lambda *a: {
         "result": {"answers": {"action": {"choice": "invented"}}},
         "diagnostics": {},

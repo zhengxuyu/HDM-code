@@ -81,7 +81,7 @@ def test_the_schema_fixes_the_shape_and_not_the_content():
     assert "pattern" not in schema["properties"]["answer"]
     assert answer_of(wire("B")) == "B", "the schema does not exclude a letter"
 
-    from litjev.candidates.proposing import looks_like_codes
+    from hde.candidates.proposing import looks_like_codes
 
     assert looks_like_codes([("B", -0.1), ("C", -0.2), ("A", -0.3)]), (
         "the guard that does exclude them must still be the one doing it")
@@ -90,7 +90,7 @@ def test_the_schema_fixes_the_shape_and_not_the_content():
 def test_an_answer_is_compared_as_content_and_never_as_an_index():
     """A proposal is matched against the gold answer by value. Nothing maps it
     back to a position, which is what would make the letter meaningful again."""
-    from litjev.candidates.construct import correct
+    from hde.candidates.construct import correct
 
     # symbolic=False is a string comparison, which is the point: nothing here
     # turns "B" into a position and compares positions.
@@ -107,7 +107,7 @@ def test_rotating_the_codes_moves_the_letters_and_not_the_options():
     reading logits in slot order, and only the letter beside each option moves.
     So a preference that follows the letter moves with it and one that follows the
     slot stays put -- the two readings every run so far has confounded."""
-    from litjev.backends.slots import rotated
+    from hde.backends.slots import rotated
 
     codes = list("ABCDEFGHIJ")
     assert rotated(codes, 0) == codes, "zero is every run to date"
@@ -123,8 +123,8 @@ def test_the_offset_reaches_the_slots_from_the_settings():
     offset and gets slot order back would look exactly like 'position, not letter'."""
     import inspect
 
-    from litjev.backends.backend import ModelSettings, TransformersScorer
-    from litjev.backends.slots import compile_prefix_slots, compile_slots
+    from hde.backends.backend import ModelSettings, TransformersScorer
+    from hde.backends.slots import compile_prefix_slots, compile_slots
 
     assert "code_offset" in inspect.signature(ModelSettings).parameters
     assert "code_offset" in inspect.signature(TransformersScorer.__init__).parameters

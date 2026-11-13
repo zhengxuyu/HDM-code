@@ -36,7 +36,7 @@ def network_stubs(where, ssh_cases=()):
             'case "$*" in\n'
             f'{cases}'
             '  *--parsable*) echo 999999 ;;\n'
-            '  *pwd*) echo /remote/litjev ;;\n'
+            '  *pwd*) echo /remote/hde ;;\n'
             'esac\nexit 0\n')
         stub.chmod(0o755)
     return binaries, log

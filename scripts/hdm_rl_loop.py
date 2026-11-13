@@ -8,7 +8,7 @@ import argparse
 import json
 from pathlib import Path
 
-from litjev._legacy.heads import DecisionHead
+from hde._legacy.heads import DecisionHead
 from slime_hdm import HeadRLConfig, LoopConfig, StepScorer, run
 from slime_hdm.envs.alfworld import AlfworldEnvironment
 
@@ -26,7 +26,7 @@ def _code():
     and appended. `code_identity` reads the tree id instead, which also names the
     working changes -- 29636 ran a dirty tree.
     """
-    from litjev.run.provenance import code_identity
+    from hde.run.provenance import code_identity
 
     return code_identity()
 

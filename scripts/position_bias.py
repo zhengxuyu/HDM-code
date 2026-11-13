@@ -15,7 +15,7 @@ measures rather than argues:
     gold          where the answer actually was
     accuracy by gold position, which is what a prior distorts
 
-Reads the record files `litjev-collect` writes. Files written before the position
+Reads the record files `hde-collect` writes. Files written before the position
 columns existed report their absence rather than a histogram of nothing.
 
     uv run python scripts/position_bias.py results/records-4b-27063.npz
@@ -36,8 +36,8 @@ def bar(share, scale=40):
 
 
 def main():
-    from litjev.data.collect import load_records
-    from litjev.run.streaming import write_json_atomic
+    from hde.data.collect import load_records
+    from hde.run.streaming import write_json_atomic
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("records", nargs="+")

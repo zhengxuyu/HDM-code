@@ -41,7 +41,7 @@ import argparse
 
 import numpy as np
 
-from litjev.train.training import holdout_mask
+from hde.train.training import holdout_mask
 from thinkswitcher import join, one_file
 
 
@@ -219,7 +219,7 @@ def main():
                   f"{row['accuracy']:9.4f}")
 
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
         write_json_atomic(arguments.output, {
             "model": data["model"], "test_items": len(test["features"]),
             "k": arguments.k, "route_llm_chosen": chosen,

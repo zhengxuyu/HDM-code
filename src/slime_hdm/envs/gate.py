@@ -47,7 +47,7 @@ from statistics import mean
 
 # The only module-level import outside the standard library: provenance pulls in
 # nothing heavy, and the label it defines is checked before the browser starts.
-from litjev.run.provenance import UNKNOWN
+from hde.run.provenance import UNKNOWN
 
 PASS = {
     # Fixed before the run; see experiments/workarena/README.md for why each.
@@ -374,7 +374,7 @@ def step_record(task, policy, index, offered, dropped, chosen, readout, seconds,
         # is what would show it.
         #
         # **Nothing reads this yet.** The comment used to say `position_bias.py`
-        # reads it; that script takes `litjev-collect` records from a .npz through
+        # reads it; that script takes `hde-collect` records from a .npz through
         # `load_records` and has never seen a gate row. code-reviewer caught that
         # after I had told exps the uniform-placeholder defect "protected
         # position_bias.py" -- it did not, because no position statistic was ever
@@ -1043,8 +1043,8 @@ def main():
     import_module(venue["registers"])  # registers the tasks
 
     from inference import DecisionClient
-    from litjev.run.provenance import commit_now, describe_environment
-    from litjev.run.streaming import Rows, completed
+    from hde.run.provenance import commit_now, describe_environment
+    from hde.run.streaming import Rows, completed
     from slime_hdm.envs.browser import close_env
     if args.list:
         for group in names:

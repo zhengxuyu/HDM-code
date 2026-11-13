@@ -24,11 +24,11 @@ import json
 
 import numpy as np
 
-from litjev.core.block import HeadMetadata, escalation_gain
-from litjev.core.objective import outcome_labels, train_head
-from litjev.data.collect import open_records
-from litjev.serving import load_head
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import HeadMetadata, escalation_gain
+from hde.core.objective import outcome_labels, train_head
+from hde.data.collect import open_records
+from hde.serving import load_head
+from hde.train.training import features_for, holdout_mask
 
 # The order `distribution_stats` writes them in, with the sign that makes a
 # higher score mean "escalate".
@@ -175,7 +175,7 @@ def main():
         print(f"  {name:28s} {int((winners == name).sum()):3d}")
 
     if arguments.output:
-        from litjev.run.streaming import write_json_atomic
+        from hde.run.streaming import write_json_atomic
         write_json_atomic(arguments.output, {
             "records": arguments.records, "head": arguments.head,
             "model_id": metadata["model_id"], "budget": metadata.get("budget"),

@@ -37,7 +37,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from litjev.core.block import DecisionHead, escalation_gain_batch
+from hde.core.block import DecisionHead, escalation_gain_batch
 from slime_hdm import head_trainer
 from slime_hdm.head_trainer import (
     HeadRLConfig,

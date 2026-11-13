@@ -10,10 +10,10 @@ import sys
 
 import numpy as np
 
-from litjev._legacy.heads import CDPOConfig, normalise_objective
-from litjev.data.collect import open_records
-from litjev.run.streaming import write_json_atomic
-from litjev.train.training import run_training
+from hde._legacy.heads import CDPOConfig, normalise_objective
+from hde.data.collect import open_records
+from hde.run.streaming import write_json_atomic
+from hde.train.training import run_training
 
 records, meta = open_records(sys.argv[1])
 base = dict(pca_dim=64, selection_folds=4, holdout_fraction=0.25,

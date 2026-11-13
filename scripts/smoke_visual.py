@@ -7,12 +7,12 @@ from pathlib import Path
 
 import torch
 
-from litjev._legacy.decision import SchemaDecisionEngine
-from litjev.backends.backend import ModelSettings, TransformersScorer
-from litjev.games import make_env
-from litjev.games.film import build_film
-from litjev.games.policy import LitJevPolicy, LocalDecisionClient
-from litjev.games.rollout import record_episode
+from hde._legacy.decision import SchemaDecisionEngine
+from hde.backends.backend import ModelSettings, TransformersScorer
+from hde.games import make_env
+from hde.games.film import build_film
+from hde.games.policy import HDEPolicy, LocalDecisionClient
+from hde.games.rollout import record_episode
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
             calls.clear()
             vision_calls.clear()
             with make_env(game, max_steps=args.steps) as env:
-                policy = LitJevPolicy(
+                policy = HDEPolicy(
                     LocalDecisionClient(engine),
                     env.unwrapped.action_names,
                     env.unwrapped.instructions,

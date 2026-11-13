@@ -1,8 +1,8 @@
 from test_visual import ImageTokenizer
 
-from litjev._legacy.prompting import build_decision_messages
-from litjev.backends.slots import compile_slots
-from litjev.data.schema import Choice, DecisionSchema
+from hde._legacy.prompting import build_decision_messages
+from hde.backends.slots import compile_slots
+from hde.data.schema import Choice, DecisionSchema
 
 
 def test_question_ids_and_other_questions_never_enter_branch():

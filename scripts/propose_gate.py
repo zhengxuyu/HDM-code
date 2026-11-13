@@ -1,7 +1,7 @@
 """Can the fast mode build the candidate set it needs?
 
 The schema calls a candidate set optional and nothing made the optional case
-work, so every benchmark in the paper is multiple choice. `litjev.construct`
+work, so every benchmark in the paper is multiple choice. `hde.construct`
 lets the fast mode propose its own answers with a beam; whether that is worth
 building on comes down to three numbers, and this measures them before anything
 is built.
@@ -27,7 +27,7 @@ import numpy as np
 
 
 def main():
-    from litjev.candidates.construct import (
+    from hde.candidates.construct import (
         FREQUENCY,
         LIKELIHOOD,
         correct,
@@ -35,7 +35,7 @@ def main():
         schema_from_beams,
         strip_enumerator,
     )
-    from litjev.candidates.proposing import (
+    from hde.candidates.proposing import (
         add_proposal_arguments,
         check_proposal_arguments,
         load_proposer,
@@ -44,10 +44,10 @@ def main():
         propose,
         watch_proposals,
     )
-    from litjev.data.datasets import LOADERS, load
-    from litjev.data.schema import DecisionSchema
-    from litjev.run.provenance import check_imported_tree, commit_now, describe_environment
-    from litjev.run.streaming import Rows, completed, write_json_atomic
+    from hde.data.datasets import LOADERS, load
+    from hde.data.schema import DecisionSchema
+    from hde.run.provenance import check_imported_tree, commit_now, describe_environment
+    from hde.run.streaming import Rows, completed, write_json_atomic
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dataset", choices=sorted(LOADERS), default="gsm8k")

@@ -39,12 +39,12 @@ import json
 
 import numpy as np
 
-from litjev.core.block import HeadMetadata, escalation_gain
-from litjev.core.block_utils import auroc
-from litjev.core.objective import outcome_labels, train_head
-from litjev.data.collect import open_records
-from litjev.run.streaming import write_json_atomic
-from litjev.train.training import features_for, holdout_mask
+from hde.core.block import HeadMetadata, escalation_gain
+from hde.core.block_utils import auroc
+from hde.core.objective import outcome_labels, train_head
+from hde.data.collect import open_records
+from hde.run.streaming import write_json_atomic
+from hde.train.training import features_for, holdout_mask
 
 # The order `distribution_stats` writes them in.
 STATS = {"max probability": 0, "normalised entropy": 1, "top-two margin": 2,

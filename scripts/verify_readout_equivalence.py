@@ -13,7 +13,7 @@ Usage, with the real collection's own arguments after the `--`:
     python scripts/verify_readout_equivalence.py report.json -- \
         --model .../qwen38-27b --layers=-1 --budget 4096 ... --output /dev/null
 
-It patches the one seam and then runs `litjev-collect` itself, rather than
+It patches the one seam and then runs `hde-collect` itself, rather than
 reimplementing the collection loop: the loop decides batching, padding and which
 position each row is read at, and a second copy of it here would be testing the
 copy. Each patched call runs the real readout *and* the causal LM on the same
@@ -32,7 +32,7 @@ import torch
 
 
 def install(report):
-    from litjev.backends.backend import TransformersScorer
+    from hde.backends.backend import TransformersScorer
 
     original = TransformersScorer._forward_readout
 
@@ -96,9 +96,9 @@ def main():
     report = []
     install(report)
 
-    from litjev.cli import collect
+    from hde.cli import collect
 
-    sys.argv = ["litjev-collect", *forwarded]
+    sys.argv = ["hde-collect", *forwarded]
     status = 0
     try:
         collect()

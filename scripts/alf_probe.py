@@ -14,7 +14,7 @@ import torch
 import yaml
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from litjev.run.streaming import write_json_atomic
+from hde.run.streaming import write_json_atomic
 
 CODES = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 BOUNDARY = "\nAction:"

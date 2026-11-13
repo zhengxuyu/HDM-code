@@ -17,8 +17,8 @@ from pathlib import Path
 
 import numpy as np
 
-from litjev.core.block import escalation_gain
-from litjev.core.block_utils import build_features
+from hde.core.block import escalation_gain
+from hde.core.block_utils import build_features
 from slime_hdm.head_trainer import HeadRLConfig, train_head_on_episodes
 from slime_hdm.resume import (
     append_row,

@@ -18,7 +18,7 @@ signal up is the second question, and the analysis script asks both.
 The fast mode only: the slow outcomes are already recorded, and re-running the
 slow mode would cost what the original collection cost.
 
-    litjev-collect --layers=... is the reference for the sampling; this repeats it.
+    hde-collect --layers=... is the reference for the sampling; this repeats it.
 """
 import argparse
 import json
@@ -48,9 +48,9 @@ def final_norm(model):
 
 
 def main():
-    from litjev.backends.backend import ModelSettings, TransformersScorer
-    from litjev.data.datasets import LOADERS, load
-    from litjev.data.mmlu import ten_question_batches
+    from hde.backends.backend import ModelSettings, TransformersScorer
+    from hde.data.datasets import LOADERS, load
+    from hde.data.mmlu import ten_question_batches
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--dataset", choices=sorted(LOADERS), default="mmlu-pro")

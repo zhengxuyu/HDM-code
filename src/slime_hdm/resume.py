@@ -47,7 +47,7 @@ def append_row(path, row):
     A partial line left by the kill is **closed first**. Appending straight onto
     a fragment glues the next row to it, and both are then unreadable -- so one
     lost episode became a lost run, which is the opposite of what this file is
-    for. `litjev.streaming.Rows` has done this since 27862 and I rebuilt a worse
+    for. `hde.streaming.Rows` has done this since 27862 and I rebuilt a worse
     version of it instead of reusing it; code-reviewer reproduced the
     consequence.
     """
@@ -74,7 +74,7 @@ def read_rows(path):
     `append_row` closes that fragment with a newline, which means the fragment is
     no longer the **last** line: dropping only the last one would have raised on
     it from the second resume onwards, turning one lost episode into a lost run.
-    This is `litjev.run.streaming.completed`'s rule, and it is the right one for the
+    This is `hde.run.streaming.completed`'s rule, and it is the right one for the
     same reason.
 
     Dropping loses nothing but that episode: the index it was playing has no

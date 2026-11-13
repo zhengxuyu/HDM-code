@@ -745,7 +745,7 @@ def test_both_writers_write_the_same_row(tmp_path):
     """
     import json
 
-    from litjev._legacy.heads import HeadMetadata
+    from hde._legacy.heads import HeadMetadata
     from slime_hdm.environment import EpisodeResult, StepRecord
     from slime_hdm.loop import LoopConfig, corpus_path, run
 

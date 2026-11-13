@@ -1,9 +1,9 @@
 import pathlib
 import numpy as np
 
-from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-from litjev.bench.benchmark import evaluate
-from litjev.data.schema import Choice, DecisionSchema
+from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+from hde.bench.benchmark import evaluate
+from hde.data.schema import Choice, DecisionSchema
 
 
 def test_sequential_uses_ten_separate_single_question_calls():
@@ -48,7 +48,7 @@ def test_omitting_the_price_flag_asks_for_four_prices_not_none():
     """
     import re
 
-    source = (pathlib.Path(__file__).resolve().parents[1] / "src" / "litjev" / "cli.py").read_text()
+    source = (pathlib.Path(__file__).resolve().parents[1] / "src" / "hde" / "cli.py").read_text()
     default = re.search(r'add_argument\("--lambdas", default="([^"]*)"\)', source)
     assert default, "the flag's default is no longer written where this test reads it"
     parsed = [float(x) for x in default.group(1).split(",") if x.strip()]
@@ -80,8 +80,8 @@ def test_the_slow_only_sentinel_is_below_every_attainable_gain():
     """
     import numpy as np
 
-    from litjev._legacy.routing import escalation_gain
-    from litjev.bench.routing_bench import ALL
+    from hde._legacy.routing import escalation_gain
+    from hde.bench.routing_bench import ALL
 
     # The gain is minimised by putting all the mass on "fast right, slow wrong":
     # P(slow right) is then floored at the epsilon and P(fast right) is 1.
@@ -116,7 +116,7 @@ def test_the_margin_cap_is_an_absolute_count_until_the_window_fills():
     decisions" has no meaning at 346 -- but that a comparison against it must not
     claim operating points above the ceiling it is forbidden to reach.
     """
-    from litjev.core.block import MarginPolicy, MarginRouter
+    from hde.core.block import MarginPolicy, MarginRouter
 
     # tau above any attainable margin, so every decision is "unsure" and only the
     # cap can stop an escalation.

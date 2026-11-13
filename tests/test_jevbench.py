@@ -15,8 +15,8 @@ import json
 
 import pytest
 
-from litjev.data.datasets import load_jevbench
-from litjev.data.mmlu import own_state_requests, typed_question
+from hde.data.datasets import load_jevbench
+from hde.data.mmlu import own_state_requests, typed_question
 
 MANIFEST = {
     "protocol": "jevbench::v1.2",
@@ -84,8 +84,8 @@ def test_the_gold_label_is_in_the_form_the_benchmark_compares_against():
     """Per type, and this is the one that fails silently if it is wrong: the gold for
     `noul` is a boolean where the file writes yes/no, and for `score` an integer level
     where the schema's candidates are the strings "0".."n"."""
-    from litjev._legacy.decision import ChoiceAnswer, NoulAnswer, ScoreAnswer
-    from litjev.bench.routing_bench import _answer_key
+    from hde._legacy.decision import ChoiceAnswer, NoulAnswer, ScoreAnswer
+    from hde.bench.routing_bench import _answer_key
 
     labels = load_jevbench(fetch=fetcher()).labels
     assert labels == {"o-choice-0": "track", "o-noul-0": False,
@@ -104,7 +104,7 @@ def test_the_gold_label_is_in_the_form_the_benchmark_compares_against():
 
 
 def test_each_question_becomes_the_schema_question_its_type_names():
-    from litjev.data.schema import Choice, Noul, Score
+    from hde.data.schema import Choice, Noul, Score
 
     by_id = {q.question_id: q for q in load_jevbench(fetch=fetcher()).questions}
     assert isinstance(typed_question(by_id["o-choice-0"]), Choice)
@@ -172,9 +172,9 @@ def test_without_a_head_the_bench_measures_the_endpoints_and_no_policy_between()
     for a policy that was never run."""
     import numpy as np
 
-    from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-    from litjev.bench.routing_bench import bench_policies
-    from litjev.data.schema import Choice, SystemOneRequest
+    from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+    from hde.bench.routing_bench import bench_policies
+    from hde.data.schema import Choice, SystemOneRequest
 
     class Provider:
         def score(self, state, schema):
@@ -186,7 +186,7 @@ def test_without_a_head_the_bench_measures_the_endpoints_and_no_policy_between()
 
     engine = SchemaDecisionEngine(Provider(), readout="coded")
     request = SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"q": Choice(instructions="Pick", criteria={"a": "1", "b": "2"})},
     )
     report = bench_policies(engine, [(request, ["q"])], {"q": "b"}, [], budget=8)
@@ -210,9 +210,9 @@ def test_a_row_says_which_primitive_each_question_was_asked_as():
     """
     import numpy as np
 
-    from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-    from litjev.bench.routing_bench import bench_policies
-    from litjev.data.schema import Choice, Noul, Score, SystemOneRequest
+    from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+    from hde.bench.routing_bench import bench_policies
+    from hde.data.schema import Choice, Noul, Score, SystemOneRequest
 
     class Provider:
         def score(self, state, schema):
@@ -224,7 +224,7 @@ def test_a_row_says_which_primitive_each_question_was_asked_as():
 
     engine = SchemaDecisionEngine(Provider(), readout="coded")
     request = SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"c": Choice(instructions="Pick", criteria={"a": "1", "b": "2"}),
                    "n": Noul(instructions="Does it hold"),
                    "s": Score(instructions="How far", criteria=["low", "high"])},
@@ -254,7 +254,7 @@ def test_the_benchmark_takes_the_split_names_jevbench_actually_has(monkeypatch):
     It is per dataset now, and each loader refuses what it does not have."""
     import argparse
 
-    from litjev.cli import bench_header
+    from hde.cli import bench_header
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--split", default="test")
@@ -273,7 +273,7 @@ def test_an_unknown_split_is_refused_by_the_loader_not_by_the_run():
     rather than a 27B load. 28170 paid the other order's bill on a different guard."""
     import inspect
 
-    from litjev.cli import bench_routing
+    from hde.cli import bench_routing
 
     source = inspect.getsource(bench_routing)
     dataset_at = source.index("loaded = load(args.dataset")

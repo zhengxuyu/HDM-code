@@ -1,5 +1,5 @@
 {
-  "model": "litjev",
+  "model": "hde",
   "state": "JevBench v1 public items. Each question carries its own context inside its instructions. Answer each one using only its listed options.",
   "questions": {
     "tool_selection": {

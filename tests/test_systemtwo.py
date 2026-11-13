@@ -8,8 +8,8 @@ import torch
 from fastapi.testclient import TestClient
 from transformers import LlamaConfig, LlamaForCausalLM
 
-from litjev._legacy.decision import HEAD_CONFIDENCE_METHOD, RawFieldScores, SchemaDecisionEngine
-from litjev._legacy.heads import (
+from hde._legacy.decision import HEAD_CONFIDENCE_METHOD, RawFieldScores, SchemaDecisionEngine
+from hde._legacy.heads import (
     STATS_DIM,
     DecisionHead,
     HeadMetadata,
@@ -20,14 +20,14 @@ from litjev._legacy.heads import (
     outcome_labels,
     train_head,
 )
-from litjev._legacy.prompting import ANSWER_BOUNDARY, build_thinking_messages, question_body
-from litjev._legacy.routing import RoutingPolicy, escalation_gain, fast_confidence, should_escalate
-from litjev.api import create_app
-from litjev.backends.backend import SuffixStop, TransformersScorer
-from litjev.backends.slots import SLOT_FORMAT
-from litjev.data.collect import MAX_OPTIONS, collect_batch, load_records, save_records
-from litjev.data.schema import Choice, DecisionSchema, Noul, SystemOneRequest
-from litjev.train.training import run_training
+from hde._legacy.prompting import ANSWER_BOUNDARY, build_thinking_messages, question_body
+from hde._legacy.routing import RoutingPolicy, escalation_gain, fast_confidence, should_escalate
+from hde.api import create_app
+from hde.backends.backend import SuffixStop, TransformersScorer
+from hde.backends.slots import SLOT_FORMAT
+from hde.data.collect import MAX_OPTIONS, collect_batch, load_records, save_records
+from hde.data.schema import Choice, DecisionSchema, Noul, SystemOneRequest
+from hde.train.training import run_training
 
 
 class CharTokenizer:
@@ -364,7 +364,7 @@ def test_a_record_scores_the_type_it_was_collected_under():
     bench path was right and only the collect path was wrong, and why the two
     disagreed by 60 accuracy points on the same items and model.
     """
-    from litjev.data.collect import Record, choice_form, gold_form
+    from hde.data.collect import Record, choice_form, gold_form
 
     # A score question answers with a level; the gold is an int.
     assert gold_form("3", "score") == 3
@@ -410,7 +410,7 @@ def test_collect_save_load_and_train(tmp_path):
     model = tiny_model()
     scorer = TransformersScorer(model, CharTokenizer(), feature_layers=(-1, 1))
     request = SystemOneRequest(
-        model="litjev",
+        model="hde",
         state="Answer.",
         questions={
             f"q{i}": Choice(instructions=f"Pick {i}", criteria={"A": "1", "B": "2"})
@@ -493,7 +493,7 @@ def test_collect_save_load_and_train(tmp_path):
 
 
 def test_cdpo_objective_trains_and_prefers_escalating_helpful_questions():
-    from litjev._legacy.heads import CDPOConfig, cdpo_loss
+    from hde._legacy.heads import CDPOConfig, cdpo_loss
 
     rng = np.random.default_rng(1)
     meta = HeadMetadata("m", "r", hidden_size=4, feature_layers=(-1,), hidden_width=16)
@@ -528,10 +528,10 @@ def test_cdpo_objective_trains_and_prefers_escalating_helpful_questions():
 
 
 def test_systemtwo_endpoint_passes_routing_and_keeps_standard_shape():
-    from litjev._legacy.decision import ChoiceAnswer, DecisionResponse, Evaluation, Usage
+    from hde._legacy.decision import ChoiceAnswer, DecisionResponse, Evaluation, Usage
 
     class RecordingEngine:
-        model_id = "litjev"
+        model_id = "hde"
 
         def __init__(self):
             self.calls = []
@@ -547,7 +547,7 @@ def test_systemtwo_endpoint_passes_routing_and_keeps_standard_shape():
     engine = RecordingEngine()
     client = TestClient(create_app(lambda: engine))
     body = {
-        "model": "litjev",
+        "model": "hde",
         "state": "s",
         "questions": {
             "q1": {"type": "choice", "instructions": "?", "criteria": {"A": "1", "B": "2"}}
@@ -572,7 +572,7 @@ def test_systemtwo_endpoint_passes_routing_and_keeps_standard_shape():
 
 
 def test_bench_policies_measures_time_tokens_and_accuracy():
-    from litjev.bench.routing_bench import bench_policies, format_table, mean_over_repeats
+    from hde.bench.routing_bench import bench_policies, format_table, mean_over_repeats
 
     class BenchHead(FakeHead):
         def predict(self, features):
@@ -598,7 +598,7 @@ def test_bench_policies_measures_time_tokens_and_accuracy():
     provider = FakeProvider()
     engine = SchemaDecisionEngine(provider, head=head, readout="coded")
     request = SystemOneRequest(
-        model="litjev",
+        model="hde",
         state="s",
         questions={
             "q1": Choice(instructions="Pick", criteria={"A": "1", "B": "2", "C": "3"}),
@@ -657,7 +657,7 @@ class SteadyHead(FakeHead):
 def bench_request():
     """The two questions FakeProvider scores; a schema it does not is refused."""
     return SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"q1": Choice(instructions="Pick", criteria={"A": "1", "B": "2", "C": "3"}),
                    "q2": Choice(instructions="Pick", criteria={"A": "1", "B": "2"})})
 
@@ -666,7 +666,7 @@ def test_the_bench_says_where_it_is_on_every_batch(capsys):
     """It printed every tenth batch and nothing during warmup, so a 27B run with a
     budget of 8192 and seven policies to a batch could go ten hours without a line.
     A log that says nothing cannot distinguish a slow job from a hung one."""
-    from litjev.bench.routing_bench import bench_policies
+    from hde.bench.routing_bench import bench_policies
 
     provider = FakeProvider()
     engine = SchemaDecisionEngine(provider, head=SteadyHead([]), readout="coded")
@@ -683,7 +683,7 @@ def test_the_bench_says_where_it_is_on_every_batch(capsys):
 
 
 def test_the_bench_can_still_be_asked_to_be_quiet(capsys):
-    from litjev.bench.routing_bench import bench_policies
+    from hde.bench.routing_bench import bench_policies
 
     engine = SchemaDecisionEngine(FakeProvider(), head=SteadyHead([]), readout="coded")
     bench_policies(engine, [(bench_request(), ["q1", "q2"])], {"q1": "C", "q2": "B"},
@@ -732,8 +732,8 @@ def test_a_resumed_bench_produces_the_same_summary_as_an_uninterrupted_one(tmp_p
     """
     import json
 
-    from litjev.bench.routing_bench import bench_policies
-    from litjev.run.streaming import Rows, completed
+    from hde.bench.routing_bench import bench_policies
+    from hde.run.streaming import Rows, completed
 
     def build():
         head = FakeHead([])
@@ -741,7 +741,7 @@ def test_a_resumed_bench_produces_the_same_summary_as_an_uninterrupted_one(tmp_p
         return SchemaDecisionEngine(FakeProvider(), head=head, readout="coded")
 
     request = SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"q1": Choice(instructions="Pick", criteria={"A": "1", "B": "2", "C": "3"}),
                    "q2": Choice(instructions="Pick", criteria={"A": "1", "B": "2"})},
     )
@@ -791,7 +791,7 @@ def test_the_resume_key_is_the_questions_and_not_the_batch_number():
     wrong questions, scoring one against another's gold answer -- the hazard
     `streaming.completed` was written for, worse here because a row covers a whole
     batch under one policy."""
-    from litjev.bench.routing_bench import batch_key
+    from hde.bench.routing_bench import batch_key
 
     assert batch_key(["q1", "q2"]) != batch_key(["q2", "q1"]), "order is part of the work"
     assert batch_key(["q1", "q2"]) != batch_key(["q1", "q3"])
@@ -805,7 +805,7 @@ def test_a_resume_on_another_machine_says_so_rather_than_averaging_two_clocks():
     silently mixed two machines. Refusing would make resume useless on Slurm, where
     a resubmission rarely lands on the same node, so the row carries where it was
     measured and the summary says when they differ."""
-    from litjev.bench.routing_bench import _summarise
+    from hde.bench.routing_bench import _summarise
 
     def row(policy, node, seconds):
         return {"policy": policy, "node": node, "seconds": seconds, "scored": 2,
@@ -826,13 +826,13 @@ def test_a_resume_on_another_machine_says_so_rather_than_averaging_two_clocks():
 
 
 def test_every_bench_row_records_the_machine_it_was_measured_on():
-    from litjev.bench.routing_bench import bench_policies
+    from hde.bench.routing_bench import bench_policies
 
     head = FakeHead([])
     head.predict = lambda features: np.array([[0.2, 0.1, 0.6, 0.1]])
     engine = SchemaDecisionEngine(FakeProvider(), head=head, readout="coded")
     request = SystemOneRequest(
-        model="litjev", state="s",
+        model="hde", state="s",
         questions={"q1": Choice(instructions="Pick", criteria={"A": "1", "B": "2", "C": "3"}),
                    "q2": Choice(instructions="Pick", criteria={"A": "1", "B": "2"})},
     )
@@ -851,8 +851,8 @@ def test_the_rows_header_the_benchmark_writes_round_trips_and_refuses_another_ru
 
     import pytest
 
-    from litjev.cli import bench_header
-    from litjev.run.streaming import Rows
+    from hde.cli import bench_header
+    from hde.run.streaming import Rows
 
     args = argparse.Namespace(
         model="qwen38-27b", backend="sglang", decision_head="head-27b-lastlayer.safetensors",
@@ -890,7 +890,7 @@ def test_averaging_repeats_keeps_which_machines_the_seconds_came_from():
     --repeats > 1 the thing tables are read from lost the node fields that had just
     been added one call down. code-reviewer's note; the transfer rerun uses
     --repeats 1 and so would not have shown it."""
-    from litjev.bench.routing_bench import mean_over_repeats
+    from hde.bench.routing_bench import mean_over_repeats
 
     def report(nodes, mixed, seconds):
         return {"policies": {"fast_only": {
@@ -924,8 +924,8 @@ def test_the_content_readout_returns_the_state_at_its_own_readout_position():
     vector in every option's row, which is why one state for the question is the
     right shape to return.
     """
-    from litjev._legacy.prompting import build_content_messages, unlabelled_suffix
-    from litjev.data.schema import Choice
+    from hde._legacy.prompting import build_content_messages, unlabelled_suffix
+    from hde.data.schema import Choice
 
     model = tiny_model()
     tokenizer = CharTokenizer()
@@ -960,7 +960,7 @@ def test_the_content_readout_returns_the_state_at_its_own_readout_position():
 def test_no_feature_layers_means_the_content_readout_returns_no_state():
     """And not a zero vector, which a head would read as a reading."""
     scorer = TransformersScorer(tiny_model(), CharTokenizer())
-    from litjev.data.schema import Choice
+    from hde.data.schema import Choice
 
     _, _, hidden = scorer.score_options(
         "Answer.", Choice(instructions="q", criteria={"A": "aa", "B": "bb"}),
@@ -978,7 +978,7 @@ def test_the_margin_rule_is_anyjevs_published_one_in_both_its_halves():
     only the threshold would route a different share of a long run, and the
     comparison would then be against a rule they did not publish.
     """
-    from litjev._legacy.routing import MarginPolicy, MarginRouter, top_two_margin
+    from hde._legacy.routing import MarginPolicy, MarginRouter, top_two_margin
 
     # The margin is a log-probability gap taken from the normalised
     # distribution, so it means the same thing under either readout; the raw
@@ -1024,9 +1024,9 @@ def test_the_margin_rule_is_anyjevs_published_one_in_both_its_halves():
 def test_a_margin_router_and_a_priced_policy_cannot_both_decide_one_question():
     """Two rules on one question makes the escalation rate unattributable: the
     row would say neither what the head did nor what the threshold did."""
-    from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-    from litjev._legacy.routing import MarginPolicy, MarginRouter, RoutingPolicy
-    from litjev.data.schema import Choice, DecisionSchema
+    from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+    from hde._legacy.routing import MarginPolicy, MarginRouter, RoutingPolicy
+    from hde.data.schema import Choice, DecisionSchema
 
     class TwoQuestions:
         def score(self, state, schema):
@@ -1060,9 +1060,9 @@ def test_an_escalation_under_the_margin_rule_gets_a_budget_to_think_with():
     `pass` left the suite green. This one records the budget the provider is
     handed, which is the quantity that was wrong.
     """
-    from litjev._legacy.decision import RawFieldScores, SchemaDecisionEngine
-    from litjev._legacy.routing import MarginPolicy, MarginRouter
-    from litjev.data.schema import Choice, DecisionSchema
+    from hde._legacy.decision import RawFieldScores, SchemaDecisionEngine
+    from hde._legacy.routing import MarginPolicy, MarginRouter
+    from hde.data.schema import Choice, DecisionSchema
 
     spent_against = []
 

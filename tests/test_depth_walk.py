@@ -7,7 +7,7 @@ depth -- which is the only thing the task exists to vary.
 
 import pytest
 
-from litjev.data.depth_walk import (
+from hde.data.depth_walk import (
     SYMBOLS,
     as_request,
     questions,
@@ -131,7 +131,7 @@ def test_the_demo_is_one_file_with_the_trace_inside_it():
     import tempfile
     from pathlib import Path
 
-    from litjev.games.film import build_compare
+    from hde.games.film import build_compare
 
     trace = {
         "schema_version": "litjev.compare.v1",
@@ -173,7 +173,7 @@ def test_a_trace_of_the_wrong_kind_is_refused():
 
     import pytest as _pytest
 
-    from litjev.games.film import build_compare
+    from hde.games.film import build_compare
 
     work = Path(tempfile.mkdtemp())
     source = work / "t.json"

@@ -16,9 +16,9 @@ import numpy as np
 import pytest
 
 from inference.sglang_backend import SGLangScorer, SGLangSettings
-from litjev.backends.backend import ModelSettings, TransformersScorer
-from litjev.core.prompts_utils import ANSWER_BOUNDARY
-from litjev.data.schema import Choice, SystemOneRequest
+from hde.backends.backend import ModelSettings, TransformersScorer
+from hde.core.prompts_utils import ANSWER_BOUNDARY
+from hde.data.schema import Choice, SystemOneRequest
 from test_inference_sglang import _RealEnoughTokenizer
 
 STATE = "A bag holds two red marbles."
@@ -143,7 +143,7 @@ def transformers_scorer(feature_layers=(), unified=True, code_offset=0):
 
 
 def request():
-    return SystemOneRequest(model="litjev", state=STATE, questions=SCHEMA)
+    return SystemOneRequest(model="hde", state=STATE, questions=SCHEMA)
 
 
 def test_the_two_backends_render_the_same_strings():

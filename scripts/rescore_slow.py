@@ -2,7 +2,7 @@
 
 A three-policy run records the whole response for every question, so a fault in
 reading the answer out of it is a scoring fault and not a generation fault. This
-reads the saved responses, extracts again with whatever `litjev.construct` now
+reads the saved responses, extracts again with whatever `hde.construct` now
 does, grades against the same gold answers, and writes a new record beside the
 old one.
 
@@ -26,8 +26,8 @@ import numpy as np
 
 
 def main():
-    from litjev.candidates.construct import balanced, correct, extract_answer
-    from litjev.run.streaming import write_json_atomic
+    from hde.candidates.construct import balanced, correct, extract_answer
+    from hde.run.streaming import write_json_atomic
 
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("record")

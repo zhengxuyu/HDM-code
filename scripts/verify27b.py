@@ -9,7 +9,7 @@ import glob
 
 import numpy as np
 
-from litjev.data.collect import open_records
+from hde.data.collect import open_records
 
 shards = sorted(glob.glob("results/records-27b-shard*.npz"))
 ids, fast, slow, cats = [], [], [], []
