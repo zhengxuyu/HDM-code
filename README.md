@@ -10,9 +10,9 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2611.16961-b31b1b)](https://arxiv.org/abs/2611.16961)
 [![weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--blocks-yellow)](https://huggingface.co/fredreick/HDM-blocks)
 
-*Rather than deciding how much to think, the model decides whether autoregressive
-generation is needed at all: a question costs either no token, or the T a reasoning
-pass takes.*
+***Zero-or-T thinking:*** *the model decides for itself whether a question needs
+autoregressive generation at all. An answer costs either no token, or the T a
+reasoning pass takes.*
 
 </div>
 
