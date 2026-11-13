@@ -117,14 +117,17 @@ what the caller sets is the price it has to clear. The dial on `/routing` is tha
 price, and moving it is the whole of the decision the paper is about.
 
 <div align="center">
-<img src="assets/playground.gif" alt="The routing page: one request at a price, and what each question did with it" width="92%">
+<video src="https://github.com/zhengxuyu/HDM-code/raw/main/assets/playground.mp4" controls muted playsinline width="92%">
+<a href="https://github.com/zhengxuyu/HDM-code/raw/main/assets/playground.mp4">The routing page, one request at a price (MP4)</a>
+</video>
 </div>
 
 <div align="center">
 <sub>One request, a price on the dial, and per question: the value of thinking, the fast
 mode's confidence, and how the two compared. A question whose value clears the price is
 answered by the slow mode; the rest are answered at no generated token. The same
-questions throughout, only the price changes. Recorded at twice speed.</sub>
+questions throughout, only the price changes. Recorded at twice speed; the text is
+readable at full size, which is why this one is a video and not a GIF.</sub>
 </div>
 
 ## The API
