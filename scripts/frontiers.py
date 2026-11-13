@@ -116,13 +116,13 @@ def main():
     if arguments.head:
         head = load_head(arguments.head)
         gains = np.array([escalation_gain(row) for row in head.predict(eval_features)])
-        curves["HTM head (served)"] = [frontier(gains, ft, st, tt)]
+        curves["HDM head (served)"] = [frontier(gains, ft, st, tt)]
         print(f"served head: {arguments.head.split('/')[-1]}, "
               f"layer {head.metadata.feature_layers}, pca {head.metadata.pca_dim}")
     else:
-        shapes = {"HTM head (layer -1, raw)": dict(width=256, pca=0, layers=(arguments.layer,),
+        shapes = {"HDM head (layer -1, raw)": dict(width=256, pca=0, layers=(arguments.layer,),
                                                    block=features, key="features"),
-                  "HTM head (layer -1, PCA-64)": dict(width=64, pca=64, layers=(arguments.layer,),
+                  "HDM head (layer -1, PCA-64)": dict(width=64, pca=64, layers=(arguments.layer,),
                                                       block=features, key="features"),
                   "stats-only head": dict(width=32, pca=0, layers=(), block=stats_block,
                                           key="stats_block")}

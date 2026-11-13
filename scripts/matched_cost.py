@@ -135,7 +135,7 @@ def main():
                          conversion(got, cell["fast"], spend),
                          marginal(x, y, spend, window)))
         for label, got, cost, ceiling, conv, marg in sorted(rows, key=lambda r: -r[4]):
-            name = label.replace("\\textsc{Htm}", "HTM")
+            name = label.replace("\\textsc{Hdm}", "HDM")
             if cost is None:
                 cheap, ratio = f"{'never':>13s}", f"{'--':>7s}"
             else:
@@ -148,7 +148,7 @@ def main():
         grid = np.linspace(cell["slow_tokens"] / 8, cell["slow_tokens"], 8)
         order = [l for l, *_ in sorted(rows, key=lambda r: -r[4])]
         print(f"    {'tok':>6s} " + " ".join(
-            f"{l.replace(chr(92)+chr(92)+'textsc{Htm}','HTM')[:13]:>15s}" for l in order))
+            f"{l.replace(chr(92)+chr(92)+'textsc{Hdm}','HDM')[:13]:>15s}" for l in order))
         for budget in grid:
             cells = []
             for label in order:

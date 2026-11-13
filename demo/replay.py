@@ -200,7 +200,7 @@ def reasoning_panel(overlay, draw, step, into, scale, width, height):
 # What each policy is called on screen. `routed` is the method, so it carries
 # the method's name; `instant` described how a step felt rather than which mode
 # produced it.
-SHOWN = {"routed": "HTM", "slow": "SLOW", "fast": "FAST"}
+SHOWN = {"routed": "HDM", "slow": "SLOW", "fast": "FAST"}
 
 
 def tokens_by(spans, moment):

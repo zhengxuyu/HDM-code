@@ -160,9 +160,9 @@ def main():
         keep = np.asarray(held, dtype=bool)
 
     blocks = {
-        "HTM head (layer -1, raw)": dict(width=256, pca=0, layers=(arguments.layer,),
+        "HDM head (layer -1, raw)": dict(width=256, pca=0, layers=(arguments.layer,),
                                          key="features"),
-        "HTM head (layer -1, PCA-64)": dict(width=64, pca=64, layers=(arguments.layer,),
+        "HDM head (layer -1, PCA-64)": dict(width=64, pca=64, layers=(arguments.layer,),
                                             key="features"),
         "stats-only head": dict(width=32, pca=0, layers=(), key="stats_block"),
     }
@@ -234,7 +234,7 @@ def main():
             results[name].append(trial)
         print(f"  seed {seed}", end="\r", flush=True)
 
-    served = results["HTM head (layer -1, raw)"]
+    served = results["HDM head (layer -1, raw)"]
     reference = [float(np.mean([trial["priced"][index]["escalation"] for trial in served]))
                  for index in range(len(prices))]
     for name in eval_scores:
@@ -281,7 +281,7 @@ def main():
         index = int(np.argmin(np.abs(prices - lam)))
         print(f"\n  lambda = {prices[index]:+.2f}, rate {reference[index]:.1%}")
         print(f"    {'router':30s} {'esc':>7s} {'acc':>7s} {'tok/q':>8s} {'reward':>8s}")
-        for name in list(eval_scores) + ["HTM head (layer -1, raw)"]:
+        for name in list(eval_scores) + ["HDM head (layer -1, raw)"]:
             key = "matched" if name in eval_scores else "priced"
             esc, _ = summarise(name, key, index, "escalation")
             accuracy, _ = summarise(name, key, index, "accuracy")
@@ -295,7 +295,7 @@ def main():
                        ("fitted", "head thresholded on the fitting set, like the statistics")):
         print(f"  against the {label}")
         head_reward = np.asarray([[cell["reward"] for cell in trial[key]]
-                                  for trial in results["HTM head (layer -1, raw)"]]
+                                  for trial in results["HDM head (layer -1, raw)"]]
                                  ).mean(axis=0)
         for name in eval_scores:
             their = np.asarray([cell["reward"] for cell in results[name][0][key]])

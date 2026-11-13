@@ -19,12 +19,15 @@ reasoning pass takes.*
 ---
 
 <div align="center">
-<img src="assets/demo.gif" alt="One browser task under three policies" width="88%">
+<img src="assets/demo.gif" alt="One browser task under two policies, side by side on one clock" width="88%">
 </div>
 
 <div align="center">
-<sub><b>One task, three policies, one clock.</b> Never thinking, always thinking, and the
-block deciding per step. <code>demo/</code> has the harness.</sub>
+<sub><b>One task, two policies, one clock.</b> Always thinking on the left, HDM
+deciding per step on the right, each step held for the time it actually took. Both
+reach the page: always thinking in 101.8&nbsp;s, HDM in 43.4&nbsp;s on 186 generated
+tokens, having thought through one of the five steps. <code>demo/</code> has the
+harness.</sub>
 </div>
 
 ---

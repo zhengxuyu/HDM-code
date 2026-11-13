@@ -1,4 +1,4 @@
-"""HTM + CDPO against its baselines on BrowserGym, which is the paper's missing result.
+"""HDM + CDPO against its baselines on BrowserGym, which is the paper's missing result.
 
 Every head that produces a number in the paper is `objective: supervised`, and
 CDPO's only evidence is a 4B ablation in the one regime its own appendix says the

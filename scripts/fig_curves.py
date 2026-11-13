@@ -20,10 +20,10 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "paper-assets/figures/fig_curves.pdf"
 
-# Deliberately not Matplotlib's default palette. HTM is the only heavy, solid,
+# Deliberately not Matplotlib's default palette. HDM is the only heavy, solid,
 # saturated curve; the baselines remain distinguishable in greyscale by dashing.
 STYLES = {
-    "HTM (ours)": dict(color="#17365D", lw=2.15, ls="-", zorder=6),
+    "HDM (ours)": dict(color="#17365D", lw=2.15, ls="-", zorder=6),
     "Fast confidence": dict(color="#C44E38", lw=1.15, ls=(0, (4.0, 1.6)), zorder=4),
     "ThinkSwitcher*": dict(color="#16817A", lw=1.15, ls=(0, (2.0, 1.3)), zorder=5),
     "KNN-Router*": dict(color="#76528B", lw=1.05, ls=(0, (1.0, 1.25)), zorder=3),
@@ -52,7 +52,7 @@ def load_curves():
         routers = json.load(stream)["curves"]
 
     curves = {
-        "HTM (ours)": tuple(cell["htm"]),
+        "HDM (ours)": tuple(cell["htm"]),
         "Fast confidence": tuple(cell["confidence"]),
         "ThinkSwitcher*": ([row["tokens"] for row in switch],
                             [row["accuracy"] for row in switch]),

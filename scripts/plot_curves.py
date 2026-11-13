@@ -40,7 +40,7 @@ import numpy as np
 # One colour and dash per rule, shared across panels. Ours is the only solid
 # heavy line; the reproduced baselines are dashed, random is dotted.
 STYLE = {
-    "\\textsc{Htm} (ours)":      dict(color="#1b3a6b", lw=2.0, ls="-",  zorder=5),
+    "\\textsc{Hdm} (ours)":      dict(color="#1b3a6b", lw=2.0, ls="-",  zorder=5),
     "Fast confidence":           dict(color="#c2541c", lw=1.4, ls=(0, (2.4, 1.2))),
     "ThinkSwitcher (reproduced)": dict(color="#2e7d4f", lw=1.2, ls=(0, (1.6, 1.4))),
     "KNN-Router (reproduced)":   dict(color="#7b4fa0", lw=1.2, ls=(0, (3.4, 1.2, 0.8, 1.2))),
@@ -54,14 +54,14 @@ STYLE = {
 # In the legend a reproduced method is starred and the legend's title says what the
 # star means, because spelling "(reproduced)" out six times over makes the legend
 # wider than the empty corner it has to fit in.
-SHORT = {"\\textsc{Htm} (ours)": "HTM (ours)", "Fast confidence": "Fast confidence",
+SHORT = {"\\textsc{Hdm} (ours)": "HDM (ours)", "Fast confidence": "Fast confidence",
          "ThinkSwitcher (reproduced)": "ThinkSwitcher*",
          "KNN-Router (reproduced)": "KNN-Router*",
          "RouteLLM (reproduced)": "RouteLLM*", "Random": "Random"}
 
 # A marker per rule for the scatter. Ours is the filled one; every baseline is open,
 # so where they land on top of us the fill still reads.
-MARKER = {"\\textsc{Htm} (ours)": ("o", True, 11),
+MARKER = {"\\textsc{Hdm} (ours)": ("o", True, 11),
           "Fast confidence": ("s", False, 9),
           "ThinkSwitcher (reproduced)": ("v", False, 9),
           "KNN-Router (reproduced)": ("^", False, 9),
@@ -122,7 +122,7 @@ def read_at(tokens, accuracy, budgets):
 def lines_for(venue, model, ours, extra):
     """Every rule's (tokens, accuracy) for one panel, as a dict of label to pair."""
     cell = ours[f"{venue},{model}"]
-    out = {"\\textsc{Htm} (ours)": tuple(cell["htm"]),
+    out = {"\\textsc{Hdm} (ours)": tuple(cell["htm"]),
            "Fast confidence": tuple(cell["confidence"])}
     for label, path in extra.items():
         if not path or not pathlib.Path(path).exists():
@@ -291,7 +291,7 @@ def main():
         best = max(row.values())
         print(f"  {model}")
         for label, area in sorted(row.items(), key=lambda kv: -kv[1]):
-            name = label.replace("\\textsc{Htm}", "HTM")
+            name = label.replace("\\textsc{Hdm}", "HDM")
             print(f"    {name:30s} {area:.4f}  ({area - best:+.4f})")
 
 
