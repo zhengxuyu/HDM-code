@@ -122,14 +122,14 @@ confidence, and how the value compared with the price. A question that clears th
 price is answered by the slow mode; the rest are answered at no generated token.
 
 <div align="center">
-<video src="https://github.com/user-attachments/assets/baa4a60f-b50e-49ac-a011-7762be1c7af8" controls muted playsinline></video>
+<video src="https://github.com/user-attachments/assets/51a720b3-2d1f-4a82-a9f2-a7a7fbc2fc57" controls muted playsinline></video>
 </div>
 
 <div align="center">
-<sub>The page over several prices, in real time. The price each run used is in
-the result panel's corner, beside how many of the four questions it escalated.
-Nothing about the model changes between runs; only &lambda; does. Full size in the
-player's fullscreen button.</sub>
+<sub>The same four questions at two prices. At &lambda;&nbsp;=&nbsp;&minus;1 all four
+escalate and the run costs 1782 generated tokens; at &lambda;&nbsp;=&nbsp;0.42 two of
+them do. The price each run used is in the result panel's corner. Nothing about the
+model changes between runs. Answered by the 4B; played at 1.6&times; speed.</sub>
 </div>
 
 ## The API
