@@ -25,7 +25,11 @@ preferred-citation:
   type: article
   title: "The Value of Thinking: Learning When to Reason in Hybrid Decision Models"
   year: 2026
-  notes: "Preprint."
+  journal: "arXiv preprint arXiv:2611.16961"
+  identifiers:
+    - type: other
+      value: "arXiv:2611.16961"
+  url: "https://arxiv.org/abs/2611.16961"
   authors:
     - family-names: Yu
       given-names: Zhengxu

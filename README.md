@@ -3,11 +3,11 @@
 # HDM &nbsp;·&nbsp; a hybrid decision model
 
 **Official implementation of**
-### The Value of Thinking: Learning When to Reason in Hybrid Decision Models
+### [The Value of Thinking: Learning When to Reason in Hybrid Decision Models](https://arxiv.org/abs/2611.16961)
 
 [![licence](https://img.shields.io/badge/licence-Apache%202.0-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
-[![paper](https://img.shields.io/badge/paper-preprint-orange)](#citation)
+[![arXiv](https://img.shields.io/badge/arXiv-2611.16961-b31b1b)](https://arxiv.org/abs/2611.16961)
 [![weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--blocks-yellow)](https://huggingface.co/fredreick/HDM-blocks)
 
 *One backbone, two decision modes, and a learned block that prices thinking
@@ -181,11 +181,14 @@ fitted on, and the two places where a simpler rule scores higher.
 
 ```bibtex
 @article{yu2026valueofthinking,
-  title  = {The Value of Thinking: Learning When to Reason in Hybrid Decision Models},
-  author = {Yu, Zhengxu and Xu, Ke and Fang, Meng and Ammar, Haitham and
-            Luo, Weilin and Wang, Jun},
-  year   = {2026},
-  note   = {Preprint}
+  title         = {The Value of Thinking: Learning When to Reason in Hybrid Decision Models},
+  author        = {Yu, Zhengxu and Xu, Ke and Fang, Meng and Ammar, Haitham and
+                   Luo, Weilin and Wang, Jun},
+  journal       = {arXiv preprint arXiv:2611.16961},
+  year          = {2026},
+  eprint        = {2611.16961},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI}
 }
 ```
 
