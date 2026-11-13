@@ -87,17 +87,6 @@ rest are not. Then open <http://127.0.0.1:8000>:
 Drop `--decision-head` and the fast mode still answers; there is simply nothing
 to route on, and `/routing` will say so.
 
-<div align="center">
-<img src="assets/playground.gif" alt="The routing page: one request at a price, and what each question did with it" width="92%">
-</div>
-
-<div align="center">
-<sub>The page at work. One request, a price on the dial, and per question: the value of
-thinking, the fast mode's confidence, and how the two compared. A question whose value
-clears the price is answered by the slow mode; the rest are answered at no generated
-token. Recorded at twice speed.</sub>
-</div>
-
 On a GPU large enough for the 27B, the slow mode is far faster through SGLang:
 
 ```bash
@@ -116,6 +105,23 @@ block fitted for another backbone rather than reading noise.
 [`docs/deploy.md`](docs/deploy.md) has the rest: verifying the engine returns what
 the block was trained on, running the decision service for agent loops, and
 containers.
+
+## Setting a price, live
+
+The value of thinking is not a setting of the model: it is read per question, and
+what the caller sets is the price it has to clear. The dial on `/routing` is that
+price, and moving it is the whole of the decision the paper is about.
+
+<div align="center">
+<img src="assets/playground.gif" alt="The routing page: one request at a price, and what each question did with it" width="92%">
+</div>
+
+<div align="center">
+<sub>One request, a price on the dial, and per question: the value of thinking, the fast
+mode's confidence, and how the two compared. A question whose value clears the price is
+answered by the slow mode; the rest are answered at no generated token. The same
+questions throughout, only the price changes. Recorded at twice speed.</sub>
+</div>
 
 ## The API
 
