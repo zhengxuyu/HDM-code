@@ -205,6 +205,18 @@ def test_the_slider_reaches_past_where_the_gain_commonly_sits():
     assert maximum > 1.0, slider
 
 
+def test_the_served_pages_carry_the_engine_name():
+    """The brand split the old name across a span, `Lit<span>Jev</span>`, so the
+    rename's word-level sweep passed over it and the served pages kept showing a
+    name the project no longer uses while their titles already said HDE.
+    """
+    static = Path(__file__).resolve().parents[1] / "src/hde/static"
+    for page in ("routing.html", "index.html", "compare.html"):
+        markup = (static / page).read_text()
+        assert "Jev</span>" not in markup, page
+        assert '<a href="/" class="brand">HDE</a>' in markup, page
+
+
 def test_the_routing_page_describes_the_gain_the_engine_computes():
     """The page explains the rule it is demonstrating, so the explanation is a
     claim about the code and can be wrong. It said `v = o[2] - o[1]`, a
