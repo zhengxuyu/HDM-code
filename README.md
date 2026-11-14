@@ -20,7 +20,7 @@ reasoning pass takes.*
 
 ## Updates
 
-- **2026-11-14** &nbsp; The decision service now supports image input.
+- **2026-11-14** &nbsp; The decision service now supports image input ([how to use it](#image-input)).
 
 ---
 
@@ -193,6 +193,35 @@ A request body is `state` (text) and, for `/fast` and `/slow`, `actions`. Three 
 
 `inference.client.DecisionClient` is standard library only, so an environment with
 its own dependencies can talk to the service without carrying torch.
+
+### Image input
+
+Send the image beside the text; nothing else about the request changes. The backbone has
+to be a vision-language model (the Qwen3.5 backbones are).
+
+```python
+import base64
+from inference.client import DecisionClient
+
+client = DecisionClient("http://127.0.0.1:30001")
+image = base64.b64encode(open("screenshot.png", "rb").read()).decode()
+
+fast = client.fast("Which button submits the form?", ["the green one", "the grey one"], image=image)
+slow = client.slow("Which button submits the form?", ["the green one", "the grey one"],
+                   budget=256, image=image)          # the same image /fast saw
+assert fast["image_digest"] == slow["image_digest"]
+```
+
+Over plain HTTP it is one more field in the body, on `/fast`, `/slow` and `/solve`:
+
+```bash
+curl -s http://127.0.0.1:30001/fast -H 'Content-Type: application/json' -d "{
+  \"state\": \"Which button submits the form?\",
+  \"actions\": [\"the green one\", \"the grey one\"],
+  \"image\": \"$(base64 < screenshot.png | tr -d '\n')\"}"
+```
+
+PNG or JPEG, at most 1 megapixel and 4 MB.
 
 ## The blocks
 
