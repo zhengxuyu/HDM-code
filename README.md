@@ -18,6 +18,19 @@ reasoning pass takes.*
 
 ---
 
+## Updates
+
+- **2026-11-14** &nbsp; **Image input.** The decision service now takes visual states:
+  `/fast`, `/slow` and `/solve` accept an `image` (base64 PNG/JPEG or a data URL) beside
+  the text, on any backbone that is a vision-language model. The fast mode still
+  generates no token: the image is placed before the text, so the readout position does
+  not move. Two more request fields arrive with it: `prefix`, the part of a state that
+  does not change between requests, laid out so the engine's prefix cache can serve it;
+  and `sampling`, the decoding of one request's reasoning. See
+  [Routing inside an agent loop](#routing-inside-an-agent-loop).
+
+---
+
 <div align="center">
 <img src="assets/demo.gif" alt="One browser task under two policies, side by side on one clock" width="88%">
 </div>
