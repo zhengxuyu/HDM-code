@@ -177,6 +177,14 @@ python -m inference.decision_service \
 | `POST /solve` | lets the slow mode write an action where the environment can take one |
 | `GET /health` | which block is loaded, down to a digest of its weights |
 
+A request body is `state` (text) and, for `/fast` and `/slow`, `actions`. Three optional fields:
+
+| field | routes | what it does |
+|---|---|---|
+| `image` | `/fast`, `/slow`, `/solve` | a base64 PNG/JPEG or a data URL: the state is then the text *and* the image. The image is placed before the text, so the readout position does not move; send the same image to `/slow` that `/fast` saw (the answers carry `image_digest` to check it) |
+| `prefix` | `/fast`, `/slow` | the part of the state that does not change between requests. The prompt becomes prefix, question and options, then `state`, so consecutive requests share their beginning and the engine's prefix cache serves it |
+| `sampling` | `/slow` | decoding parameters for this request's reasoning (`temperature`, `top_p`, `top_k`, ...). The default is greedy; `HDM_THINK_SAMPLING` (a JSON object in the environment) sets a service-wide default. Candidate reads are always greedy |
+
 `inference.client.DecisionClient` is standard library only, so an environment with
 its own dependencies can talk to the service without carrying torch.
 
