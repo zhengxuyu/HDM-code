@@ -20,7 +20,7 @@ reasoning pass takes.*
 
 ## Updates
 
-- **2026-11-14** &nbsp; The decision service now supports image input ([how to use it](#image-input)).
+- **2026-11-15** &nbsp; The decision service now supports image input ([how to use it](#image-input)).
 
 ---
 
