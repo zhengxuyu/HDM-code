@@ -56,7 +56,7 @@ class DecisionClient:
     def health(self):
         return self._call("/health")
 
-    def fast(self, state, actions, want_hidden=False):
+    def fast(self, state, actions, want_hidden=False, image=None):
         """The fast distribution, and the head's input state when asked for it.
 
         `want_hidden` is for training: CDPO learns from the readout hidden state
@@ -66,15 +66,19 @@ class DecisionClient:
         which is not the 48 MB this service exists to avoid: that was sglang's own
         server encoding every prompt position.
         """
-        answer = self._call("/fast", {"state": state, "actions": list(actions),
-                                      "want_hidden": bool(want_hidden)})
+        body = {"state": state, "actions": list(actions), "want_hidden": bool(want_hidden)}
+        if image is not None:   # base64 PNG/JPEG or a data URL
+            body["image"] = image
+        answer = self._call("/fast", body)
         if want_hidden and answer.get("hidden"):
             answer["hidden_state"] = _decode_hidden(answer["hidden"])
         return answer
 
-    def slow(self, state, actions, budget):
-        return self._call("/slow", {"state": state, "actions": list(actions),
-                                    "budget": int(budget)})
+    def slow(self, state, actions, budget, image=None):
+        body = {"state": state, "actions": list(actions), "budget": int(budget)}
+        if image is not None:   # must be the image /fast saw, so both modes read one observation
+            body["image"] = image
+        return self._call("/slow", body)
 
     def solve(self, state, instructions, budget):
         """The slow mode writing its answer, with no candidate set.

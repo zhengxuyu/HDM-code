@@ -47,7 +47,7 @@ class _HttpEngine:
 
     def generate(self, prompt=None, sampling_params=None, return_logprob=False,
                  token_ids_logprob=None, return_hidden_states=False, input_ids=None,
-                 logprob_start_len=None):
+                 logprob_start_len=None, image_data=None):
         payload = {"sampling_params": sampling_params,
                    "return_logprob": return_logprob,
                    "return_hidden_states": return_hidden_states}
@@ -61,6 +61,9 @@ class _HttpEngine:
             payload["token_ids_logprob"] = token_ids_logprob
         if logprob_start_len is not None:
             payload["logprob_start_len"] = logprob_start_len
+        # SGLang's HTTP /generate takes image_data like the in-process Engine.
+        if image_data is not None:
+            payload["image_data"] = image_data
         request = urllib.request.Request(
             f"{self.base_url}/generate",
             data=json.dumps(payload).encode(),

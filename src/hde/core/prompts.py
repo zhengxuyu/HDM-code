@@ -50,10 +50,41 @@ def build_messages(state, body):
     or reason aloud" or "think it through first" is what used to force two
     renders, and the thinking block already carries that distinction.
     """
+    # A state may carry a `prefix` (see PrefixedState) -- text that stays the same from one
+    # request to the next. It goes first, then the question with its options, then the
+    # changing state, so that consecutive requests share everything up to the changing part
+    # and the engine's prefix cache can serve it.
+    prefix = getattr(state, "prefix", None)
+    if prefix:
+        content = prefix + "\n\n" + body + "\n\n" + state_text(state)
+    else:
+        content = state_text(state) + "\n\n" + body
     return [
         {"role": "system", "content": UNIFIED_SYSTEM},
-        {"role": "user", "content": state_text(state) + "\n\n" + body},
+        {"role": "user", "content": content},
     ]
+
+
+class PrefixedState(str):
+    """A text state with an unchanging part that the prompt places before the question.
+
+    A caller that asks about a slowly changing situation many times a second sends mostly the
+    same text every time. Split into `prefix` (what stays) and the state proper (what changes),
+    the prompt becomes `prefix`, question and options, then the state -- so consecutive requests
+    share a long common beginning and the engine's prefix cache serves it.
+
+    Args:
+        text: the changing part of the state; this is the string itself.
+        prefix: the unchanging part, placed first in the user turn. Empty: the state is laid
+            out as a plain string is.
+    """
+
+    prefix = ""
+
+    def __new__(cls, text, prefix=""):
+        self = super().__new__(cls, text)
+        self.prefix = prefix
+        return self
 
 
 def build_decision_messages(state, schema=None):
@@ -93,7 +124,9 @@ def build_content_messages(state, schema=None):
                 "explain or reason aloud."
             ),
         },
-        {"role": "user", "content": state_text(state)},
+        # a state's unchanging part (PrefixedState) stays in front of the changing part
+        {"role": "user", "content": (getattr(state, "prefix", None) + "\n\n" + state_text(state)
+                                     if getattr(state, "prefix", None) else state_text(state))},
     ]
 
 def build_open_thinking_messages(state, question):

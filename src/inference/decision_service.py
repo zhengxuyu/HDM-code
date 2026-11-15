@@ -132,11 +132,36 @@ class DecisionService:
             answer["hidden"] = encode_hidden(hidden)
         return answer
 
-    def slow(self, state, actions, budget):
+    def slow(self, state, actions, budget, sampling=None):
+        """The slow distribution: reason for up to `budget` tokens, then read the candidates.
+
+        Args:
+            state: the state, text or visual.
+            actions: the candidate actions.
+            budget: the most tokens the reasoning may take.
+            sampling: decoding parameters for this request's reasoning (see
+                `sglang_backend.SAMPLING_KEYS`); None uses the service default.
+
+        Returns:
+            A dict with `probabilities` (one per action), `generated_tokens`, `truncated`
+            (the reasoning did not close within the budget, so the read followed a forced
+            close), `reasoning` (the text) and `seconds`.
+
+        Raises:
+            ValueError: an unknown key in `sampling`.
+        """
         started = time.perf_counter()
-        probabilities, generated, reasoning = self.scorer.slow(state, actions, budget)
+        from inference.sglang_backend import THINK_SAMPLING, clean_sampling
+        token = THINK_SAMPLING.set(clean_sampling(sampling))
+        try:
+            probabilities, generated, reasoning = self.scorer.slow(state, actions, budget)
+        finally:
+            THINK_SAMPLING.reset(token)
         return {"probabilities": [float(p) for p in probabilities],
                 "generated_tokens": int(generated),
+                # The thinking block never closed within the budget, so the read
+                # followed a forced close (see sglang_backend._generate_then_read).
+                "truncated": "</think>" not in (reasoning or ""),
                 # Carried so a caller can show what the escalation bought. The
                 # answer is still read from the candidate codes; nothing is
                 # parsed out of this.
@@ -217,12 +242,112 @@ class DecisionService:
                 "head_digest": self.head_digest()}
 
 
-def _handler(service):
+PNG_SIGNATURE = b"\x89PNG"
+IMAGE_HEAD_CHARS = 16          # enough base64 to decode the file signature
+IMAGE_DIGEST_CHARS = 16        # hex characters of the image digest carried in an answer
+
+
+def _state_of(body):
+    """The request's state: visual when the body carries an `image`.
+
+    `image` is a base64 PNG/JPEG or a data URL. It is validated once with
+    `hde.vision.decode_image` (<= 1 MP, <= 4 MB, PNG/JPEG only) and the original
+    string is passed down as a data URL -- SGLang's `image_data` takes one, so the
+    image is never decoded and re-encoded on the request path.
+
+    Args:
+        body: the request body: `state` (text), and optionally `prefix` (the unchanging
+            part of the state, see `hde.core.prompts.PrefixedState`) and `image`.
+
+    Returns:
+        The text state (a `PrefixedState` when a prefix was given), or an
+        `EncodedVisualState` of it when an image was given.
+
+    Raises:
+        KeyError: no `state` in the body.
+        ValueError: the prefix or the state is not text, or the image is not a valid
+            PNG/JPEG within the size limits.
+    """
+    image = body.get("image")
+    text = body["state"]
+    if body.get("prefix"):
+        from hde.core.prompts import PrefixedState
+
+        if not isinstance(text, str) or not isinstance(body["prefix"], str):
+            raise ValueError("prefix needs a text state")
+        text = PrefixedState(text, body["prefix"])
+    if not image:
+        return text
+    from hde.vision import decode_image
+    from inference.sglang_backend import EncodedVisualState
+
+    decode_image(image)   # validation only; raises ValueError -> HTTP 400
+    if not image.startswith("data:"):
+        import base64
+
+        head = base64.b64decode(image[:IMAGE_HEAD_CHARS] + "=" * (-len(image[:IMAGE_HEAD_CHARS]) % 4))
+        kind = "png" if head.startswith(PNG_SIGNATURE) else "jpeg"
+        image = f"data:image/{kind};base64,{image}"
+    return EncodedVisualState(text, image)
+
+
+def _image_digest(body):
+    """A short digest of the request image, so a caller can check /slow saw /fast's image.
+
+    Args:
+        body: the request body.
+
+    Returns:
+        The first `IMAGE_DIGEST_CHARS` hex characters of the SHA-256 of the image string as
+        it was sent, or None for a request without an image.
+    """
+    image = body.get("image")
+    if not image:
+        return None
+    return hashlib.sha256(image.encode()).hexdigest()[:IMAGE_DIGEST_CHARS]
+
+
+def _tagged(answer, body):
+    """Say in an answer whether the request was visual, and which image it carried.
+
+    Args:
+        answer: the answer dict; `visual` and `image_digest` are added to it.
+        body: the request body.
+
+    Returns:
+        The same `answer`.
+    """
+    answer["visual"] = bool(body.get("image"))
+    answer["image_digest"] = _image_digest(body)
+    return answer
+
+
+def request_handler(service):
+    """The HTTP request handler class that serves a service's routes.
+
+    Args:
+        service: the object the routes call: `fast`, `slow`, `solve`, `health`.
+
+    Returns:
+        A `BaseHTTPRequestHandler` subclass bound to `service`. A caller that adds a route or
+        reads an extra request field subclasses it.
+    """
     class Handler(BaseHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
 
         def log_message(self, *_):
             """Quiet: the interesting timings are the ones the caller records."""
+
+        # The headers and the body used to leave as two small TCP segments; with Nagle's
+        # algorithm the second waits for the client's delayed ACK of the first -- 40 ms on every
+        # answer, as much as a small model's whole forward pass. One buffered write, no delay.
+        wbufsize = 1 << 16
+
+        def setup(self):
+            """Open the connection with Nagle's algorithm off (see `wbufsize`)."""
+            super().setup()
+            import socket
+            self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
         def _send(self, code, body):
             payload = json.dumps(body).encode()
@@ -231,6 +356,7 @@ def _handler(service):
             self.send_header("Content-Length", str(len(payload)))
             self.end_headers()
             self.wfile.write(payload)
+            self.wfile.flush()
 
         def do_GET(self):
             if self.path.rstrip("/") in ("/health", ""):
@@ -251,14 +377,16 @@ def _handler(service):
             route = self.path.rstrip("/")
             try:
                 if route == "/fast":
-                    self._send(200, service.fast(
-                        body["state"], body["actions"],
-                        want_hidden=bool(body.get("want_hidden", False))))
+                    self._send(200, _tagged(service.fast(
+                        _state_of(body), body["actions"],
+                        want_hidden=bool(body.get("want_hidden", False))), body))
                 elif route == "/slow":
-                    self._send(200, service.slow(body["state"], body["actions"],
-                                                 int(body.get("budget", 256))))
+                    self._send(200, _tagged(service.slow(_state_of(body), body["actions"],
+                                                         int(body.get("budget", 256)),
+                                                         sampling=body.get("sampling")), body))
                 elif route == "/solve":
-                    self._send(200, service.solve(body["state"],
+                    # the free-form mode sees the image too; it takes no prefix
+                    self._send(200, service.solve(_state_of({"state": body["state"], "image": body.get("image")}),
                                                   body.get("instructions", ""),
                                                   int(body.get("budget", 256))))
                 else:
@@ -269,6 +397,9 @@ def _handler(service):
                 self._send(500, {"error": repr(problem)})
 
     return Handler
+
+
+_handler = request_handler      # the name this had before it was part of the interface
 
 
 class ConcurrentEngine:
@@ -323,12 +454,17 @@ def head_device(choice="auto"):
 
 
 def build_service(model_id, head_path, *, sglang_url=None, revision="main",
-                  instructions=None, mem_fraction_static=0.8, device="auto"):
+                  instructions=None, mem_fraction_static=0.8, device="auto",
+                  attention_backend=None, torchao_config=None, extra_engine_kwargs=None,
+                  head_model_id=None, step_scorer=None):
     """The service, on top of whichever SGLang the caller points it at.
 
     `sglang_url` uses a server that is already running, which is the usual case
     on a cluster: one job holds the GPU and this sits beside it. Without one an
     engine is started in this process.
+
+    `step_scorer` is the class that turns a backend into the scorer of one step; None uses
+    `StepScorer`. A caller that reads the fast distribution another way passes a subclass.
     """
     from slime_hdm import StepScorer
 
@@ -344,16 +480,26 @@ def build_service(model_id, head_path, *, sglang_url=None, revision="main",
     else:
         from inference import SGLangScorer, SGLangSettings
 
+        # Some GPU generations only run Qwen3.5's hybrid GDN under the triton or trtllm_mha
+        # attention backend; a head fitted under another backend sees slightly different
+        # kernels, as with any backend change.
+        engine_kwargs = {} if not attention_backend else {"attention_backend": attention_backend}
+        if torchao_config:      # online weight quantization at load, e.g. int4wo-128
+            engine_kwargs["torchao_config"] = torchao_config
+        engine_kwargs.update(extra_engine_kwargs or {})   # e.g. tp_size, quantization, kv_cache_dtype
         provider = SGLangScorer.load(SGLangSettings(
             model_id=model_id, revision=revision, feature_layers=layers,
-            batch_questions=False, mem_fraction_static=mem_fraction_static))
+            batch_questions=False, mem_fraction_static=mem_fraction_static,
+            engine_kwargs=engine_kwargs))
         # Rebuilt around a thread-safe engine rather than mutated, so every
         # per-thread clone below gets the same one.
         provider = type(provider)(ConcurrentEngine(provider.engine), provider.tokenizer,
                                   provider.settings, provider.hidden_size)
 
+    scorer_class = step_scorer or StepScorer
+
     def wrap(backend):
-        return StepScorer(backend) if instructions is None else StepScorer(backend, instructions)
+        return scorer_class(backend) if instructions is None else scorer_class(backend, instructions)
 
     def per_thread():
         """A scorer for this thread: fresh tokenizer, the same engine."""
@@ -366,30 +512,83 @@ def build_service(model_id, head_path, *, sglang_url=None, revision="main",
 
     # The stage this path did not have: a head served against another model, or
     # under a readout whose numbers mean something else, used to raise nothing.
-    head = attach_head(head, provider, model_id, revision)
+    # head_model_id: serve a head against weights other than those it was trained on (e.g. a
+    # quantized copy). Only the identity check uses it; the weights still come from model_id.
+    if head_model_id and head_model_id != model_id:
+        print(f"WARNING decision head identity check overridden: head trained for {head_model_id}, "
+              f"serving {model_id}", flush=True)
+    head = attach_head(head, provider, head_model_id or model_id, revision)
     return DecisionService(wrap(provider), head, per_thread=per_thread)
 
 
-def main():
+def build_parser():
+    """The command line of the service.
+
+    Returns:
+        The argument parser; a caller that serves an extended service adds its own options
+        to it before parsing.
+    """
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--model", required=True)
     parser.add_argument("--head", help="omit to serve the two modes without a router")
     parser.add_argument("--sglang-url", help="an SGLang server to use instead of starting one")
     parser.add_argument("--revision", default="main")
+    parser.add_argument("--head-model-id", default=None,
+                        help="model id the head was trained for, when serving it on other weights "
+                             "(overrides the identity check; the head may be miscalibrated)")
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=30001)
     parser.add_argument("--mem-fraction-static", type=float, default=0.8)
     parser.add_argument("--head-device", default="auto",
                         help="auto puts the head on the GPU the backbone is on")
-    arguments = parser.parse_args()
+    parser.add_argument("--attention-backend", default=None,
+                        help="SGLang attention backend, e.g. triton")
+    parser.add_argument("--engine-kwargs", default=None,
+                        help='extra sgl.Engine arguments as JSON, e.g. {"tp_size": 2}')
+    parser.add_argument("--torchao-config", default=None,
+                        help="SGLang online quantization, e.g. int4wo-128 (INT4 weights)")
+    return parser
 
-    service = build_service(arguments.model, arguments.head,
-                            sglang_url=arguments.sglang_url, revision=arguments.revision,
-                            mem_fraction_static=arguments.mem_fraction_static,
-                            device=arguments.head_device)
-    print(f"decision service on {arguments.host}:{arguments.port}: {service.health()}",
-          flush=True)
-    ThreadingHTTPServer((arguments.host, arguments.port), _handler(service)).serve_forever()
+
+def service_from(arguments, step_scorer=None):
+    """Build the service the parsed command line describes.
+
+    Args:
+        arguments: the namespace `build_parser().parse_args()` returns.
+        step_scorer: the step scorer class (see `build_service`); None uses `StepScorer`.
+
+    Returns:
+        The `DecisionService`.
+    """
+    return build_service(arguments.model, arguments.head,
+                         sglang_url=arguments.sglang_url, revision=arguments.revision,
+                         mem_fraction_static=arguments.mem_fraction_static,
+                         device=arguments.head_device,
+                         attention_backend=arguments.attention_backend,
+                         torchao_config=arguments.torchao_config,
+                         extra_engine_kwargs=json.loads(arguments.engine_kwargs)
+                         if arguments.engine_kwargs else None,
+                         head_model_id=arguments.head_model_id, step_scorer=step_scorer)
+
+
+def serve(service, host, port, handler=None):
+    """Serve a service over HTTP until the process is stopped.
+
+    Args:
+        service: the object the routes call: `fast`, `slow`, `solve`, `health`.
+        host: the address to listen on.
+        port: the TCP port to listen on.
+        handler: a function from a service to its request handler class; None uses the
+            routes of this module.
+    """
+    print(f"decision service on {host}:{port}: {service.health()}", flush=True)
+    ThreadingHTTPServer((host, port), (handler or request_handler)(service)).serve_forever()
+
+
+def main():
+    """Parse the command line, build the service and serve it."""
+    arguments = build_parser().parse_args()
+    serve(service_from(arguments), arguments.host, arguments.port)
 
 
 if __name__ == "__main__":

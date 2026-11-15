@@ -9,7 +9,9 @@ Implements the same surface as `hde.backend.TransformersScorer`:
 so `SchemaDecisionEngine` takes either without knowing which.
 """
 
+import contextvars
 import json
+import os
 import re
 from dataclasses import dataclass, field, replace
 
@@ -29,6 +31,62 @@ from hde.core.prompts_utils import (
     unlabelled_suffix,
 )
 from hde.readout.content_readout import OptionScore, option_token_ids
+
+# How the slow mode's reasoning is decoded. The default is greedy, which is what the published
+# numbers were measured with. A request may set its own decoding for its own thread
+# (decision_service /slow "sampling"), and HDM_THINK_SAMPLING (a JSON object in the
+# environment) sets a service-wide default -- Qwen recommends QWEN_THINK_SAMPLING for its
+# thinking mode. Only the reasoning call is affected: every one-token candidate read stays greedy.
+THINK_SAMPLING_ENV = "HDM_THINK_SAMPLING"
+SAMPLING_KEYS = ("temperature", "top_p", "top_k", "min_p", "presence_penalty",
+                 "frequency_penalty", "repetition_penalty")
+INTEGER_SAMPLING_KEYS = ("top_k",)
+QWEN_THINK_SAMPLING = {"temperature": 0.6, "top_p": 0.95, "top_k": 20}
+GREEDY_TEMPERATURE = 0.0
+THINK_SAMPLING = contextvars.ContextVar("think_sampling", default=None)
+
+
+def clean_sampling(sampling):
+    """Check a request's decoding parameters and bring them to numbers.
+
+    Args:
+        sampling: a mapping of decoding parameter names to values, or None / empty for
+            "not given".
+
+    Returns:
+        The same parameters with `top_k` as an int and the others as floats, or None when
+        nothing was given.
+
+    Raises:
+        ValueError: a key that is not one of `SAMPLING_KEYS`.
+    """
+    if not sampling:
+        return None
+    unknown = set(sampling) - set(SAMPLING_KEYS)
+    if unknown:
+        raise ValueError(f"unknown sampling keys {sorted(unknown)}; allowed: {SAMPLING_KEYS}")
+    return {key: (int(value) if key in INTEGER_SAMPLING_KEYS else float(value))
+            for key, value in sampling.items()}
+
+
+_DEFAULT_THINK_SAMPLING = clean_sampling(json.loads(os.environ.get(THINK_SAMPLING_ENV) or "null"))
+
+
+def _sampling(max_new_tokens):
+    """The sampling parameters of one generate call.
+
+    Args:
+        max_new_tokens: how many tokens the call may generate. One token is a candidate read.
+
+    Returns:
+        Greedy decoding for a one-token read; for a longer call (the reasoning) the request's
+        own decoding, else the service default, else greedy.
+    """
+    params = {"max_new_tokens": max_new_tokens, "temperature": GREEDY_TEMPERATURE}
+    if max_new_tokens > 1:
+        params.update(THINK_SAMPLING.get() or _DEFAULT_THINK_SAMPLING or {})
+    return params
+
 
 # `generate` takes `sampling_params` as a plain dict, so a key it does not know is
 # dropped without a word -- an unseeded run reporting a seed. The name is therefore
@@ -130,6 +188,157 @@ class SGLangSettings:
     mem_fraction_static: float = 0.8
     max_input_tokens: int = 16384
     engine_kwargs: dict = field(default_factory=dict)
+
+
+# --------------------------------------------------------------------------- visual states
+# Image states on the SGLang path. The backbone (Qwen3_5ForConditionalGeneration) is
+# a VLM; this lets a `hde.vision.VisualState(text, image)` reach the engine.
+#
+# Layout: the text layout the head was fitted on is kept **byte for byte**, and the
+# image is inserted **before** it. The reference is the SGLang text render (the 4B
+# head was collected under SGLang), not the transformers path. The user turn ends
+# with the question, the options and ANSWER_BOUNDARY, so the image must precede that
+# text: placed after it, hundreds of vision tokens would sit between the boundary
+# and the readout position and the coded readout ("the next token is the answer")
+# would no longer hold.
+#
+# The same image goes as `image_data` on every generate call made for one state --
+# fast, slow's reasoning, slow's follow-up read -- so both modes see one observation.
+# The readout stays at position -1, which the image prefix does not move.
+
+
+@dataclass(frozen=True)
+class EncodedVisualState:
+    """A visual state carrying the data URL it arrived as, so it is not re-encoded.
+
+    `decision_service` validates the request image with `hde.vision.decode_image`
+    and passes the original string down; SGLang's `image_data` takes a data URL.
+
+    **Not a subclass of `VisualState`, and dispatched through `_image_of`, not
+    isinstance.** Every SGLang-path branch asks `_image_of(state)`; a check written
+    as `isinstance(state, VisualState)` would miss this type. Use `_visual_states()`
+    when a type test is unavoidable, so a third state type changes one line.
+    """
+
+    text: str
+    data_url: str
+
+
+def _visual_states():
+    """The state types that carry an image.
+
+    Returns:
+        The tuple to give `isinstance` when a type test cannot be avoided.
+    """
+    from hde.vision import VisualState
+
+    return (VisualState, EncodedVisualState)
+
+
+def _image_of(state):
+    """The state's image in the form the engine takes it.
+
+    Args:
+        state: a text state (str) or a visual one (`VisualState`, `EncodedVisualState`).
+
+    Returns:
+        The image as a data URL for `image_data`, or None for a text state.
+    """
+    if isinstance(state, EncodedVisualState):
+        return state.data_url
+    if not isinstance(state, _visual_states()):
+        return None
+    import base64
+    import io
+
+    buffer = io.BytesIO()
+    state.image.convert("RGB").save(buffer, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii")
+
+
+def _text_of(state):
+    """The text of a state, whichever kind it is.
+
+    Args:
+        state: a text state or a visual one.
+
+    Returns:
+        The visual state's text, or the text state itself.
+    """
+    return state.text if _image_of(state) is not None else state
+
+
+def _with_image_first(messages):
+    """Put the image placeholder at the start of the last (user) turn.
+
+    Args:
+        messages: chat messages whose last turn has plain-text content. Changed in place.
+
+    Returns:
+        The same list, its last turn now an image part followed by the text part.
+    """
+    messages[-1]["content"] = [{"type": "image"},
+                               {"type": "text", "text": messages[-1]["content"]}]
+    return messages
+
+
+def _messages_for(state, body):
+    """`build_messages`, with the image placed first in the user turn for a visual state.
+
+    Args:
+        state: a text state or a visual one.
+        body: the question with its options, as `question_body` renders it.
+
+    Returns:
+        The chat messages of the enumerated prompt.
+    """
+    if _image_of(state) is None:
+        return build_messages(state, body)
+    return _with_image_first(build_messages(_text_of(state), body))
+
+
+VISION_PLACEHOLDERS = ("<|vision_start|>", "<|image_pad|>")
+
+
+def _check_image_rendered(rendered, state):
+    """A visual render must carry the vision placeholder, or the image is silently lost.
+
+    If the chat template emitted nothing for `{"type": "image"}`, SGLang would get
+    `image_data` with no placeholder to expand and could run a text-only forward that
+    looks entirely normal. This is the one failure mode of image states that would look
+    like success, so it is checked on every render.
+
+    Args:
+        rendered: the prompt after the chat template.
+        state: the state the prompt was rendered for.
+
+    Raises:
+        RuntimeError: the state is visual and the prompt has no vision placeholder.
+    """
+    if _image_of(state) is not None and not all(p in rendered for p in VISION_PLACEHOLDERS):
+        raise RuntimeError("the chat template emitted no vision placeholder for the image; "
+                           "refusing to run a text-only forward under a visual request")
+
+
+def _check_rendered(rendered, state):
+    """Check the render of an enumerated prompt for a visual state.
+
+    Besides carrying the placeholder, the image must come before the answer boundary:
+    after it, the vision tokens would sit between the boundary and the readout position.
+
+    Args:
+        rendered: the prompt after the chat template.
+        state: the state the prompt was rendered for.
+
+    Raises:
+        RuntimeError: the placeholder is missing, or it follows the answer boundary.
+    """
+    if _image_of(state) is None:
+        return
+    _check_image_rendered(rendered, state)
+    boundary = rendered.rfind(ANSWER_BOUNDARY.strip())
+    if boundary != -1 and rendered.find(VISION_PLACEHOLDERS[0]) > boundary:
+        raise RuntimeError("the image landed after the answer boundary")
 
 
 def readout_hidden_state(states, feature_layers=(-1,), position=-1):
@@ -362,8 +571,9 @@ class SGLangScorer:
                 continue
             own = codes[: len(question.choices)]
             rendered = self.tokenizer.apply_chat_template(
-                build_messages(state, question_body(question, own)),
+                _messages_for(state, question_body(question, own)),
                 tokenize=False, add_generation_prompt=True, enable_thinking=True)
+            _check_rendered(rendered, state)
             shared = shared_prefix(rendered)
             # The slow mode gets the render as it stands, block open, preamble and
             # all; the fast mode closes the block and reads at the boundary. Both
@@ -392,7 +602,8 @@ class SGLangScorer:
         """
         return boundary_candidate_ids(self.tokenizer, ANSWER_BOUNDARY, codes)
 
-    def _generate(self, prompts, max_new_tokens, candidate_ids_per_prompt, want_hidden=None):
+    def _generate(self, prompts, max_new_tokens, candidate_ids_per_prompt, want_hidden=None,
+                  image=None):
         """Logprobs for the candidate codes, and the hidden state beside them.
 
         `want_hidden` is False on the slow mode's generation call, where nothing reads
@@ -411,13 +622,16 @@ class SGLangScorer:
         groups = ([list(range(len(prompts)))] if self.settings.batch_questions
                   else [[i] for i in range(len(prompts))])
         for group in groups:
+            # One image per prompt when the state is visual. Every prompt in
+            # a call comes from the same state, so they all carry the same image.
+            extra = {} if image is None else {"image_data": [image for _ in group]}
             outputs = self.engine.generate(
                 [prompts[i] for i in group],
-                sampling_params=[{"max_new_tokens": max_new_tokens, "temperature": 0.0}
-                                 for _ in group],
+                sampling_params=[_sampling(max_new_tokens) for _ in group],
                 return_logprob=True,
                 token_ids_logprob=[candidate_ids_per_prompt[i] for i in group],
                 return_hidden_states=want_hidden,
+                **extra,
             )
             outputs = outputs if isinstance(outputs, list) else [outputs]
             results.extend(zip(group, outputs))
@@ -564,18 +778,41 @@ class SGLangScorer:
         """
         from hde.core.prompts import build_open_thinking_messages
 
+        # A visual state is rendered with the image first in the user turn, as the enumerated
+        # modes do, and the same image goes with every generate call.
+        image = _image_of(state)
+        messages = build_open_thinking_messages(_text_of(state), question)
+        if image is not None:
+            _with_image_first(messages)
         prompt = self.tokenizer.apply_chat_template(
-            build_open_thinking_messages(state, question), tokenize=False,
-            add_generation_prompt=True, enable_thinking=True)
-        written, spent = self._complete(prompt, budget)
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=True)
+        # not `_check_rendered`: a free-form prompt has no answer boundary to be on the right side of
+        _check_image_rendered(prompt, state)
+        written, spent = self._complete(prompt, budget, image)
         if "</think>" in written:
             return written, spent, False
-        forced, extra = self._complete(prompt + written + "</think>\nAnswer:", answer_tokens)
+        forced, extra = self._complete(prompt + written + "</think>\nAnswer:", answer_tokens, image)
         return written + "</think>\nAnswer:" + forced, spent + extra, True
 
-    def _complete(self, prompt, max_new_tokens):
+    def _complete(self, prompt, max_new_tokens, image=None):
+        """Continue one rendered prompt, greedily.
+
+        Args:
+            prompt: the rendered prompt text.
+            max_new_tokens: the most tokens to write.
+            image: the data URL of the image the prompt has a placeholder for, or None for a
+                text prompt.
+
+        Returns:
+            `(text, completion_tokens)`: what the engine wrote and how many tokens it was.
+
+        Raises:
+            RuntimeError: the engine returned no completion, or no token count.
+        """
+        extra = {} if image is None else {"image_data": image}
         output = self.engine.generate(
-            prompt, sampling_params={"max_new_tokens": max_new_tokens, "temperature": 0.0})
+            prompt, sampling_params={"max_new_tokens": max_new_tokens,
+                                     "temperature": GREEDY_TEMPERATURE}, **extra)
         row = output[0] if isinstance(output, list) else output
         if not isinstance(row, dict):
             raise RuntimeError(f"the server returned {type(row).__name__}, not a completion")
@@ -705,11 +942,15 @@ class SGLangScorer:
         """The fast mode: no generated token, the answer read at the boundary."""
         prompts, labels = self._render(state, schema, thinking=False)
         candidate_ids = [self._candidate_ids(codes) for _, codes in labels]
-        outputs = self._generate(prompts, max_new_tokens=1, candidate_ids_per_prompt=candidate_ids)
+        outputs = self._generate(prompts, max_new_tokens=1, candidate_ids_per_prompt=candidate_ids,
+                                 image=_image_of(state))
         return self._fields(prompts, labels, outputs, generated=False)
 
     def score_options(self, state, question, content_free=True):
         """Score each option by its own text, with no label between the two.
+
+        Refuses image states: the content readout has no image path, and silently
+        dropping the image would give the two fast readouts different observations.
 
         The same readout as `TransformersScorer.score_options`, returning the same
         `(scores, rewritten)`, so the engine does not know which backend is under
@@ -723,6 +964,8 @@ class SGLangScorer:
         such positions, so a table may not mix the backends without saying which
         produced each row.
         """
+        if _image_of(state) is not None:
+            raise TypeError("the content readout has no image path; use the coded readout for a visual state")
         scored, rewritten, hidden = self._score_options(state, question)
         if not content_free:
             return scored, rewritten, hidden
@@ -873,18 +1116,26 @@ class SGLangScorer:
         candidate_ids = [self._candidate_ids(codes) for _, codes in labels]
         # No hidden states for the reasoning itself: only its text and token count are
         # read, and the state the head needs comes from the follow-up read below.
+        image = _image_of(state)
         reasoned = self._generate(prompts, max_new_tokens=budget,
                                  candidate_ids_per_prompt=candidate_ids,
-                                 want_hidden=False)
+                                 want_hidden=False, image=image)
         # The answer is read after the reasoning, at the same boundary, so the
         # typed answer is assembled in code and nothing is parsed from the text.
         followups, spent, traces = [], [], []
         for prompt, output in zip(prompts, reasoned):
-            followups.append(prompt + output["text"] + ANSWER_BOUNDARY)
+            # A budget that runs out mid-thought must not leave the answer
+            # boundary inside an open think block -- the fast read and `solve` both read
+            # after a closed block, and reading inside an open one is a different
+            # (and, at 100% truncation, stop-biased) readout. Close it first.
+            written = output["text"]
+            if "</think>" not in written:
+                written = close_thinking(written)
+            followups.append(prompt + written + ANSWER_BOUNDARY)
             spent.append(int(output["meta_info"].get("completion_tokens", 0)))
             traces.append(output["text"])
         outputs = self._generate(followups, max_new_tokens=1,
-                                 candidate_ids_per_prompt=candidate_ids)
+                                 candidate_ids_per_prompt=candidate_ids, image=image)
         fields = self._fields(followups, labels, outputs, generated=False)
         return tuple(
             RawFieldScores(name=f.name, logits=f.logits, input_tokens=f.input_tokens,
