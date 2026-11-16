@@ -24,8 +24,10 @@ The blocks are not in the repository; they are on the Hub. Fetch the one that
 matches the backbone you mean to serve:
 
 ```bash
-huggingface-cli download fredreick/HDM-blocks \
+huggingface-cli download fredreick/HDM-Qwen3.5-4B \
     head-4b-mmlu-pro.safetensors --local-dir weights/
+huggingface-cli download fredreick/HDM-Qwen3.8-27B \
+    head-27b-mmlu-pro.safetensors --local-dir weights/
 ```
 
 `uv sync` resolves the pinned lockfile. The GPU wheels follow your CUDA; see
