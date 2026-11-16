@@ -250,7 +250,7 @@ curl -s http://127.0.0.1:30001/fast -H 'Content-Type: application/json' -d "{
 
 PNG or JPEG, at most 1 megapixel and 4 MB.
 
-## The blocks
+## Deploy HDM via HF
 
 The blocks live on the Hub rather than in this repository, one repository per
 backbone, so there is one copy of each and one place that records what it was
@@ -259,12 +259,33 @@ fitted on:
 - [**fredreick/HDM-Qwen3.5-4B**](https://huggingface.co/fredreick/HDM-Qwen3.5-4B)
 - [**fredreick/HDM-Qwen3.8-27B**](https://huggingface.co/fredreick/HDM-Qwen3.8-27B)
 
+HDM-Qwen3.5-4B:
+
 ```bash
 huggingface-cli download fredreick/HDM-Qwen3.5-4B \
     head-4b-mmlu-pro.safetensors --local-dir weights/
+
+hde-serve --model Qwen/Qwen3.5-4B \
+          --decision-head weights/head-4b-mmlu-pro.safetensors \
+          --backend sglang --readout coded --preload --port 8000 \
+          --lambda 0 --think-budget 4096
+```
+
+HDM-Qwen3.8-27B:
+
+```bash
 huggingface-cli download fredreick/HDM-Qwen3.8-27B \
     head-27b-mmlu-pro.safetensors --local-dir weights/
+
+hde-serve --model Qwen/Qwen3.8-27B \
+          --decision-head weights/head-27b-mmlu-pro.safetensors \
+          --backend sglang --readout coded --preload --port 8000 \
+          --lambda 0 --think-budget 4096
 ```
+
+The backbone downloads from the Hub on the first start. `--lambda` and
+`--think-budget` set the default price and thinking budget; a request can override
+both in its `routing` field.
 
 | | `head-4b-mmlu-pro` | `head-27b-mmlu-pro` |
 |---|---|---|
