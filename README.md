@@ -8,7 +8,8 @@
 [![licence](https://img.shields.io/badge/licence-Apache%202.0-blue)](LICENSE)
 [![python](https://img.shields.io/badge/python-3.11%2B-blue)](pyproject.toml)
 [![arXiv](https://img.shields.io/badge/arXiv-2611.16961-b31b1b)](https://arxiv.org/abs/2611.16961)
-[![weights](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--blocks-yellow)](https://huggingface.co/fredreick/HDM-blocks)
+[![weights 4B](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--Qwen3.5--4B-yellow)](https://huggingface.co/fredreick/HDM-Qwen3.5-4B)
+[![weights 27B](https://img.shields.io/badge/%F0%9F%A4%97%20weights-HDM--Qwen3.8--27B-yellow)](https://huggingface.co/fredreick/HDM-Qwen3.8-27B)
 
 ***Zero-or-T thinking:*** *the model decides for itself whether a question needs
 autoregressive generation at all. An answer costs either no token, or the T a
@@ -77,7 +78,7 @@ git clone https://github.com/zhengxuyu/HDM-code
 cd HDM-code
 uv sync                                   # or: pip install -e .
 
-huggingface-cli download fredreick/HDM-blocks \
+huggingface-cli download fredreick/HDM-Qwen3.5-4B \
     head-4b-mmlu-pro.safetensors --local-dir weights/
 
 hde-serve --model Qwen/Qwen3.5-4B \
@@ -100,10 +101,36 @@ to route on, and `/routing` will say so.
 On a GPU large enough for the 27B, the slow mode is far faster through SGLang:
 
 ```bash
-hde-serve --model /path/to/Qwen3.8-27B \
+huggingface-cli download fredreick/HDM-Qwen3.8-27B \
+    head-27b-mmlu-pro.safetensors --local-dir weights/
+
+hde-serve --model Qwen/Qwen3.8-27B \
           --decision-head weights/head-27b-mmlu-pro.safetensors \
           --backend sglang --readout coded --preload --port 8000
 ```
+
+The 4B starts the same way through SGLang:
+
+```bash
+hde-serve --model Qwen/Qwen3.5-4B \
+          --decision-head weights/head-4b-mmlu-pro.safetensors \
+          --backend sglang --readout coded --preload --port 8000
+```
+
+To route by default at a price, without a `routing` field in each request, add
+`--lambda` and `--think-budget`. This is the setting the paper's tables use at
+&lambda;&nbsp;=&nbsp;0:
+
+```bash
+hde-serve --model Qwen/Qwen3.8-27B \
+          --decision-head weights/head-27b-mmlu-pro.safetensors \
+          --backend sglang --readout coded --preload --port 8000 \
+          --lambda 0 --think-budget 4096
+```
+
+Every number in the paper was produced through SGLang. The transformers backend
+serves the same block, but its features are not identical, so a question can be
+routed differently there.
 
 `--readout` has to be the one the block was fitted under, and the server refuses a
 block fitted for another backbone rather than reading noise.
@@ -225,14 +252,18 @@ PNG or JPEG, at most 1 megapixel and 4 MB.
 
 ## The blocks
 
-The blocks live on the Hub, at
-[**fredreick/HDM-blocks**](https://huggingface.co/fredreick/HDM-blocks), rather than
-in this repository, so there is one copy of them and one place that records what
-they were fitted on:
+The blocks live on the Hub rather than in this repository, one repository per
+backbone, so there is one copy of each and one place that records what it was
+fitted on:
+
+- [**fredreick/HDM-Qwen3.5-4B**](https://huggingface.co/fredreick/HDM-Qwen3.5-4B)
+- [**fredreick/HDM-Qwen3.8-27B**](https://huggingface.co/fredreick/HDM-Qwen3.8-27B)
 
 ```bash
-huggingface-cli download fredreick/HDM-blocks \
+huggingface-cli download fredreick/HDM-Qwen3.5-4B \
     head-4b-mmlu-pro.safetensors --local-dir weights/
+huggingface-cli download fredreick/HDM-Qwen3.8-27B \
+    head-27b-mmlu-pro.safetensors --local-dir weights/
 ```
 
 | | `head-4b-mmlu-pro` | `head-27b-mmlu-pro` |
@@ -243,9 +274,9 @@ huggingface-cli download fredreick/HDM-blocks \
 | held out | 346, whole categories | 346, whole categories |
 | AUROC, where thinking helps | 0.804 | 0.879 |
 
-Fitted once and used unchanged everywhere else. The
-[model card](https://huggingface.co/fredreick/HDM-blocks) records what they were
-fitted on, and the two places where a simpler rule scores higher.
+Fitted once and used unchanged everywhere else. Each model card records what the
+block was fitted on and its results at each price; the report file beside it lists
+the baselines, including the two places where a simpler rule scores higher.
 
 ## Citation
 
